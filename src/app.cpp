@@ -2,7 +2,10 @@
 // Created by paul on 3/8/23.
 //
 
-# include "../inc/app.hpp"
+#include <iostream>
+#include <chrono>
+#include "../inc/app.hpp"
+
 
 Application::Application() {
     isRunning = true;
@@ -14,7 +17,8 @@ bool Application::OnInit() {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         return false;
     }
-    pWindow = SDL_CreateWindow("Ray Tracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
+    pWindow = SDL_CreateWindow("Ray Tracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480,
+                               SDL_WINDOW_SHOWN);
     if (pWindow == nullptr) {
         return false;
     }
@@ -23,11 +27,14 @@ bool Application::OnInit() {
         return false;
     }
     m_image.Initialize(640, 480, pRenderer);
+    SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
+    SDL_RenderClear(pRenderer);
+
     return true;
 }
 
 int Application::OnExecute() {
-    if (OnInit() == false) {
+    if (!OnInit()) {
         return -1;
     }
     SDL_Event Event;
@@ -42,38 +49,25 @@ int Application::OnExecute() {
     return 0;
 }
 
-void Application::OnEvent(SDL_Event* Event) {
+void Application::OnEvent(const SDL_Event *Event) {
     if (Event->type == SDL_QUIT) {
         isRunning = false;
     }
 }
 
-void Application::OnLoop() {
-//    for (int y = 0; y < 480; y++) {
-//        for (int x = 0; x < 640; x++) {
-//            double r = rand() % 255;
-//            double g = rand() % 255;
-//            double b = rand() % 255;
-//            double a = 255.0;
-//            m_image.SetPixel(x, y, r, g, b, a);
-//        }
-//    }
-    for (int y = 0; y < 480; y++) {
-        for (int x = 0; x < 640; x++) {
-            double r = static_cast<double>(x) / 640.0 * 255.0;
-            double g = static_cast<double>(y) / 480.0 * 255.0;
-            double b = 0.2 * 255.0;
-            double a = 255.0;
-            m_image.SetPixel(x, y, r, g, b, a);
-        }
-    }
+void Application::OnLoop() const {
+    // do nothing for now
 }
 
 void Application::OnRender() {
-    // set the background color to white
+    auto start = std::chrono::high_resolution_clock::now();
     SDL_RenderClear(pRenderer);
+    m_scene.Render(m_image);
     m_image.Display();
     SDL_RenderPresent(pRenderer);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "FPS: " << 1.0 / elapsed.count() << std::endl;
 }
 
 void Application::OnExit() {

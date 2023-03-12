@@ -7,23 +7,33 @@
 
 #include <SDL2/SDL.h>
 #include "image.hpp"
+#include "scene.hpp"
 
 class Application {
+private:
+    Scene m_scene;
+    Image m_image;
+    bool isRunning;
+    SDL_Window *pWindow;
+    SDL_Renderer *pRenderer;
+
 public:
     Application();
 
     int OnExecute();
+
     bool OnInit();
-    void OnEvent(SDL_Event* Event);
-    void OnLoop();
+
+    void OnEvent(const SDL_Event *Event);
+
+    void OnLoop() const;
+
     void OnRender();
+
     void OnExit();
+
     ~Application() = default;
-private:
-    Image m_image;
-    // SDL2 stuff
-    bool isRunning;
-    SDL_Window* pWindow;
-    SDL_Renderer* pRenderer;
+
 };
+
 #endif //RAY_TRACER_APP_HPP
