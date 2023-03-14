@@ -71,7 +71,7 @@ glm::vec3 Camera::GetScreenCenter() const {
 
 void Camera::UpdateCameraGeometry() {
     m_screenU = glm::normalize(glm::cross(m_direction, m_up));
-    m_screenV = glm::normalize(glm::cross(m_screenU, m_direction));
+    m_screenV = glm::normalize(glm::cross(m_direction, m_screenU));
     m_screenCenter = m_position + m_direction * static_cast<float>(m_lensDistance);
     m_screenU *= static_cast<float>(m_width);
     m_screenV *= static_cast<float>(m_width / m_aspectRatio);

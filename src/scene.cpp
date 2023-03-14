@@ -6,7 +6,7 @@
 
 Scene::Scene() {
     m_camera.SetPosition(glm::vec3(0.0f, -10.0f, 0.0f));
-    m_camera.SetDirection(glm::vec3(0.0f, 1.0f, 0.0f));
+    m_camera.SetDirection(glm::vec3(0.0f, 1.0f, 0.1f));
     m_camera.SetUp(glm::vec3(0.0f, 0.0f, 1.0f));
     m_camera.SetWidth(0.25f);
     m_camera.SetAspectRatio(4.0 / 3.0);
