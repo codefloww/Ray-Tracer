@@ -6,6 +6,9 @@
 #include <chrono>
 #include "../inc/app.hpp"
 
+// set the timestep to 64ms which is roughly 30fps
+using namespace std::chrono_literals;
+constexpr std::chrono::nanoseconds timestep(64ms);
 
 Application::Application() {
     isRunning = true;
@@ -22,7 +25,7 @@ bool Application::OnInit() {
     if (pWindow == nullptr) {
         return false;
     }
-    pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
+    pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_PRESENTVSYNC|SDL_RENDERER_ACCELERATED);
     if (pRenderer == nullptr) {
         return false;
     }
@@ -38,12 +41,28 @@ int Application::OnExecute() {
         return -1;
     }
     SDL_Event Event;
+
+    using clock = std::chrono::high_resolution_clock;
+    std::chrono::nanoseconds lag(0ns);
+    auto last_time = clock::now();
+
     while (isRunning) {
+        auto current_time = clock::now();
+        auto frame_time = current_time - last_time;
+        last_time = current_time;
+        lag += std::chrono::duration_cast<std::chrono::nanoseconds>(frame_time);
+
+        // if there are visible delay between closing the window then that means that fps is lower than 30
         while (SDL_PollEvent(&Event)) {
             OnEvent(&Event);
         }
-        OnLoop();
-        OnRender();
+
+        while (lag >= timestep) {
+            lag -= timestep;
+            OnLoop();
+            OnRender();
+        }
+
     }
     OnExit();
     return 0;
@@ -60,14 +79,10 @@ void Application::OnLoop() const {
 }
 
 void Application::OnRender() {
-    auto start = std::chrono::high_resolution_clock::now();
     SDL_RenderClear(pRenderer);
     m_scene.Render(m_image);
     m_image.Display();
     SDL_RenderPresent(pRenderer);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "FPS: " << 1.0 / elapsed.count() << std::endl;
 }
 
 void Application::OnExit() {
