@@ -7,14 +7,17 @@
 
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
+#include <memory>
 #include "image.hpp"
 #include "camera.hpp"
 #include "sphere.hpp"
+#include "point_light.hpp"
 
 class Scene {
 
     Camera camera_m;
-    Sphere sphere_m;
+    std::vector<std::shared_ptr<Sphere>> sphere_list_m;
+    std::vector<std::shared_ptr<PointLight>> light_list_m;
 
 public:
     Scene();

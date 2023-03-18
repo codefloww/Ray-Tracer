@@ -7,8 +7,10 @@
 #include "../inc/app.hpp"
 
 // set the kTimestep to 64ms which is roughly 30fps
+//#define SHOW_FPS
+
 using namespace std::chrono_literals;
-constexpr std::chrono::nanoseconds kTimestep(32ms);
+constexpr std::chrono::nanoseconds kTimestep(40ms);
 
 Application::Application() : is_running_m(true), window_m(nullptr), renderer_m(nullptr) {}
 
@@ -26,7 +28,7 @@ bool Application::onInit() {
         return false;
     }
     image_m.initialize(640, 480, renderer_m);
-    SDL_SetRenderDrawColor(renderer_m, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer_m, 100.0,100.0,100.0, 255.0);
     SDL_RenderClear(renderer_m);
 
     return true;
@@ -52,7 +54,9 @@ int Application::onExecute() {
         while (SDL_PollEvent(&event)) {
             onEvent(&event);
         }
-
+#ifdef SHOW_FPS
+        std::cout << "fps: " << 1.0 / (lag.count() / 1e9) << std::endl;
+#endif
         while (lag >= kTimestep) {
             lag -= kTimestep;
             onLoop();

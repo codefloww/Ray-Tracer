@@ -5,8 +5,10 @@
 #include "../inc/sphere.hpp"
 #include <cmath>
 
+Sphere::Sphere(const glm::vec3 &position, double radius) : position_m(position), radius_m(radius) {}
+
 bool
-Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, const glm::vec3 &loc_normal, glm::vec3 loc_color) const {
+Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 loc_color) const {
     glm::vec3 vhat = cast_ray.getDirection();
     double b = 2.0 * glm::dot(vhat, cast_ray.getOrigin() - position_m);
     double c = glm::dot(cast_ray.getOrigin() - position_m, cast_ray.getOrigin() - position_m) - radius_m * radius_m;
@@ -26,6 +28,7 @@ Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, const glm::
             } else {
                 int_point = cast_ray.getOrigin() + vhat * static_cast<float>(t2);
             }
+            loc_normal = glm::normalize(int_point - position_m);
             return true;
         }
     }

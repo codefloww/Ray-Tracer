@@ -17,9 +17,11 @@ class Sphere {
 public:
     Sphere() = default;
 
+    Sphere(const glm::vec3 &position, double radius);
+
     ~Sphere() = default;
 
-    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, const glm::vec3 &loc_normal, glm::vec3 loc_color) const;
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 loc_color) const;
 };
 
 
