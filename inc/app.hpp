@@ -10,27 +10,26 @@
 #include "scene.hpp"
 
 class Application {
-private:
-    Scene m_scene;
-    Image m_image;
-    bool isRunning;
-    SDL_Window *pWindow;
-    SDL_Renderer *pRenderer;
+    Scene scene_m;
+    Image image_m;
+    bool is_running_m;
+    SDL_Window *window_m;
+    SDL_Renderer *renderer_m;
 
 public:
     Application();
 
-    int OnExecute();
+    int onExecute();
 
-    bool OnInit();
+    bool onInit();
 
-    void OnEvent(const SDL_Event *Event);
+    void onEvent(const SDL_Event *event);
 
-    void OnLoop() const;
+    void onLoop() const;
 
-    void OnRender();
+    void onRender();
 
-    void OnExit();
+    void onExit();
 
     ~Application() = default;
 

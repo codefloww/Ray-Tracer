@@ -9,16 +9,17 @@
 #include "ray.hpp"
 
 class Sphere {
-    glm::vec3 m_center;
-    double m_radius;
+
+    double radius_m = 1.0f;
+    glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
+
 
 public:
-    Sphere();
+    Sphere() = default;
 
-    ~Sphere();
+    ~Sphere() = default;
 
-    bool TestIntersections(const Ray &castRay, glm::vec3 &intPoint, glm::vec3 &locNormal, glm::vec3 locColor) const;
-
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, const glm::vec3 &loc_normal, glm::vec3 loc_color) const;
 };
 
 

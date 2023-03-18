@@ -4,87 +4,82 @@
 
 #include "../inc/image.hpp"
 
-Image::Image() {
-    m_width = 0;
-    m_height = 0;
-    m_pRenderer = nullptr;
-    m_pTexture = nullptr;
-}
 
 Image::~Image() {
-    if (m_pTexture != nullptr) {
-        SDL_DestroyTexture(m_pTexture);
+    if (texture_m != nullptr) {
+        SDL_DestroyTexture(texture_m);
     }
 }
 
-void Image::Initialize(int width, int height, SDL_Renderer *pRenderer) {
-    m_rChannel.resize(width, std::vector<double>(height, 0.0));
-    m_gChannel.resize(width, std::vector<double>(height, 0.0));
-    m_bChannel.resize(width, std::vector<double>(height, 0.0));
-    m_aChannel.resize(width, std::vector<double>(height, 0.0));
+void Image::initialize(int width, int height, SDL_Renderer *renderer) {
+    r_channel_m.resize(width, std::vector<double>(height, 0.0));
+    g_channel_m.resize(width, std::vector<double>(height, 0.0));
+    b_channel_m.resize(width, std::vector<double>(height, 0.0));
+    a_channel_m.resize(width, std::vector<double>(height, 0.0));
 
-    m_width = width;
-    m_height = height;
-    m_pRenderer = pRenderer;
+    width_m = width;
+    height_m = height;
+    renderer_m = renderer;
 
-    InitTexture();
+    initTexture();
 }
 
-void Image::SetPixel(int x, int y, double r, double g, double b, double a) {
-    m_rChannel[x][y] = r;
-    m_gChannel[x][y] = g;
-    m_bChannel[x][y] = b;
-    m_aChannel[x][y] = a;
+void Image::setPixel(int x, int y, double r, double g, double b, double a) {
+    r_channel_m[x][y] = r;
+    g_channel_m[x][y] = g;
+    b_channel_m[x][y] = b;
+    a_channel_m[x][y] = a;
 }
 
-void Image::Display() const {
-    auto *tempPixels = new Uint32[m_width * m_height];
+void Image::display() const {
+    auto *temp_pixels = new Uint32[width_m * height_m];
 
-    memset(tempPixels, 0, m_width * m_height * sizeof(Uint32));
+    memset(temp_pixels, 0, width_m * height_m * sizeof(Uint32));
 
-    for (int y = 0; y < m_height; y++) {
-        for (int x = 0; x < m_width; x++) {
-            tempPixels[y * m_width + x] = ConvertColor(m_rChannel[x][y], m_gChannel[x][y], m_bChannel[x][y],
-                                                       m_aChannel[x][y]);
+    for (int y = 0; y < height_m; y++) {
+        for (int x = 0; x < width_m; x++) {
+            temp_pixels[y * width_m + x] = convertColor(r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y],
+                                                        a_channel_m[x][y]);
         }
     }
-    SDL_UpdateTexture(m_pTexture, nullptr, tempPixels, m_width * sizeof(Uint32));
+    SDL_UpdateTexture(texture_m, nullptr, temp_pixels, width_m * sizeof(Uint32));
 
-    delete[] tempPixels;
+    delete[] temp_pixels;
 
-    SDL_Rect srcRect;
+    SDL_Rect src_rect;
     SDL_Rect bounds;
-    srcRect.x = 0;
-    srcRect.y = 0;
-    srcRect.w = m_width;
-    srcRect.h = m_height;
-    bounds = srcRect;
-    SDL_RenderCopy(m_pRenderer, m_pTexture, &srcRect, &bounds);
+    src_rect.x = 0;
+    src_rect.y = 0;
+    src_rect.w = width_m;
+    src_rect.h = height_m;
+    bounds = src_rect;
+    SDL_RenderCopy(renderer_m, texture_m, &src_rect, &bounds);
 }
 
-void Image::InitTexture() {
-    Uint32 rmask, gmask, bmask, amask;
+void Image::initTexture() {
+    Uint32 r_mask, g_mask, b_mask, a_mask;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    rmask = 0xff000000;
-    gmask = 0x00ff0000;
-    bmask = 0x0000ff00;
-    amask = 0x000000ff;
+    r_mask = 0xff000000;
+    g_mask = 0x00ff0000;
+    b_mask = 0x0000ff00;
+    a_mask = 0x000000ff;
 #else
-    rmask = 0x000000ff;
-    gmask = 0x0000ff00;
-    bmask = 0x00ff0000;
-    amask = 0xff000000;
+    r_mask = 0x000000ff;
+    g_mask = 0x0000ff00;
+    b_mask = 0x00ff0000;
+    a_mask = 0xff000000;
 #endif
-    if (m_pTexture != nullptr) {
-        SDL_DestroyTexture(m_pTexture);
+    if (texture_m != nullptr) {
+        SDL_DestroyTexture(texture_m);
     }
-    SDL_Surface *tempSurface = SDL_CreateRGBSurface(0, m_width, m_height, 32, rmask, gmask, bmask, amask);
-    m_pTexture = SDL_CreateTextureFromSurface(m_pRenderer, tempSurface);
-    SDL_FreeSurface(tempSurface);
+    SDL_Surface *temp_surface = SDL_CreateRGBSurface(0, width_m, height_m, 32,
+                                                     r_mask, g_mask, b_mask, a_mask);
+    texture_m = SDL_CreateTextureFromSurface(renderer_m, temp_surface);
+    SDL_FreeSurface(temp_surface);
 }
 
-Uint32 Image::ConvertColor(double r, double g, double b, double a) const {
+Uint32 Image::convertColor(double r, double g, double b, double a) const {
     Uint32 color = 0;
     auto r8 = static_cast<unsigned char>(r);
     auto g8 = static_cast<unsigned char>(g);
@@ -100,19 +95,19 @@ Uint32 Image::ConvertColor(double r, double g, double b, double a) const {
     return color;
 }
 
-int Image::GetWidth() const {
-    return m_width;
+int Image::getWidth() const {
+    return width_m;
 }
 
-int Image::GetHeight() const {
-    return m_height;
+int Image::getHeight() const {
+    return height_m;
 }
 
-std::vector<double> Image::GetPixel(int x, int y) const {
+std::vector<double> Image::getPixel(int x, int y) const {
     std::vector<double> pixel;
-    pixel.push_back(m_rChannel[x][y]);
-    pixel.push_back(m_gChannel[x][y]);
-    pixel.push_back(m_bChannel[x][y]);
-    pixel.push_back(m_aChannel[x][y]);
+    pixel.push_back(r_channel_m[x][y]);
+    pixel.push_back(g_channel_m[x][y]);
+    pixel.push_back(b_channel_m[x][y]);
+    pixel.push_back(a_channel_m[x][y]);
     return pixel;
 }

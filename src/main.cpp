@@ -1,7 +1,8 @@
 #include "../inc/app.hpp"
 
+
 int main() {
     Application app;
-    app.OnExecute();
+    app.onExecute();
     return 0;
 }

@@ -5,33 +5,26 @@
 #include "../inc/sphere.hpp"
 #include <cmath>
 
-Sphere::Sphere() {
-    m_center = glm::vec3(0.0f, 0.0f, 0.0f);
-    m_radius = 1.0f;
-}
-
-Sphere::~Sphere() {}
-
-
 bool
-Sphere::TestIntersections(const Ray &castRay, glm::vec3 &intPoint, glm::vec3 &locNormal, glm::vec3 locColor) const {
-    glm::vec3 vhat = castRay.GetDirection();
-    double b = 2.0 * glm::dot(vhat, castRay.GetOrigin() - m_center);
-    double c = glm::dot(castRay.GetOrigin() - m_center, castRay.GetOrigin() - m_center) - m_radius * m_radius;
+Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, const glm::vec3 &loc_normal, glm::vec3 loc_color) const {
+    glm::vec3 vhat = cast_ray.getDirection();
+    double b = 2.0 * glm::dot(vhat, cast_ray.getOrigin() - position_m);
+    double c = glm::dot(cast_ray.getOrigin() - position_m, cast_ray.getOrigin() - position_m) - radius_m * radius_m;
     double discriminant = b * b - 4.0 * c;
+
     if (discriminant < 0.0) {
         return false;
     } else {
-        double numSqrt = sqrt(discriminant);
-        double t1 = (-b + numSqrt) / 2.0;
-        double t2 = (-b - numSqrt) / 2.0;
+        double num_sqrt = sqrt(discriminant);
+        double t1 = (-b + num_sqrt) / 2.0;
+        double t2 = (-b - num_sqrt) / 2.0;
         if ((t1 < 0.0) || (t2 < 0.0)) {
             return false;
         } else {
             if (t1 < t2) {
-                intPoint = castRay.GetOrigin() + vhat * static_cast<float>(t1);
+                int_point = cast_ray.getOrigin() + vhat * static_cast<float>(t1);
             } else {
-                intPoint = castRay.GetOrigin() + vhat * static_cast<float>(t2);
+                int_point = cast_ray.getOrigin() + vhat * static_cast<float>(t2);
             }
             return true;
         }

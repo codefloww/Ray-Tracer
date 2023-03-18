@@ -6,88 +6,83 @@
 #include <chrono>
 #include "../inc/app.hpp"
 
-// set the timestep to 64ms which is roughly 30fps
+// set the kTimestep to 64ms which is roughly 30fps
 using namespace std::chrono_literals;
-constexpr std::chrono::nanoseconds timestep(64ms);
+constexpr std::chrono::nanoseconds kTimestep(32ms);
 
-Application::Application() {
-    isRunning = true;
-    pWindow = nullptr;
-    pRenderer = nullptr;
-}
+Application::Application() : is_running_m(true), window_m(nullptr), renderer_m(nullptr) {}
 
-bool Application::OnInit() {
+bool Application::onInit() {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         return false;
     }
-    pWindow = SDL_CreateWindow("Ray Tracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480,
-                               SDL_WINDOW_SHOWN);
-    if (pWindow == nullptr) {
+    window_m = SDL_CreateWindow("Ray Tracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480,
+                                SDL_WINDOW_SHOWN);
+    if (window_m == nullptr) {
         return false;
     }
-    pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_PRESENTVSYNC|SDL_RENDERER_ACCELERATED);
-    if (pRenderer == nullptr) {
+    renderer_m = SDL_CreateRenderer(window_m, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    if (renderer_m == nullptr) {
         return false;
     }
-    m_image.Initialize(640, 480, pRenderer);
-    SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
-    SDL_RenderClear(pRenderer);
+    image_m.initialize(640, 480, renderer_m);
+    SDL_SetRenderDrawColor(renderer_m, 255, 255, 255, 255);
+    SDL_RenderClear(renderer_m);
 
     return true;
 }
 
-int Application::OnExecute() {
-    if (!OnInit()) {
+int Application::onExecute() {
+    if (!onInit()) {
         return -1;
     }
-    SDL_Event Event;
+    SDL_Event event;
 
     using clock = std::chrono::high_resolution_clock;
     std::chrono::nanoseconds lag(0ns);
     auto last_time = clock::now();
 
-    while (isRunning) {
+    while (is_running_m) {
         auto current_time = clock::now();
         auto frame_time = current_time - last_time;
         last_time = current_time;
         lag += std::chrono::duration_cast<std::chrono::nanoseconds>(frame_time);
 
         // if there are visible delay between closing the window then that means that fps is lower than 30
-        while (SDL_PollEvent(&Event)) {
-            OnEvent(&Event);
+        while (SDL_PollEvent(&event)) {
+            onEvent(&event);
         }
 
-        while (lag >= timestep) {
-            lag -= timestep;
-            OnLoop();
-            OnRender();
+        while (lag >= kTimestep) {
+            lag -= kTimestep;
+            onLoop();
+            onRender();
         }
-
     }
-    OnExit();
+    onExit();
     return 0;
 }
 
-void Application::OnEvent(const SDL_Event *Event) {
-    if (Event->type == SDL_QUIT) {
-        isRunning = false;
+void Application::onEvent(const SDL_Event *event) {
+    if (event->type == SDL_QUIT) {
+        is_running_m = false;
     }
 }
 
-void Application::OnLoop() const {
+void Application::onLoop() const {
     // do nothing for now
 }
 
-void Application::OnRender() {
-    SDL_RenderClear(pRenderer);
-    m_scene.Render(m_image);
-    m_image.Display();
-    SDL_RenderPresent(pRenderer);
+void Application::onRender() {
+    SDL_RenderClear(renderer_m);
+    scene_m.render(image_m);
+    image_m.display();
+    SDL_RenderPresent(renderer_m);
 }
 
-void Application::OnExit() {
-    SDL_DestroyRenderer(pRenderer);
-    SDL_DestroyWindow(pWindow);
-    pWindow = nullptr;
+void Application::onExit() {
+    SDL_DestroyRenderer(renderer_m);
+    SDL_DestroyWindow(window_m);
+    window_m = nullptr;
     SDL_Quit();
 }

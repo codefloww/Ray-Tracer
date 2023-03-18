@@ -5,80 +5,80 @@
 #include "../inc/camera.hpp"
 
 Camera::Camera() {
-    m_position = glm::vec3(0.0f, 0.0f, 0.0f);
-    m_direction = glm::vec3(0.0f, 1.0f, 0.0f);
-    m_up = glm::vec3(0.0f, 0.0f, 1.0f);
-    m_lensDistance = 1.0f;
-    m_width = 1.0f;
-    m_aspectRatio = 1.0f;
+    position_m = glm::vec3(0.0f, 0.0f, 0.0f);
+    direction_m = glm::vec3(0.0f, 1.0f, 0.0f);
+    screen_up_m = glm::vec3(0.0f, 0.0f, 1.0f);
+    lens_distance_m = 1.0f;
+    width_m = 1.0f;
+    aspect_ratio_m = 1.0f;
 }
 
-void Camera::SetPosition(const glm::vec3 &newPosition) {
-    m_position = newPosition;
+void Camera::setPosition(const glm::vec3 &new_position) {
+    position_m = new_position;
 }
 
-void Camera::SetDirection(const glm::vec3 &newDirection) {
-    m_direction = glm::normalize(newDirection);
+void Camera::setDirection(const glm::vec3 &new_direction) {
+    direction_m = glm::normalize(new_direction);
 }
 
-void Camera::SetUp(const glm::vec3 &newUp) {
-    m_up = glm::normalize(newUp);
+void Camera::setUp(const glm::vec3 &new_up) {
+    screen_up_m = glm::normalize(new_up);
 }
 
-void Camera::SetLensDistance(const double &newLensDistance) {
-    m_lensDistance = newLensDistance;
+void Camera::setLensDistance(const double &new_lens_distance) {
+    lens_distance_m = new_lens_distance;
 }
 
-void Camera::SetWidth(const double &newWidth) {
-    m_width = newWidth;
+void Camera::setWidth(const double &new_width) {
+    width_m = new_width;
 }
 
-void Camera::SetAspectRatio(const double &newAspectRatio) {
-    m_aspectRatio = newAspectRatio;
+void Camera::setAspectRatio(const double &new_aspect_ratio) {
+    aspect_ratio_m = new_aspect_ratio;
 }
 
-glm::vec3 Camera::GetPosition() const {
-    return m_position;
+glm::vec3 Camera::getPosition() const {
+    return position_m;
 }
 
-glm::vec3 Camera::GetDirection() const {
-    return m_direction;
+glm::vec3 Camera::getDirection() const {
+    return direction_m;
 }
 
-glm::vec3 Camera::GetUp() const {
-    return m_up;
+glm::vec3 Camera::getUp() const {
+    return screen_up_m;
 }
 
-double Camera::GetLensDistance() const {
-    return m_lensDistance;
+double Camera::getLensDistance() const {
+    return lens_distance_m;
 }
 
-double Camera::GetWidth() const {
-    return m_width;
+double Camera::getWidth() const {
+    return width_m;
 }
 
-glm::vec3 Camera::GetU() const {
-    return m_screenU;
+glm::vec3 Camera::getU() const {
+    return screen_u_m;
 }
 
-glm::vec3 Camera::GetV() const {
-    return m_screenV;
+glm::vec3 Camera::getV() const {
+    return screen_v_m;
 }
 
-glm::vec3 Camera::GetScreenCenter() const {
-    return m_screenCenter;
+glm::vec3 Camera::getScreenCenter() const {
+    return screen_center_m;
 }
 
-void Camera::UpdateCameraGeometry() {
-    m_screenU = glm::normalize(glm::cross(m_direction, m_up));
-    m_screenV = glm::normalize(glm::cross(m_direction, m_screenU));
-    m_screenCenter = m_position + m_direction * static_cast<float>(m_lensDistance);
-    m_screenU *= static_cast<float>(m_width);
-    m_screenV *= static_cast<float>(m_width / m_aspectRatio);
+void Camera::updateCameraGeometry() {
+    screen_u_m = glm::normalize(glm::cross(direction_m, screen_up_m));
+    screen_v_m = glm::normalize(glm::cross(direction_m, screen_u_m));
+    screen_center_m = position_m + direction_m * static_cast<float>(lens_distance_m);
+    screen_u_m *= static_cast<float>(width_m);
+    screen_v_m *= static_cast<float>(width_m / aspect_ratio_m);
 }
 
-bool Camera::GetRayFromScreenPoint(double x, double y, Ray &cameraRay) const {
-    glm::vec3 pointOnScreen = m_screenCenter + m_screenU * static_cast<float>(x) + m_screenV * static_cast<float>(y);
-    cameraRay = Ray::GetRayFromPoints(m_position, pointOnScreen);
+bool Camera::getRayFromScreenPoint(double x, double y, Ray &camera_ray) const {
+    glm::vec3 pointOnScreen = screen_center_m + screen_u_m * static_cast<float>(x) + screen_v_m * static_cast<float>(y);
+    camera_ray = Ray::getRayFromPoints(position_m, pointOnScreen);
     return true;
 }

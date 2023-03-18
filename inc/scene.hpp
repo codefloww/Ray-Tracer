@@ -13,17 +13,15 @@
 
 class Scene {
 
-private:
-    Camera m_camera;
-    Sphere m_sphere;
+    Camera camera_m;
+    Sphere sphere_m;
 
 public:
     Scene();
 
     ~Scene() = default;
 
-    bool Render(Image &outputImage) const;
-
+    bool render(Image &output_image) const;
 };
 
 #endif //RAY_TRACER_SCENE_HPP

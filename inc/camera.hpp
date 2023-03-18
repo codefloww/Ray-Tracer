@@ -10,53 +10,50 @@
 
 class Camera {
 
-private:
-    glm::vec3 m_position;
-    glm::vec3 m_direction;
-    glm::vec3 m_up;
-    glm::vec3 m_screenU;
-    glm::vec3 m_screenV;
-    glm::vec3 m_screenCenter;
-    double m_lensDistance;
-    double m_width;
-    double m_aspectRatio;
+    glm::vec3 position_m;
+    glm::vec3 direction_m;
+    glm::vec3 screen_up_m;
+    glm::vec3 screen_u_m;
+    glm::vec3 screen_v_m;
+    glm::vec3 screen_center_m;
+    double lens_distance_m;
+    double width_m;
+    double aspect_ratio_m;
 
 public:
     Camera();
 
-    void SetPosition(const glm::vec3 &newPosition);
+    void setPosition(const glm::vec3 &new_position);
 
-    void SetDirection(const glm::vec3 &newDirection);
+    void setDirection(const glm::vec3 &new_direction);
 
-    void SetUp(const glm::vec3 &newUp);
+    void setUp(const glm::vec3 &new_up);
 
-    void SetLensDistance(const double &newLensDistance);
+    void setLensDistance(const double &new_lens_distance);
 
-    void SetWidth(const double &newWidth);
+    void setWidth(const double &new_width);
 
-    void SetAspectRatio(const double &newAspectRatio);
+    void setAspectRatio(const double &new_aspect_ratio);
 
-    glm::vec3 GetPosition() const;
+    [[nodiscard]] glm::vec3 getPosition() const;
 
-    glm::vec3 GetDirection() const;
+    [[nodiscard]] glm::vec3 getDirection() const;
 
-    glm::vec3 GetUp() const;
+    [[nodiscard]] glm::vec3 getUp() const;
 
-    glm::vec3 GetU() const;
+    [[nodiscard]] glm::vec3 getU() const;
 
-    glm::vec3 GetV() const;
+    [[nodiscard]] glm::vec3 getV() const;
 
-    glm::vec3 GetScreenCenter() const;
+    [[nodiscard]] glm::vec3 getScreenCenter() const;
 
-    double GetLensDistance() const;
+    [[nodiscard]] double getLensDistance() const;
 
-    double GetWidth() const;
+    [[nodiscard]] double getWidth() const;
 
-    double GetAspectRatio() const;
+    bool getRayFromScreenPoint(double x, double y, Ray &camera_ray) const;
 
-    bool GetRayFromScreenPoint(double x, double y, Ray &cameraRay) const;
-
-    void UpdateCameraGeometry();
+    void updateCameraGeometry();
 
 };
 

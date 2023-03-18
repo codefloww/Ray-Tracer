@@ -8,8 +8,9 @@
 #include <glm/glm.hpp>
 
 class Ray {
-    glm::vec3 m_origin;
-    glm::vec3 m_direction;
+
+    glm::vec3 origin_m;
+    glm::vec3 direction_m;
 
 public:
     Ray();
@@ -18,13 +19,13 @@ public:
 
     ~Ray() = default;
 
-    glm::vec3 GetOrigin() const;
+    [[nodiscard]] glm::vec3 getOrigin() const;
 
-    glm::vec3 GetDirection() const;
+    [[nodiscard]] glm::vec3 getDirection() const;
 
-    glm::vec3 GetPoint(double t) const;
+    [[nodiscard]] glm::vec3 getPoint(double t) const;
 
-    static Ray GetRayFromPoints(const glm::vec3 &origin, const glm::vec3 &destination);
+    static Ray getRayFromPoints(const glm::vec3 &origin, const glm::vec3 &destination);
 };
 
 
