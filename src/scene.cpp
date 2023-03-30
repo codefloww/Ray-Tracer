@@ -17,8 +17,9 @@ Scene::Scene() {
     light_list_m[0]->color_m = glm::vec3(255.0f, 255.0f, 255.0f);
     sphere_list_m.emplace_back(std::make_shared<Sphere>(glm::vec3(3.0f, 7.0f, 0.0f), 1.4f));
     sphere_list_m.emplace_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f));
-
+    sphere_list_m.emplace_back(std::make_shared<Sphere>(glm::vec3(-4.0f, -3.3f, 6.0f), 3.0f));
 }
+
 
 bool Scene::render(Image &output_image) const {
     int width = output_image.getWidth();
@@ -37,25 +38,65 @@ bool Scene::render(Image &output_image) const {
             double norm_x = static_cast<double>(x) * x_factor - 1.0;
             double norm_y = static_cast<double>(y) * y_factor - 1.0;
             camera_m.getRayFromScreenPoint(norm_x, norm_y, camera_ray);
-
-            for (auto &sphere_m : sphere_list_m){
+            bool blank = true;
+            for (auto &sphere_m: sphere_list_m) {
                 bool valid_intersection = sphere_m->testIntersections(camera_ray, int_point, loc_normal, loc_color);
                 if (valid_intersection) {
+                    blank = false;
                     double intensity = 0.0;
                     glm::vec3 color;
                     bool valid_illumination;
-                    for (auto &light_m : light_list_m) {
-                        valid_illumination = light_m->compute_illumination(int_point, loc_normal, sphere_list_m, sphere_m, color, intensity);
+                    for (auto &light_m: light_list_m) {
+                        valid_illumination = light_m->compute_illumination(int_point, loc_normal, sphere_list_m,
+                                                                           sphere_m, color, intensity);
                         if (valid_illumination) {
                             output_image.setPixel(x, y, color.r * intensity, 0.0, 0.0, 255.0);
-                        }
-                        else {
+                        } else {
                             output_image.setPixel(x, y, 0.0, 0.0, 0.0, 255.0);
                         }
                     }
                 }
             }
+            if (blank) {
+                output_image.setPixel(x, y, 64.0, 64.0, 64.0, 255.0);
+            }
         }
     }
     return true;
+}
+
+void Scene::move_camera(Scene::CameraMovement move_direction) {
+    switch (move_direction) {
+        case FORWARD:
+            camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection());
+            break;
+        case BACKWARD:
+            camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection());
+            break;
+        case LEFT:
+            // move to left of camera in regard to direction vector
+            // should be refactored!!!
+            camera_m.setPosition(camera_m.getPosition() + glm::normalize(
+                    glm::vec3(-camera_m.getDirection().y, camera_m.getDirection().x, 0.0f)) * 0.1f);
+            break;
+        case RIGHT:
+            camera_m.setPosition(camera_m.getPosition() - glm::normalize(
+                    glm::vec3(-camera_m.getDirection().y, camera_m.getDirection().x, 0.0f)) * 0.1f);
+            break;
+        case UP:
+            camera_m.setPosition(camera_m.getPosition() + glm::vec3(0.0f, 0.0f, 0.03f));
+            break;
+        case DOWN:
+            camera_m.setPosition(camera_m.getPosition() - glm::vec3(0.0f, 0.0f, 0.03f));
+            break;
+    }
+
+
+    camera_m.setPosition(camera_m.getPosition());
+    camera_m.updateCameraGeometry();
+}
+
+void Scene::rotate_camera(const glm::vec3 &rotation) {
+    camera_m.setDirection(camera_m.getDirection() - rotation);
+    camera_m.updateCameraGeometry();
 }

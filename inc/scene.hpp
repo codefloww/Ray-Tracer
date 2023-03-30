@@ -20,11 +20,25 @@ class Scene {
     std::vector<std::shared_ptr<PointLight>> light_list_m;
 
 public:
+
+    enum CameraMovement {
+        FORWARD,
+        BACKWARD,
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    };
+
     Scene();
 
     ~Scene() = default;
 
     bool render(Image &output_image) const;
+
+    void move_camera(CameraMovement direction);
+
+    void rotate_camera(const glm::vec3 &rotation);
 };
 
 #endif //RAY_TRACER_SCENE_HPP

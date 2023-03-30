@@ -28,7 +28,7 @@ bool Application::onInit() {
         return false;
     }
     image_m.initialize(640, 480, renderer_m);
-    SDL_SetRenderDrawColor(renderer_m, 100.0,100.0,100.0, 255.0);
+    SDL_SetRenderDrawColor(renderer_m, 100.0, 100.0, 100.0, 255.0);
     SDL_RenderClear(renderer_m);
 
     return true;
@@ -70,6 +70,44 @@ int Application::onExecute() {
 void Application::onEvent(const SDL_Event *event) {
     if (event->type == SDL_QUIT) {
         is_running_m = false;
+    } else if (event->type == SDL_KEYDOWN) {
+        switch (event->key.keysym.sym) {
+            // inverse h j k l movement for camera and rotation
+            case SDLK_j:
+                scene_m.move_camera(Scene::CameraMovement::DOWN);
+                break;
+            case SDLK_k:
+                scene_m.move_camera(Scene::CameraMovement::UP);
+                break;
+            case SDLK_h:
+                scene_m.move_camera(Scene::CameraMovement::LEFT);
+                break;
+            case SDLK_l:
+                scene_m.move_camera(Scene::CameraMovement::RIGHT);
+                break;
+            case SDLK_u:
+                scene_m.move_camera(Scene::CameraMovement::FORWARD);
+                break;
+            case SDLK_i:
+                scene_m.move_camera(Scene::CameraMovement::BACKWARD);
+                break;
+                // should be fixed but it's ok for now
+            case SDLK_w:
+                scene_m.rotate_camera(glm::vec3(0.0f, 0.0f, -0.05f));
+                break;
+            case SDLK_s:
+                scene_m.rotate_camera(glm::vec3(0.0f, 0.0f, 0.05f));
+                break;
+            case SDLK_a:
+                scene_m.rotate_camera(glm::vec3(0.05f, 0.0f, 0.0f));
+                break;
+            case SDLK_d:
+                scene_m.rotate_camera(glm::vec3(-0.05f, 0.0f, 0.0f));
+                break;
+
+            default:
+                break;
+        }
     }
 }
 
