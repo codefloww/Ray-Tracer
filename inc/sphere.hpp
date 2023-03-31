@@ -7,21 +7,23 @@
 
 #include <glm/glm.hpp>
 #include "ray.hpp"
+#include "transformation.hpp"
 
 class Sphere {
+public:
 
-    double radius_m = 1.0f;
-    glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
-
-
+    Transformation transformation_m;
+    glm::vec3 base_color_m = glm::vec3(255.0f, 0.0f, 0.0f);
 public:
     Sphere() = default;
 
-    Sphere(const glm::vec3 &position, double radius);
-
     ~Sphere() = default;
 
-    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 loc_color) const;
+    void setTransformation(const Transformation &transformation);
+
+    void setColor(const glm::vec3 &color);
+
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const;
 };
 
 
