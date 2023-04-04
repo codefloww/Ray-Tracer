@@ -21,6 +21,9 @@ void Transformation::setTransform(const glm::vec3 &translation, const glm::vec3 
     forw_transform_m = glm::mat4(1.0f);
     back_transform_m = glm::mat4(1.0f);
 
+    // apply translation
+    forw_transform_m = glm::translate(forw_transform_m, translation);
+
     // apply rotation
     forw_transform_m = glm::rotate(forw_transform_m, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
     forw_transform_m = glm::rotate(forw_transform_m, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -28,9 +31,6 @@ void Transformation::setTransform(const glm::vec3 &translation, const glm::vec3 
 
     // apply scale
     forw_transform_m = glm::scale(forw_transform_m, scale);
-
-    // apply translation
-    forw_transform_m = glm::translate(forw_transform_m, translation);
 
     // calculate back transform
     back_transform_m = glm::inverse(forw_transform_m);
