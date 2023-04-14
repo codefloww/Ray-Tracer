@@ -6,11 +6,10 @@
 #include <chrono>
 #include "../inc/app.hpp"
 
-// set the kTimestep to 64ms which is roughly 30fps
-//#define SHOW_FPS
+#define CAP_FPS
+#define SHOW_FPS
 
-using namespace std::chrono_literals;
-constexpr std::chrono::nanoseconds kTimestep(40ms);
+constexpr float kTimeStep = 100.0f;
 constexpr int kWidth = 640;
 constexpr int kHeight = 480;
 
@@ -42,29 +41,28 @@ int Application::onExecute() {
     }
     SDL_Event event;
 
-    using clock = std::chrono::high_resolution_clock;
-    std::chrono::nanoseconds lag(0ns);
-    auto last_time = clock::now();
-
     while (is_running_m) {
-        auto current_time = clock::now();
-        auto frame_time = current_time - last_time;
-        last_time = current_time;
-        lag += std::chrono::duration_cast<std::chrono::nanoseconds>(frame_time);
 
-        // if there are visible delay between closing the window then that means that fps is lower than 30
-#ifdef SHOW_FPS
-        std::cout << "fps: " << 1.0 / (lag.count() / 1e9) << std::endl;
-#endif
-        while (lag >= kTimestep) {
-            lag -= kTimestep;
-            while (SDL_PollEvent(&event)) {
-                onEvent(&event);
-            }
-            onLoop();
-            onRender();
+        Uint64 start = SDL_GetPerformanceCounter();
+
+        while (SDL_PollEvent(&event)) {
+            onEvent(&event);
         }
+        onLoop();
+        onRender();
+        Uint64 end = SDL_GetPerformanceCounter();
+        float elapsed = (end - start) / (float) SDL_GetPerformanceFrequency();
+#ifdef CAP_FPS
+        SDL_Delay(floor(kTimeStep - elapsed * 1000.0f));
+#endif // CAP_FPS
+
+#ifdef SHOW_FPS
+        Uint64 end_for_counter = SDL_GetPerformanceCounter();
+        float elapsed_for_counter = (end_for_counter - start) / (float) SDL_GetPerformanceFrequency();
+        std::cout << "FPS:" << std::to_string(1.0f / elapsed_for_counter) << std::endl;
+#endif // SHOW_FPS
     }
+
     onExit();
     return 0;
 }
