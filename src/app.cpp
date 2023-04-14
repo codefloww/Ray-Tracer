@@ -11,6 +11,8 @@
 
 using namespace std::chrono_literals;
 constexpr std::chrono::nanoseconds kTimestep(40ms);
+constexpr int kWidth = 640;
+constexpr int kHeight = 480;
 
 Application::Application() : is_running_m(true), window_m(nullptr), renderer_m(nullptr) {}
 
@@ -18,7 +20,7 @@ bool Application::onInit() {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         return false;
     }
-    window_m = SDL_CreateWindow("Ray Tracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480,
+    window_m = SDL_CreateWindow("Ray Tracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, kWidth, kHeight,
                                 SDL_WINDOW_SHOWN);
     if (window_m == nullptr) {
         return false;
@@ -27,7 +29,7 @@ bool Application::onInit() {
     if (renderer_m == nullptr) {
         return false;
     }
-    image_m.initialize(640, 480, renderer_m);
+    image_m.initialize(kWidth, kHeight, renderer_m);
     SDL_SetRenderDrawColor(renderer_m, 100.0, 100.0, 100.0, 255.0);
     SDL_RenderClear(renderer_m);
 
@@ -51,14 +53,14 @@ int Application::onExecute() {
         lag += std::chrono::duration_cast<std::chrono::nanoseconds>(frame_time);
 
         // if there are visible delay between closing the window then that means that fps is lower than 30
-        while (SDL_PollEvent(&event)) {
-            onEvent(&event);
-        }
 #ifdef SHOW_FPS
         std::cout << "fps: " << 1.0 / (lag.count() / 1e9) << std::endl;
 #endif
         while (lag >= kTimestep) {
             lag -= kTimestep;
+            while (SDL_PollEvent(&event)) {
+                onEvent(&event);
+            }
             onLoop();
             onRender();
         }
@@ -93,16 +95,16 @@ void Application::onEvent(const SDL_Event *event) {
                 break;
                 // should be fixed but it's ok for now
             case SDLK_w:
-                scene_m.rotate_camera(glm::vec3(0.0f, 0.0f, -0.05f));
+                scene_m.rotate_camera(glm::vec2(0.0f, 0.05f));
                 break;
             case SDLK_s:
-                scene_m.rotate_camera(glm::vec3(0.0f, 0.0f, 0.05f));
+                scene_m.rotate_camera(glm::vec2(0.0f, -0.05f));
                 break;
             case SDLK_a:
-                scene_m.rotate_camera(glm::vec3(0.05f, 0.0f, 0.0f));
+                scene_m.rotate_camera(glm::vec2(0.05f,  0.0f));
                 break;
             case SDLK_d:
-                scene_m.rotate_camera(glm::vec3(-0.05f, 0.0f, 0.0f));
+                scene_m.rotate_camera(glm::vec2(-0.05f, 0.0f));
                 break;
 
             default:

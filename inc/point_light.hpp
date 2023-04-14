@@ -8,6 +8,7 @@
 #include <vector>
 #include "light_src.hpp"
 #include "sphere.hpp"
+#include "plane.hpp"
 #include "ray.hpp"
 
 
@@ -19,7 +20,10 @@ public:
                               const std::vector<std::shared_ptr<Sphere>> &sphere_list,
                               const std::shared_ptr<Sphere> &current_sphere,
                               glm::vec3 &color, double &intensity) const;
-            ;
-};
 
+    bool compute_illumination(const glm::vec3 &int_point, const glm::vec3 &loc_normal,
+                              const std::vector<std::shared_ptr<Plane>> &plane_list,
+                              const std::shared_ptr<Plane> &current_plane,
+                              glm::vec3 &color, double &intensity) const;
+};
 #endif //RAY_TRACER_POINT_LIGHT_HPP
