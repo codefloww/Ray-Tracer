@@ -40,7 +40,8 @@ public:
 
     void move_camera(CameraMovement direction);
 
-    void rotate_camera(const glm::vec3 &rotation);
+    // rotation about the up and left to right camera axis
+    void rotate_camera(const glm::vec2 &rotation);
 };
 
 #endif //RAY_TRACER_SCENE_HPP

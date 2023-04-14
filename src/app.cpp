@@ -95,16 +95,16 @@ void Application::onEvent(const SDL_Event *event) {
                 break;
                 // should be fixed but it's ok for now
             case SDLK_w:
-                scene_m.rotate_camera(glm::vec3(0.0f, 0.0f, -0.05f));
+                scene_m.rotate_camera(glm::vec2(0.0f, 0.05f));
                 break;
             case SDLK_s:
-                scene_m.rotate_camera(glm::vec3(0.0f, 0.0f, 0.05f));
+                scene_m.rotate_camera(glm::vec2(0.0f, -0.05f));
                 break;
             case SDLK_a:
-                scene_m.rotate_camera(glm::vec3(0.05f, 0.0f, 0.0f));
+                scene_m.rotate_camera(glm::vec2(0.05f,  0.0f));
                 break;
             case SDLK_d:
-                scene_m.rotate_camera(glm::vec3(-0.05f, 0.0f, 0.0f));
+                scene_m.rotate_camera(glm::vec2(-0.05f, 0.0f));
                 break;
 
             default:
