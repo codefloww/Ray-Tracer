@@ -145,9 +145,10 @@ void Scene::move_camera(Scene::CameraMovement move_direction) {
 }
 
 void Scene::rotate_camera(const glm::vec2 &rotation) {
+    glm::vec3 x_axis = glm::normalize(glm::cross(camera_m.getDirection(),camera_m.getUp()));
     camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.x, camera_m.getUp()));
 
-    camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.y, glm::normalize(glm::cross(camera_m.getDirection(),camera_m.getUp()))));
-    camera_m.setUp(glm::rotate(camera_m.getUp(), rotation.y, glm::normalize(glm::cross(camera_m.getDirection(),camera_m.getUp()))));
+    camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.y, x_axis));
+    camera_m.setUp(glm::rotate(camera_m.getUp(), rotation.y, x_axis));
     camera_m.updateCameraGeometry();
 }

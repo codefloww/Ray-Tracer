@@ -4,12 +4,14 @@
 
 #include "../inc/plane.hpp"
 
+constexpr double kEpsilon = 0.0001f;
+
 bool
 Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const {
     Ray local_ray = transformation_m.applyTransform(cast_ray, false);
     glm::vec3 k = local_ray.getDirection();
 
-    if (fabs(k.z) < 0.0001f) {
+    if (fabs(k.z) < kEpsilon) {
         return false;
     } else {
         double t = -local_ray.getOrigin().z / k.z;

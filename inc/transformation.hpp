@@ -13,12 +13,12 @@ constexpr bool kForwTransform = true;
 constexpr bool kBackTransform = false;
 
 class Transformation {
-    glm::mat4x4 forw_transform_m;
-    glm::mat4x4 back_transform_m;
+    glm::mat4x4 forw_transform_m = glm::mat4(1.0f);
+    glm::mat4x4 back_transform_m = glm::mat4(1.0f);
 
 
 public:
-    Transformation();
+    Transformation() = default;
 
     ~Transformation() = default;
 

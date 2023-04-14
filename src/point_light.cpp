@@ -33,13 +33,13 @@ bool PointLight::compute_illumination(const glm::vec3 &int_point, const glm::vec
     glm::vec3 light_dir = glm::normalize(position_m - int_point);
     double angle = glm::acos(glm::dot(loc_normal, light_dir));
 
-    if (angle > 1.5708) {
+    if(angle > glm::half_pi<decltype(angle)>()) {
         color = color_m;
         intensity = 0.0;
         return false;
     } else {
         color = color_m;
-        intensity = intensity_m * (1.0 - (angle / 1.5708));
+        intensity = intensity_m * (1.0 - (angle / glm::half_pi<decltype(angle)>()));
         return true;
     }
 }

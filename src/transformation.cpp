@@ -5,11 +5,6 @@
 #include <iostream>
 #include "../inc/transformation.hpp"
 
-Transformation::Transformation() {
-    // set forw and back transform to identity matrix
-    forw_transform_m = glm::mat4(1.0f);
-    back_transform_m = glm::mat4(1.0f);
-}
 
 Transformation::Transformation(const glm::mat4 &forw_transform, const glm::mat4 &back_transform) {
     forw_transform_m = forw_transform;
@@ -17,10 +12,6 @@ Transformation::Transformation(const glm::mat4 &forw_transform, const glm::mat4 
 }
 
 void Transformation::setTransform(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale) {
-    // set forw and back transform to identity matrix
-    forw_transform_m = glm::mat4(1.0f);
-    back_transform_m = glm::mat4(1.0f);
-
     // apply translation
     forw_transform_m = glm::translate(forw_transform_m, translation);
 
