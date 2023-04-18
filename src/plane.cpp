@@ -27,16 +27,8 @@ Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &l
             glm::vec3 plane_origin = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 0.0f), true);
             loc_normal = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 1.0f), true) - plane_origin;
             loc_normal = glm::normalize(loc_normal);
-            loc_color = color_m;
+            loc_color = base_color_m;
             return true;
         }
     }
-}
-
-void Plane::setTransformation(const Transformation &transformation) {
-    transformation_m = transformation;
-}
-
-void Plane::setColor(const glm::vec3 &color) {
-    color_m = color;
 }

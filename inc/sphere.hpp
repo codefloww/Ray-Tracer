@@ -8,23 +8,11 @@
 #include <glm/glm.hpp>
 #include "ray.hpp"
 #include "transformation.hpp"
+#include "object.hpp"
 
-class Sphere {
+class Sphere : public Object {
 public:
 
-    Transformation transformation_m;
-    glm::vec3 base_color_m = glm::vec3(255.0f, 0.0f, 0.0f);
-public:
-    Sphere() = default;
-
-    ~Sphere() = default;
-
-    void setTransformation(const Transformation &transformation);
-
-    void setColor(const glm::vec3 &color);
-
-    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const;
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const override;
 };
-
-
 #endif //RAY_TRACER_SPHERE_HPP

@@ -13,3 +13,5 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 include_directories(${SDL2_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC inc)

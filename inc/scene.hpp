@@ -17,8 +17,7 @@
 class Scene {
 
     Camera camera_m;
-    std::vector<std::shared_ptr<Sphere>> sphere_list_m;
-    std::vector<std::shared_ptr<Plane>> plane_list_m;
+    std::vector<std::shared_ptr<Object>> object_list_m;
     std::vector<std::shared_ptr<PointLight>> light_list_m;
 
 public:
