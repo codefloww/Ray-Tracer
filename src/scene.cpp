@@ -53,7 +53,7 @@ Scene::Scene() {
 }
 
 
-bool Scene::render(Image &output_image) const {
+bool Scene::render(Image &output_image) {
     int width = output_image.getWidth();
     int height = output_image.getHeight();
 
@@ -69,27 +69,8 @@ bool Scene::render(Image &output_image) const {
         for (int x = 0; x < width; x++) {
             double norm_x = static_cast<double>(x) * x_factor - 1.0;
             double norm_y = static_cast<double>(y) * y_factor - 1.0;
-            camera_m.getRayFromScreenPoint(norm_x, norm_y, camera_ray);
-            bool blank = true;
-            for (auto &sphere_m: object_list_m) {
-                bool valid_intersection = sphere_m->testIntersections(camera_ray, int_point, loc_normal, loc_color);
-                if (valid_intersection) {
-                    blank = false;
-                    double intensity = 0.0;
-                    glm::vec3 color;
-                    bool valid_illumination;
-                    for (auto &light_m: light_list_m) {
-                        valid_illumination = light_m->compute_illumination(int_point, loc_normal, object_list_m,
-                                                                           sphere_m, color, intensity);
-                        if (valid_illumination) {
-                            output_image.setPixel(x, y, loc_color.r * intensity, loc_color.g * intensity,
-                                                  loc_color.b * intensity, 255.0);
-                        } else {
-                            output_image.setPixel(x, y, 0.0, 0.0, 0.0, 255.0);
-                        }
-                    }
-                }
-            }
+            camera_m.createRay(norm_x, norm_y, camera_ray);
+            bool blank = internalRender(x, y, camera_ray, output_image, int_point, loc_normal, loc_color);
             if (blank) {
                 output_image.setPixel(x, y, 64.0, 64.0, 64.0, 255.0);
             }
@@ -98,8 +79,34 @@ bool Scene::render(Image &output_image) const {
     return true;
 }
 
-void Scene::move_camera(Scene::CameraMovement move_direction) {
-    switch (move_direction) {
+bool Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
+                           glm::vec3 &loc_normal, glm::vec3 &loc_color) {
+    bool blank = true;
+    for (auto &sphere_m: object_list_m) {
+        bool valid_intersection = sphere_m->testIntersections(camera_ray, int_point, loc_normal, loc_color);
+        if (valid_intersection) {
+            blank = false;
+            double intensity = 0.0;
+            glm::vec3 color;
+            bool valid_illumination;
+            for (auto &light_m: light_list_m) {
+                valid_illumination = light_m->computeIllumination(int_point, loc_normal, object_list_m,
+                                                                  sphere_m, color, intensity);
+                if (valid_illumination) {
+                    output_image.setPixel(x, y, loc_color.r * intensity, loc_color.g * intensity,
+                                          loc_color.b * intensity, 255.0);
+                } else {
+                    output_image.setPixel(x, y, 0.0, 0.0, 0.0, 255.0);
+                }
+            }
+        }
+    }
+
+    return blank;
+}
+
+void Scene::moveCamera(CameraMovement direction) {
+    switch (direction) {
         case CameraMovement::FORWARD:
             camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection());
             break;
@@ -125,7 +132,7 @@ void Scene::move_camera(Scene::CameraMovement move_direction) {
     camera_m.updateCameraGeometry();
 }
 
-void Scene::rotate_camera(const glm::vec2 &rotation) {
+void Scene::rotateCamera(const glm::vec2 &rotation) {
     glm::vec3 x_axis = glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp()));
     camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.x, camera_m.getUp()));
 

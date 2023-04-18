@@ -31,11 +31,13 @@ public:
 
     Scene();
 
-    bool render(Image &output_image) const;
+    bool render(Image &output_image);
 
-    void move_camera(CameraMovement direction);
+    bool internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color);
 
-    void rotate_camera(const glm::vec2 &rotation);
+    void moveCamera(CameraMovement direction);
+
+    void rotateCamera(const glm::vec2 &rotation);
 };
 
 #endif //RAY_TRACER_SCENE_HPP

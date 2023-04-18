@@ -50,7 +50,7 @@ public:
 
     [[nodiscard]] double getWidth() const;
 
-    bool getRayFromScreenPoint(double x, double y, Ray &camera_ray) const;
+    bool createRay(double x, double y, Ray &camera_ray) const;
 
     void updateCameraGeometry();
 };
