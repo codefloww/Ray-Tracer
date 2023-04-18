@@ -118,3 +118,6 @@ fabric.properties
 *.exe
 *.out
 *.app
+
+# IDE specific files
+**/.idea/
