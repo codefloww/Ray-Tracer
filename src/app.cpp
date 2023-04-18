@@ -50,10 +50,12 @@ int Application::onExecute() {
         }
         onLoop();
         onRender();
+#ifdef CAP_FPS
         Uint64 end = SDL_GetPerformanceCounter();
         float elapsed = (end - start) / (float) SDL_GetPerformanceFrequency();
-#ifdef CAP_FPS
-        SDL_Delay(floor(kTimeStep - elapsed * 1000.0f));
+        if (elapsed < 1.0f / kTimeStep) {
+            SDL_Delay((1.0f / kTimeStep - elapsed) * 1000);
+        }
 #endif // CAP_FPS
 
 #ifdef SHOW_FPS
