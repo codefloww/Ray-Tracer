@@ -2,9 +2,9 @@
 // Created by paul on 3/18/23.
 //
 
-#include "../inc/point_light.hpp"
+#include "point_light.hpp"
 
-PointLight::PointLight() : LightSrc() {
+PointLight::PointLight() : LightSource() {
     position_m = glm::vec3(0.0f, 0.0f, 0.0f);
     color_m = glm::vec3(1.0f, 1.0f, 1.0f);
     intensity_m = 1.0f;
@@ -27,5 +27,3 @@ bool PointLight::compute_illumination(const glm::vec3 &int_point, const glm::vec
         return true;
     }
 }
-
-

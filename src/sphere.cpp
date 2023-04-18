@@ -2,18 +2,16 @@
 // Created by paul on 3/12/23.
 //
 
-#include "../inc/sphere.hpp"
+#include "sphere.hpp"
 #include <cmath>
 
-bool
-Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
-                          glm::vec3 &loc_color) const {
+bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
+                               glm::vec3 &loc_color) const {
     // Copy the ray and transform it into the local coordinate system of the sphere
-    Ray local_ray = transformation_m.applyTransform(cast_ray, false);
+    Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
 
-
-    glm::vec3 vhat = local_ray.getDirection();
-    double b = 2.0 * glm::dot(local_ray.getOrigin(), vhat);
+    glm::vec3 v_hat = local_ray.getDirection();
+    double b = 2.0 * glm::dot(local_ray.getOrigin(), v_hat);
     double c = glm::dot(local_ray.getOrigin(), local_ray.getOrigin()) - 1.0f;
     double discriminant = b * b - 4.0 * c;
 
@@ -29,14 +27,14 @@ Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &
             return false;
         } else {
             if (t1 < t2) {
-                loc_int_point = local_ray.getOrigin() + vhat * static_cast<float>(t1);
+                loc_int_point = local_ray.getOrigin() + v_hat * static_cast<float>(t1);
             } else {
-                loc_int_point = local_ray.getOrigin() + vhat * static_cast<float>(t2);
+                loc_int_point = local_ray.getOrigin() + v_hat * static_cast<float>(t2);
             }
 
             // Transform the intersection point back into the world coordinate system
-            int_point = transformation_m.applyTransform(loc_int_point, true);
-            glm::vec3 sphere_origin = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 0.0f), true);
+            int_point = transformation_m.applyTransform(loc_int_point, Direction::FORWARD);
+            glm::vec3 sphere_origin = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 0.0f), Direction::FORWARD);
             loc_normal = glm::normalize(int_point - sphere_origin);
 
             loc_color = base_color_m;

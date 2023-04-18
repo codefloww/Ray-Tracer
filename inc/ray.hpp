@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 
 class Ray {
-
     glm::vec3 origin_m;
     glm::vec3 direction_m;
 
@@ -16,8 +15,6 @@ public:
     Ray();
 
     Ray(const glm::vec3 &origin, const glm::vec3 &direction);
-
-    ~Ray() = default;
 
     [[nodiscard]] glm::vec3 getOrigin() const;
 
@@ -27,6 +24,5 @@ public:
 
     static Ray getRayFromPoints(const glm::vec3 &origin, const glm::vec3 &destination);
 };
-
 
 #endif //RAY_TRACER_RAY_HPP

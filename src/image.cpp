@@ -2,8 +2,7 @@
 // Created by paul on 3/8/23.
 //
 
-#include "../inc/image.hpp"
-
+#include "image.hpp"
 
 Image::~Image() {
     if (texture_m != nullptr) {
@@ -79,7 +78,7 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-Uint32 Image::convertColor(double r, double g, double b, double a) const {
+Uint32 Image::convertColor(double r, double g, double b, double a) {
     Uint32 color = 0;
     auto r8 = static_cast<unsigned char>(r);
     auto g8 = static_cast<unsigned char>(g);
@@ -103,11 +102,6 @@ int Image::getHeight() const {
     return height_m;
 }
 
-std::vector<double> Image::getPixel(int x, int y) const {
-    std::vector<double> pixel;
-    pixel.push_back(r_channel_m[x][y]);
-    pixel.push_back(g_channel_m[x][y]);
-    pixel.push_back(b_channel_m[x][y]);
-    pixel.push_back(a_channel_m[x][y]);
-    return pixel;
+std::vector<double> Image::getPixelColor(int x, int y) const {
+    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y], a_channel_m[x][y]};
 }

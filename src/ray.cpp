@@ -2,7 +2,7 @@
 // Created by paul on 3/11/23.
 //
 
-#include "../inc/ray.hpp"
+#include "ray.hpp"
 
 Ray::Ray() : origin_m(glm::vec3(0.0f, 0.0f, 0.0f)),
              direction_m(glm::vec3(0.0f, 0.0f, 1.0f)) {}
