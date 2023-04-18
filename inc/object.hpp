@@ -10,19 +10,17 @@
 #include "transformation.hpp"
 
 class Object {
-public:
+protected:
     Transformation transformation_m;
     glm::vec3 base_color_m = glm::vec3(255.0f, 0.0f, 0.0f);
 
 public:
-    Object() = default;
-
-    ~Object() = default;
-
     void setTransformation(const Transformation &transformation);
 
     void setColor(const glm::vec3 &color);
 
-    virtual bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const = 0;
+    virtual bool
+    testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const = 0;
 };
+
 #endif //RAY_TRACER_OBJECT_HPP

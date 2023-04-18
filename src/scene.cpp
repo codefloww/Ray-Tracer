@@ -1,9 +1,9 @@
 //
 // Created by paul on 3/11/23.
 //
-#include <glm/gtx/rotate_vector.hpp>
-#include "../inc/scene.hpp"
 
+#include <glm/gtx/rotate_vector.hpp>
+#include "scene.hpp"
 
 Scene::Scene() {
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
@@ -14,8 +14,8 @@ Scene::Scene() {
     camera_m.updateCameraGeometry();
 
     light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[0]->position_m = glm::vec3(250.0f, -100.0f, 250.0f);
-    light_list_m[0]->color_m = glm::vec3(255.0f, 255.0f, 255.0f);
+    light_list_m[0]->setPosition(glm::vec3(250.0f, -100.0f, 250.0f));
+    light_list_m[0]->setColor(glm::vec3(255.0f, 255.0f, 255.0f));
 
     object_list_m.emplace_back(std::make_shared<Sphere>());
     object_list_m.emplace_back(std::make_shared<Sphere>());
@@ -100,24 +100,24 @@ bool Scene::render(Image &output_image) const {
 
 void Scene::move_camera(Scene::CameraMovement move_direction) {
     switch (move_direction) {
-        case FORWARD:
+        case CameraMovement::FORWARD:
             camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection());
             break;
-        case BACKWARD:
+        case CameraMovement::BACKWARD:
             camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection());
             break;
-        case LEFT:
-            // move to left of camera in regard to direction vector
-            // should be refactored!!!
-            camera_m.setPosition(camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getUp(),camera_m.getDirection())));
+        case CameraMovement::LEFT:
+            camera_m.setPosition(
+                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getUp(), camera_m.getDirection())));
             break;
-        case RIGHT:
-            camera_m.setPosition(camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getDirection(),camera_m.getUp())));
+        case CameraMovement::RIGHT:
+            camera_m.setPosition(
+                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp())));
             break;
-        case UP:
+        case CameraMovement::UP:
             camera_m.setPosition(camera_m.getPosition() + camera_m.getUp());
             break;
-        case DOWN:
+        case CameraMovement::DOWN:
             camera_m.setPosition(camera_m.getPosition() - camera_m.getUp());
             break;
     }
@@ -126,7 +126,7 @@ void Scene::move_camera(Scene::CameraMovement move_direction) {
 }
 
 void Scene::rotate_camera(const glm::vec2 &rotation) {
-    glm::vec3 x_axis = glm::normalize(glm::cross(camera_m.getDirection(),camera_m.getUp()));
+    glm::vec3 x_axis = glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp()));
     camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.x, camera_m.getUp()));
 
     camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.y, x_axis));

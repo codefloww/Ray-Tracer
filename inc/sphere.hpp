@@ -12,7 +12,8 @@
 
 class Sphere : public Object {
 public:
-
-    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const override;
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
+                           glm::vec3 &loc_color) const override;
 };
+
 #endif //RAY_TRACER_SPHERE_HPP
