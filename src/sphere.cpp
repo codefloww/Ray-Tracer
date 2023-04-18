@@ -5,7 +5,6 @@
 #include "../inc/sphere.hpp"
 #include <cmath>
 
-
 bool
 Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
                           glm::vec3 &loc_color) const {
@@ -44,12 +43,4 @@ Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &
             return true;
         }
     }
-}
-
-void Sphere::setTransformation(const Transformation &transformation) {
-    transformation_m = transformation;
-}
-
-void Sphere::setColor(const glm::vec3 &color) {
-    base_color_m = color;
 }

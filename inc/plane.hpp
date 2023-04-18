@@ -7,22 +7,12 @@
 
 #include <glm/glm.hpp>
 #include "transformation.hpp"
+#include "object.hpp"
 
-class Plane {
+class Plane : public Object {
 public:
-    glm::vec3 color_m = glm::vec3(128.0f, 128.0f, 128.0f);
-    Transformation transformation_m = Transformation();
 
-public:
-    Plane() = default;
-
-    ~Plane() = default;
-
-    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const;
-
-    void setTransformation(const Transformation &transformation);
-
-    void setColor(const glm::vec3 &color);
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const override;
 };
 
 #endif //RAY_TRACER_PLANE_HPP
