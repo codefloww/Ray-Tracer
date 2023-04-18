@@ -9,13 +9,12 @@
 #include "ray.hpp"
 
 class Camera {
-
-    glm::vec3 position_m;
-    glm::vec3 direction_m;
-    glm::vec3 screen_up_m;
-    glm::vec3 screen_u_m;
-    glm::vec3 screen_v_m;
-    glm::vec3 screen_center_m;
+    glm::vec3 position_m{};
+    glm::vec3 direction_m{};
+    glm::vec3 screen_up_m{};
+    glm::vec3 screen_u_m{};
+    glm::vec3 screen_v_m{};
+    glm::vec3 screen_center_m{};
     double lens_distance_m;
     double width_m;
     double aspect_ratio_m;
@@ -51,10 +50,9 @@ public:
 
     [[nodiscard]] double getWidth() const;
 
-    bool getRayFromScreenPoint(double x, double y, Ray &camera_ray) const;
+    bool createRay(double x, double y, Ray &camera_ray) const;
 
     void updateCameraGeometry();
-
 };
 
 #endif //RAY_TRACER_CAMERA_HPP

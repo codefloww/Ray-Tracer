@@ -15,14 +15,12 @@
 #include "point_light.hpp"
 
 class Scene {
-
     Camera camera_m;
     std::vector<std::shared_ptr<Object>> object_list_m;
     std::vector<std::shared_ptr<PointLight>> light_list_m;
 
 public:
-
-    enum CameraMovement {
+    enum class CameraMovement {
         FORWARD,
         BACKWARD,
         LEFT,
@@ -33,14 +31,13 @@ public:
 
     Scene();
 
-    ~Scene() = default;
+    bool render(Image &output_image);
 
-    bool render(Image &output_image) const;
+    bool internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color);
 
-    void move_camera(CameraMovement direction);
+    void moveCamera(CameraMovement direction);
 
-    // rotation about the up and left to right camera axis
-    void rotate_camera(const glm::vec2 &rotation);
+    void rotateCamera(const glm::vec2 &rotation);
 };
 
 #endif //RAY_TRACER_SCENE_HPP

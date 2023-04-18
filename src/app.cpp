@@ -3,8 +3,7 @@
 //
 
 #include <iostream>
-#include <chrono>
-#include "../inc/app.hpp"
+#include "app.hpp"
 
 #define CAP_FPS
 #define SHOW_FPS
@@ -50,15 +49,18 @@ int Application::onExecute() {
         }
         onLoop();
         onRender();
-        Uint64 end = SDL_GetPerformanceCounter();
-        float elapsed = (end - start) / (float) SDL_GetPerformanceFrequency();
 #ifdef CAP_FPS
-        SDL_Delay(floor(kTimeStep - elapsed * 1000.0f));
+        Uint64 end = SDL_GetPerformanceCounter();
+        float elapsed = static_cast<float>(end - start) / static_cast<float>(SDL_GetPerformanceFrequency());
+        if (elapsed < 1.0f / kTimeStep) {
+            SDL_Delay(static_cast<Uint32>((1.0f / kTimeStep - elapsed) * 1000.0f));
+        }
 #endif // CAP_FPS
 
 #ifdef SHOW_FPS
         Uint64 end_for_counter = SDL_GetPerformanceCounter();
-        float elapsed_for_counter = (end_for_counter - start) / (float) SDL_GetPerformanceFrequency();
+        float elapsed_for_counter =
+                static_cast<float>(end_for_counter - start) / static_cast<float>(SDL_GetPerformanceFrequency());
         std::cout << "FPS:" << std::to_string(1.0f / elapsed_for_counter) << std::endl;
 #endif // SHOW_FPS
     }
@@ -72,37 +74,35 @@ void Application::onEvent(const SDL_Event *event) {
         is_running_m = false;
     } else if (event->type == SDL_KEYDOWN) {
         switch (event->key.keysym.sym) {
-            // inverse h j k l movement for camera and rotation
             case SDLK_j:
-                scene_m.move_camera(Scene::CameraMovement::DOWN);
+                scene_m.moveCamera(Scene::CameraMovement::DOWN);
                 break;
             case SDLK_k:
-                scene_m.move_camera(Scene::CameraMovement::UP);
+                scene_m.moveCamera(Scene::CameraMovement::UP);
                 break;
             case SDLK_h:
-                scene_m.move_camera(Scene::CameraMovement::LEFT);
+                scene_m.moveCamera(Scene::CameraMovement::LEFT);
                 break;
             case SDLK_l:
-                scene_m.move_camera(Scene::CameraMovement::RIGHT);
+                scene_m.moveCamera(Scene::CameraMovement::RIGHT);
                 break;
             case SDLK_u:
-                scene_m.move_camera(Scene::CameraMovement::FORWARD);
+                scene_m.moveCamera(Scene::CameraMovement::FORWARD);
                 break;
             case SDLK_i:
-                scene_m.move_camera(Scene::CameraMovement::BACKWARD);
+                scene_m.moveCamera(Scene::CameraMovement::BACKWARD);
                 break;
-                // should be fixed but it's ok for now
             case SDLK_w:
-                scene_m.rotate_camera(glm::vec2(0.0f, 0.05f));
+                scene_m.rotateCamera(glm::vec2(0.0f, 0.05f));
                 break;
             case SDLK_s:
-                scene_m.rotate_camera(glm::vec2(0.0f, -0.05f));
+                scene_m.rotateCamera(glm::vec2(0.0f, -0.05f));
                 break;
             case SDLK_a:
-                scene_m.rotate_camera(glm::vec2(0.05f,  0.0f));
+                scene_m.rotateCamera(glm::vec2(0.05f, 0.0f));
                 break;
             case SDLK_d:
-                scene_m.rotate_camera(glm::vec2(-0.05f, 0.0f));
+                scene_m.rotateCamera(glm::vec2(-0.05f, 0.0f));
                 break;
 
             default:

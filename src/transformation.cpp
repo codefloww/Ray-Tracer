@@ -3,8 +3,7 @@
 //
 
 #include <iostream>
-#include "../inc/transformation.hpp"
-
+#include "transformation.hpp"
 
 Transformation::Transformation(const glm::mat4 &forw_transform, const glm::mat4 &back_transform) {
     forw_transform_m = forw_transform;
@@ -27,23 +26,23 @@ void Transformation::setTransform(const glm::vec3 &translation, const glm::vec3 
     back_transform_m = glm::inverse(forw_transform_m);
 }
 
-glm::mat4x4 Transformation::getForwTransform() const{
+glm::mat4x4 Transformation::getForwTransform() const {
     return forw_transform_m;
 }
 
-glm::mat4x4 Transformation::getBackTransform() const{
+glm::mat4x4 Transformation::getBackTransform() const {
     return back_transform_m;
 }
 
-Ray Transformation::applyTransform(const Ray &ray, bool dir_flag) const {
-    glm::vec3 new_origin = applyTransform(ray.getOrigin(), dir_flag);
-    glm::vec3 new_dir = applyTransform(ray.getOrigin() + ray.getDirection(), dir_flag);
+Ray Transformation::applyTransform(const Ray &ray, Direction dir) const {
+    glm::vec3 new_origin = applyTransform(ray.getOrigin(), dir);
+    glm::vec3 new_dir = applyTransform(ray.getOrigin() + ray.getDirection(), dir);
     return Ray{new_origin, new_dir - new_origin};
 }
 
-glm::vec3 Transformation::applyTransform(const glm::vec3 &vec, bool dir_flag) const {
+glm::vec3 Transformation::applyTransform(const glm::vec3 &vec, Direction dir) const {
     auto new_vec = glm::vec4(vec, 1.0f);
-    if (dir_flag) {
+    if (dir == Direction::FORWARD) {
         new_vec = forw_transform_m * new_vec;
     } else {
         new_vec = back_transform_m * new_vec;
@@ -51,15 +50,15 @@ glm::vec3 Transformation::applyTransform(const glm::vec3 &vec, bool dir_flag) co
     return glm::vec3{new_vec};
 }
 
-void Transformation::printTransform(bool dir_flag) const {
-    if (dir_flag) {
-        printMat(forw_transform_m);
+void Transformation::printTransform(Direction dir) const {
+    if (dir == Direction::FORWARD) {
+        printMatrix(forw_transform_m);
     } else {
-        printMat(back_transform_m);
+        printMatrix(back_transform_m);
     }
 }
 
-void Transformation::printMat(const glm::mat4x4 &mat) const {
+void Transformation::printMatrix(const glm::mat4x4 &mat) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             std::cout << mat[i][j] << " ";
@@ -68,8 +67,6 @@ void Transformation::printMat(const glm::mat4x4 &mat) const {
     }
 }
 
-void Transformation::printVec(const glm::vec3 &vec) {
+void Transformation::printVector(const glm::vec3 &vec) {
     std::cout << vec.x << " " << vec.y << " " << vec.z << std::endl;
 }
-
-

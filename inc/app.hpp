@@ -30,9 +30,6 @@ public:
     void onRender();
 
     void onExit();
-
-    ~Application() = default;
-
 };
 
 #endif //RAY_TRACER_APP_HPP

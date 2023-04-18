@@ -9,40 +9,37 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "ray.hpp"
 
-constexpr bool kForwTransform = true;
-constexpr bool kBackTransform = false;
+enum class Direction {
+    FORWARD,
+    BACKWARD,
+};
 
 class Transformation {
     glm::mat4x4 forw_transform_m = glm::mat4(1.0f);
     glm::mat4x4 back_transform_m = glm::mat4(1.0f);
 
-
 public:
     Transformation() = default;
 
-    ~Transformation() = default;
-
     Transformation(const glm::mat4x4 &forw_transform, const glm::mat4x4 &back_transform);
-
-    void setTransform(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
-
-    glm::mat4x4 getForwTransform() const;
-
-    glm::mat4x4 getBackTransform() const;
-
-    [[nodiscard]] Ray applyTransform(const Ray &ray, bool dir_flag) const;
-
-    [[nodiscard]] glm::vec3 applyTransform(const glm::vec3 &vec, bool dir_flag) const;
 
     Transformation &operator=(const Transformation &rhs) = default;
 
-    void printTransform(bool dir_flag) const;
+    void setTransform(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
 
-    void printMat(const glm::mat4x4 &mat) const;
+    [[nodiscard]] glm::mat4x4 getForwTransform() const;
 
-    static void printVec(const glm::vec3 &vec);
+    [[nodiscard]] glm::mat4x4 getBackTransform() const;
 
+    [[nodiscard]] Ray applyTransform(const Ray &ray, Direction dir) const;
 
+    [[nodiscard]] glm::vec3 applyTransform(const glm::vec3 &vec, Direction dir) const;
+
+    void printTransform(Direction dir) const;
+
+    static void printMatrix(const glm::mat4x4 &mat);
+
+    static void printVector(const glm::vec3 &vec);
 };
 
 #endif //RAY_TRACER_TRANSFORMATION_HPP
