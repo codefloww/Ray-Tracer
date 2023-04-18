@@ -2,6 +2,5 @@
 
 int main() {
     Application app;
-    app.onExecute();
-    return 0;
+    return app.onExecute();
 }
