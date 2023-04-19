@@ -45,6 +45,8 @@ public:
     void rotateCamera(const glm::vec2 &rotation);
 
     bool renderImagePart(std::pair<int, int> boundaries, Image &output_image);
+
+    ~Scene();
 };
 
 #endif //RAY_TRACER_SCENE_HPP

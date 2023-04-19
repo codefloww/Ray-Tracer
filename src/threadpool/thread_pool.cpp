@@ -1,12 +1,12 @@
 #include "threadpool/thread_pool.h"
 
-thread_pool::thread_pool(unsigned int threads_number): done{false}, tasksQueue{}, threads{}, joiner(threads){
+thread_pool::thread_pool(unsigned int threads_number): m_done{false}, m_tasksQueue{}, m_threads{}, m_joiner(m_threads){
     for (int i = 0; i < threads_number; i++){
         try{
-            threads.emplace_back(&thread_pool::worker_thread, this);
+            m_threads.emplace_back(&thread_pool::worker_thread, this);
         }
         catch (...){
-            done=true;
+            m_done=true;
             throw;
         }
     }
@@ -14,11 +14,11 @@ thread_pool::thread_pool(unsigned int threads_number): done{false}, tasksQueue{}
 
 void thread_pool::worker_thread() {
     task_wrapper task;
-    while (!done){
+    while (!m_done){
         try {
-            if (tasksQueue.try_lock_non_empty_queue()){
-                task = tasksQueue.careless_deque();
-                tasksQueue.unlock_queue();
+            if (m_tasksQueue.try_lock_non_empty_queue()){
+                task = m_tasksQueue.careless_deque();
+                m_tasksQueue.unlock_queue();
                 task();
             }
             else{
@@ -26,7 +26,7 @@ void thread_pool::worker_thread() {
             }
         }
         catch (...){
-            done=true;
+            m_done=true;
             throw;
         }
     }

@@ -5,7 +5,7 @@
 
 class threads_joiner {
 private:
-    std::vector<std::thread> &threads_to_join;
+    std::vector<std::thread> &m_threads_to_join;
 public:
     explicit threads_joiner(std::vector<std::thread> &threads);
     ~threads_joiner();

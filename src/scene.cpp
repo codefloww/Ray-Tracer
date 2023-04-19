@@ -170,3 +170,7 @@ void Scene::rotateCamera(const glm::vec2 &rotation) {
     camera_m.setUp(glm::rotate(camera_m.getUp(), rotation.y, x_axis));
     camera_m.updateCameraGeometry();
 }
+
+Scene::~Scene(){
+    thread_pool_m.finish();
+};
