@@ -2,10 +2,11 @@
 // Created by paul on 3/11/23.
 //
 
-#include <glm/gtx/rotate_vector.hpp>
 #include "scene.hpp"
 
-Scene::Scene() {
+unsigned int constexpr THREADS_NUMBER = 16;
+
+Scene::Scene(): thread_pool_m{THREADS_NUMBER}{
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
     camera_m.setDirection(glm::vec3(0.0f, 1.0f, 0.0f));
     camera_m.setUp(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -57,15 +58,44 @@ bool Scene::render(Image &output_image) {
     int width = output_image.getWidth();
     int height = output_image.getHeight();
 
+    unsigned int whole_part = height / THREADS_NUMBER; // make height unsigned in future
+    unsigned int remainder = height % THREADS_NUMBER;
+    unsigned int current_step = 0;
+    unsigned int next_step = (remainder > 0) ? whole_part + 1 : whole_part;
+    remainder = (remainder > 0) ? remainder - 1 : remainder;
+
+    std::vector<std::future<bool>> responses;
+
+    for (unsigned int thread_number = 0; thread_number < THREADS_NUMBER; thread_number++){
+        std::pair<int, int> image_part {current_step, next_step};
+        current_step = next_step;
+        next_step += (remainder > 0) ? whole_part + 1 : whole_part;
+        remainder = (remainder > 0) ? remainder - 1 : remainder;
+        responses.push_back(thread_pool_m.submit([this, image_part, &output_image]
+        { return renderImagePart(image_part, output_image); }));
+    }
+
+    for (auto &future_response: responses){
+        auto response = future_response.get();
+        if (!response){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Scene::renderImagePart(std::pair<int, int> boundaries, Image &output_image){
+    auto [lower_bound, upper_bound] = boundaries;
+    int width = output_image.getWidth();
+    int height = output_image.getHeight();
+
     Ray camera_ray;
     glm::vec3 int_point;
     glm::vec3 loc_normal;
     glm::vec3 loc_color;
     double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
     double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
-
-
-    for (int y = 0; y < height; y++) {
+    for (int y = lower_bound; y < upper_bound; y++) {
         for (int x = 0; x < width; x++) {
             double norm_x = static_cast<double>(x) * x_factor - 1.0;
             double norm_y = static_cast<double>(y) * y_factor - 1.0;
