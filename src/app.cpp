@@ -8,7 +8,7 @@
 #define CAP_FPS
 #define SHOW_FPS
 
-constexpr float kTimeStep = 100.0f;
+constexpr float kFpsCap = 30.0f;
 constexpr int kWidth = 640;
 constexpr int kHeight = 480;
 
@@ -23,7 +23,7 @@ bool Application::onInit() {
     if (window_m == nullptr) {
         return false;
     }
-    renderer_m = SDL_CreateRenderer(window_m, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    renderer_m = SDL_CreateRenderer(window_m, -1, SDL_RENDERER_ACCELERATED);
     if (renderer_m == nullptr) {
         return false;
     }
@@ -52,8 +52,8 @@ int Application::onExecute() {
 #ifdef CAP_FPS
         Uint64 end = SDL_GetPerformanceCounter();
         float elapsed = static_cast<float>(end - start) / static_cast<float>(SDL_GetPerformanceFrequency());
-        if (elapsed < 1.0f / kTimeStep) {
-            SDL_Delay(static_cast<Uint32>((1.0f / kTimeStep - elapsed) * 1000.0f));
+        if (elapsed < 1.0f / kFpsCap) {
+            SDL_Delay(static_cast<Uint32>((1.0f / kFpsCap - elapsed) * 1000.0f));
         }
 #endif // CAP_FPS
 

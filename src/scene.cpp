@@ -82,8 +82,8 @@ bool Scene::render(Image &output_image) {
 bool Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
                            glm::vec3 &loc_normal, glm::vec3 &loc_color) {
     bool blank = true;
-    for (auto &sphere_m: object_list_m) {
-        bool valid_intersection = sphere_m->testIntersections(camera_ray, int_point, loc_normal, loc_color);
+    for (auto &object_m: object_list_m) {
+        bool valid_intersection = object_m->testIntersections(camera_ray, int_point, loc_normal, loc_color);
         if (valid_intersection) {
             blank = false;
             double intensity = 0.0;
@@ -91,7 +91,7 @@ bool Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
             bool valid_illumination;
             for (auto &light_m: light_list_m) {
                 valid_illumination = light_m->computeIllumination(int_point, loc_normal, object_list_m,
-                                                                  sphere_m, color, intensity);
+                                                                  object_m, color, intensity);
                 if (valid_illumination) {
                     output_image.setPixel(x, y, loc_color.r * intensity, loc_color.g * intensity,
                                           loc_color.b * intensity, 255.0);

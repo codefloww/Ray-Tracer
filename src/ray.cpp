@@ -23,5 +23,5 @@ glm::vec3 Ray::getPoint(double t) const {
 }
 
 Ray Ray::getRayFromPoints(const glm::vec3 &origin, const glm::vec3 &destination) {
-    return Ray{origin, glm::normalize(destination - origin)};
+    return Ray{origin, destination - origin};
 }

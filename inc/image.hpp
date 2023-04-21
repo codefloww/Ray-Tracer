@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
 
 class Image {
     std::vector<std::vector<double>> r_channel_m;
@@ -25,6 +26,8 @@ public:
     void initialize(int width, int height, SDL_Renderer *renderer);
 
     void setPixel(int x, int y, double r, double g, double b, double a);
+
+    glm::vec3 getPixel(int x, int y) const;
 
     void display() const;
 

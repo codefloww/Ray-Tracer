@@ -105,3 +105,7 @@ int Image::getHeight() const {
 std::vector<double> Image::getPixelColor(int x, int y) const {
     return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y], a_channel_m[x][y]};
 }
+
+glm::vec3 Image::getPixel(int x, int y) const {
+    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y]};
+}
