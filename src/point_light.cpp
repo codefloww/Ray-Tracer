@@ -14,9 +14,23 @@ bool PointLight::computeIllumination(const glm::vec3 &int_point, const glm::vec3
                                      const std::vector<std::shared_ptr<Object>> &object_list,
                                      const std::shared_ptr<Object> &current_object, glm::vec3 &color,
                                      double &intensity) const {
-    glm::vec3 light_dir = glm::normalize(position_m - int_point);
-    double angle = glm::acos(glm::dot(loc_normal, light_dir));
 
+    Ray light_ray(int_point, position_m - int_point);
+    glm::vec3 betweeen_int_point;
+    glm::vec3 between_loc_normal;
+    glm::vec3 between_loc_color;
+    for (const auto &object: object_list) {
+        if (object == current_object) {
+            continue;
+        }
+        if (object->testIntersections(light_ray, betweeen_int_point, between_loc_normal, between_loc_color)) {
+            color = color_m;
+            intensity = 0.0;
+            return false;
+        }
+    }
+
+    double angle = glm::acos(glm::dot(loc_normal, light_ray.getDirection()));
     if (angle > glm::half_pi<decltype(angle)>()) {
         color = color_m;
         intensity = 0.0;
