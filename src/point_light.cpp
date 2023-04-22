@@ -47,8 +47,10 @@ PointLight::computeSpecIllum(const Ray &camera_ray, const glm::vec3 &int_point, 
     float spec_intensity = 0.5f;
     glm::vec3 view_dir = glm::normalize(camera_ray.getOrigin() - int_point);
     glm::vec3 light_dir = glm::normalize(position_m - int_point);
-    glm::vec3 reflect_dir = glm::reflect(-light_dir, loc_normal);
-    float spec_angle = std::pow(glm::max(glm::dot(view_dir, reflect_dir), 0.0f), 16);
+    glm::vec3 halfway_dir = glm::normalize(light_dir + view_dir);
+//    glm::vec3 reflect_dir = glm::reflect(-light_dir, loc_normal); // phong model
+//    float spec_angle = std::pow(glm::max(glm::dot(view_dir, reflect_dir), 0.0f), 16);
+    float spec_angle = std::pow(glm::max(glm::dot(loc_normal, halfway_dir), 0.0f), 32); // blinn-phong model
     return spec_intensity * spec_angle * color_m;
 }
 
