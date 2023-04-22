@@ -52,7 +52,6 @@ Scene::Scene() {
                                  glm::vec3(5.0f, 5.0f, 1.0f));
     object_list_m[3]->setTransformation(transformation4);
     object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-
 }
 
 
@@ -73,17 +72,14 @@ bool Scene::render(Image &output_image) {
             double norm_x = static_cast<double>(x) * x_factor - 1.0;
             double norm_y = static_cast<double>(y) * y_factor - 1.0;
             camera_m.createRay(norm_x, norm_y, camera_ray);
-            bool blank = internalRender(x, y, camera_ray, output_image, int_point, loc_normal, loc_color);
-            if (blank) {
-                output_image.setPixel(x, y, 0.2, 0.2, 0.2, 1.0);
-            }
+            internalRender(x, y, camera_ray, output_image, int_point, loc_normal, loc_color);
         }
     }
     return true;
 }
 
-bool Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
-                           glm::vec3 &loc_normal, glm::vec3 &loc_color){
+void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
+                           glm::vec3 &loc_normal, glm::vec3 &loc_color) const{
     bool blank = true;
     std::shared_ptr<Object> closest_object;
     glm::vec3 closest_int_point;
@@ -105,37 +101,48 @@ bool Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
             }
         }
     }
-
     // illumination part
-    float ambient_intensity = 0.05f;
-
     if (!blank) {
-        double intensity{};
-        glm::vec3 color{};
-        glm::vec3 output_color{};
-        glm::vec3 ambient_color{};
-
-        bool valid_illumination = false;
-        bool illuminated = false;
-        for (const auto& light_m: light_list_m) {
-            valid_illumination = light_m->computeIllumination(closest_int_point, closest_loc_normal, object_list_m,
-                                                              closest_object, color, intensity);
-            ambient_color += ambient_intensity * light_m->getColor();
-            if (valid_illumination) {
-                illuminated = true;
-                output_color += color * static_cast<float>(intensity);
-            }
-        }
-        if (illuminated) {
-            output_color = closest_loc_color * (output_color + ambient_color);
-            output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
-        } else {
-            output_color = closest_loc_color * ambient_color / static_cast<float>(light_list_m.size());
-            output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
-        }
-        return false;
+        glm::vec3 output_color = computeColor(camera_ray, closest_object, closest_int_point, closest_loc_normal, closest_loc_color);
+        output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
+    }else{
+        output_image.setPixel(x, y, 0.2, 0.2, 0.2, 1.0);
     }
-    return true;
+}
+
+glm::vec3 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object>& current_object, const glm::vec3 &int_point,
+                              const glm::vec3 &loc_normal, const glm::vec3 &loc_color) const{
+    float ambient_intensity = 0.05f;
+    double intensity{};
+    glm::vec3 color{};
+    glm::vec3 output_color{};
+    glm::vec3 ambient_color{};
+    glm::vec3 specular_color{};
+    glm::vec3 diffuse_color{};
+
+    bool valid_illumination = false;
+    bool illuminated = false;
+    for (const auto &light_m: light_list_m) {
+        valid_illumination = light_m->computeDiffIllum(int_point, loc_normal,
+                                                       object_list_m,
+                                                       current_object, color, intensity);
+        // specular part of illumination
+        specular_color += light_m->computeSpecIllum(camera_ray, int_point, loc_normal);
+        // ambient part of illumination
+        ambient_color += ambient_intensity * light_m->getColor();
+
+        if (valid_illumination) {
+            illuminated = true;
+            diffuse_color += color * static_cast<float>(intensity);
+        }
+    }
+    if (illuminated) {
+        output_color = loc_color * (ambient_color / static_cast<float>(light_list_m.size()) + diffuse_color + specular_color);
+    } else {
+        output_color = loc_color * ambient_color / static_cast<float>(light_list_m.size());
+    }
+    return output_color;
+
 }
 
 void Scene::moveCamera(CameraMovement direction) {

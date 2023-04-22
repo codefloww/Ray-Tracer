@@ -10,10 +10,10 @@ PointLight::PointLight() : LightSource() {
     intensity_m = 1.0f;
 }
 
-bool PointLight::computeIllumination(const glm::vec3 &int_point, const glm::vec3 &loc_normal,
-                                     const std::vector<std::shared_ptr<Object>> &object_list,
-                                     const std::shared_ptr<Object> &current_object, glm::vec3 &color,
-                                     double &intensity) const {
+bool PointLight::computeDiffIllum(const glm::vec3 &int_point, const glm::vec3 &loc_normal,
+                                  const std::vector<std::shared_ptr<Object>> &object_list,
+                                  const std::shared_ptr<Object> &current_object, glm::vec3 &color,
+                                  double &intensity) const {
 
     Ray light_ray(int_point, position_m - int_point);
     glm::vec3 betweeen_int_point;
@@ -41,3 +41,14 @@ bool PointLight::computeIllumination(const glm::vec3 &int_point, const glm::vec3
         return true;
     }
 }
+
+glm::vec3
+PointLight::computeSpecIllum(const Ray &camera_ray, const glm::vec3 &int_point, const glm::vec3 &loc_normal) const {
+    float spec_intensity = 0.5f;
+    glm::vec3 view_dir = glm::normalize(camera_ray.getOrigin() - int_point);
+    glm::vec3 light_dir = glm::normalize(position_m - int_point);
+    glm::vec3 reflect_dir = glm::reflect(-light_dir, loc_normal);
+    float spec_angle = std::pow(glm::max(glm::dot(view_dir, reflect_dir), 0.0f), 16);
+    return spec_intensity * spec_angle * color_m;
+}
+

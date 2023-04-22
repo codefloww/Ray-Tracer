@@ -17,6 +17,8 @@ protected:
 public:
     void setTransformation(const Transformation &transformation);
 
+    Transformation getTransformation() const;
+
     void setColor(const glm::vec3 &color);
 
     virtual bool

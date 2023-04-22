@@ -33,7 +33,12 @@ public:
 
     bool render(Image &output_image);
 
-    bool internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color);
+    void internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
+                        glm::vec3 &loc_normal, glm::vec3 &loc_color) const;
+
+    [[nodiscard]] glm::vec3
+    computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
+                 const glm::vec3 &loc_normal, const glm::vec3 &loc_color) const;
 
     void moveCamera(CameraMovement direction);
 
