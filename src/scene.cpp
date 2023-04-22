@@ -14,10 +14,10 @@ Scene::Scene() {
     camera_m.updateCameraGeometry();
 
     light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[0]->setPosition(glm::vec3(-250.0f, -100.0f, 250.0f));
+    light_list_m[0]->setPosition(glm::vec3(-25.0f, -10.0f, 25.0f));
     light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
     light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[1]->setPosition(glm::vec3(250.0f, -100.0f, 250.0f));
+    light_list_m[1]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
     light_list_m[1]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
 
     object_list_m.emplace_back(std::make_shared<Sphere>());
@@ -107,26 +107,31 @@ bool Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
     }
 
     // illumination part
+    float ambient_intensity = 0.05f;
+
     if (!blank) {
         double intensity{};
         glm::vec3 color{};
         glm::vec3 output_color{};
+        glm::vec3 ambient_color{};
 
         bool valid_illumination = false;
         bool illuminated = false;
         for (const auto& light_m: light_list_m) {
             valid_illumination = light_m->computeIllumination(closest_int_point, closest_loc_normal, object_list_m,
                                                               closest_object, color, intensity);
+            ambient_color += ambient_intensity * light_m->getColor();
             if (valid_illumination) {
                 illuminated = true;
                 output_color += color * static_cast<float>(intensity);
             }
         }
         if (illuminated) {
-            output_color = closest_loc_color * output_color;
+            output_color = closest_loc_color * (output_color + ambient_color);
             output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
         } else {
-            output_image.setPixel(x, y, 0.0, 0.0, 0.0, 1.0);
+            output_color = closest_loc_color * ambient_color / static_cast<float>(light_list_m.size());
+            output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
         }
         return false;
     }

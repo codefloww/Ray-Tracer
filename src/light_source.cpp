@@ -15,3 +15,7 @@ void LightSource::setColor(const glm::vec3 &color) {
 void LightSource::setIntensity(double intensity) {
     intensity_m = intensity;
 }
+
+glm::vec3 LightSource::getColor() const {
+    return color_m;
+}

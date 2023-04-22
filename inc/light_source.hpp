@@ -19,6 +19,8 @@ public:
 
     void setColor(const glm::vec3 &color);
 
+    [[nodiscard]] glm::vec3 getColor() const;
+
     void setIntensity(double intensity);
 };
 
