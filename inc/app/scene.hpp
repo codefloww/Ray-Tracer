@@ -8,11 +8,11 @@
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <memory>
-#include "image.hpp"
-#include "camera.hpp"
-#include "sphere.hpp"
-#include "plane.hpp"
-#include "point_light.hpp"
+#include "app/image.hpp"
+#include "app/camera.hpp"
+#include "objects/sphere.hpp"
+#include "objects/plane.hpp"
+#include "lights/point_light.hpp"
 
 class Scene {
     Camera camera_m;

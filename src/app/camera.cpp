@@ -2,7 +2,7 @@
 // Created by paul on 3/11/23.
 //
 
-#include "camera.hpp"
+#include "app/camera.hpp"
 
 Camera::Camera() {
     position_m = glm::vec3(0.0f, 0.0f, 0.0f);

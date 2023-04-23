@@ -2,7 +2,7 @@
 // Created by paul on 3/18/23.
 //
 
-#include "light_source.hpp"
+#include "lights/light_source.hpp"
 
 void LightSource::setPosition(const glm::vec3 &position) {
     position_m = position;

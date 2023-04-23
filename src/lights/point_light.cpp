@@ -2,7 +2,7 @@
 // Created by paul on 3/18/23.
 //
 
-#include "point_light.hpp"
+#include "lights/point_light.hpp"
 
 PointLight::PointLight() : LightSource() {
     position_m = glm::vec3(0.0f, 0.0f, 0.0f);

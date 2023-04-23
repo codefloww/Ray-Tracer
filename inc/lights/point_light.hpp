@@ -7,8 +7,8 @@
 
 #include <vector>
 #include "light_source.hpp"
-#include "sphere.hpp"
-#include "plane.hpp"
+#include "objects/sphere.hpp"
+#include "objects/plane.hpp"
 #include "ray.hpp"
 
 class PointLight : public LightSource {

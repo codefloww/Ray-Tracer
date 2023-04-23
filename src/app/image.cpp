@@ -2,7 +2,7 @@
 // Created by paul on 3/8/23.
 //
 
-#include "image.hpp"
+#include "app/image.hpp"
 
 Image::~Image() {
     if (texture_m != nullptr) {

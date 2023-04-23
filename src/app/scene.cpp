@@ -3,7 +3,7 @@
 //
 
 #include <glm/gtx/rotate_vector.hpp>
-#include "scene.hpp"
+#include "app/scene.hpp"
 
 Scene::Scene() {
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
