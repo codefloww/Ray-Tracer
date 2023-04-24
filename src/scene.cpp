@@ -71,8 +71,9 @@ bool Scene::render(Image &output_image) {
         current_step = next_step;
         next_step += (remainder > 0) ? whole_part + 1 : whole_part;
         remainder = (remainder > 0) ? remainder - 1 : remainder;
-        responses.push_back(thread_pool_m.submit([this, image_part, &output_image]
-        { return renderImagePart(image_part, output_image); }));
+        std::packaged_task<bool()> task([this, image_part, &output_image]
+                                        { return renderImagePart(image_part, output_image); });
+        responses.push_back(boost::asio::post(thread_pool_m, std::move(task)));
     }
 
     for (auto &future_response: responses){
@@ -172,5 +173,6 @@ void Scene::rotateCamera(const glm::vec2 &rotation) {
 }
 
 Scene::~Scene(){
-    thread_pool_m.finish();
+    thread_pool_m.join();
+    thread_pool_m.~thread_pool();
 };

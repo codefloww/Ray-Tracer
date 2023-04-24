@@ -11,6 +11,7 @@
 #include <SDL2/SDL.h>
 #include <glm/gtx/rotate_vector.hpp>
 #include <memory>
+#include <boost/asio.hpp>
 #include "image.hpp"
 #include "camera.hpp"
 #include "sphere.hpp"
@@ -22,7 +23,7 @@ class Scene {
     Camera camera_m;
     std::vector<std::shared_ptr<Object>> object_list_m;
     std::vector<std::shared_ptr<PointLight>> light_list_m;
-    thread_pool thread_pool_m;
+    boost::asio::thread_pool thread_pool_m;
 
 public:
     enum class CameraMovement {
