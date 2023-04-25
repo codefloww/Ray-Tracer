@@ -5,7 +5,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include "app/scene.hpp"
 
-unsigned int constexpr THREADS_NUMBER = 16;
+unsigned int constexpr THREADS_NUMBER = 8;
 
 Scene::Scene(): thread_pool_m{THREADS_NUMBER}{
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
@@ -58,7 +58,6 @@ Scene::Scene(): thread_pool_m{THREADS_NUMBER}{
 
 
 bool Scene::render(Image &output_image) {
-    int width = output_image.getWidth();
     int height = output_image.getHeight();
 
     unsigned int whole_part = height / THREADS_NUMBER; // make height unsigned in future
@@ -215,5 +214,4 @@ void Scene::rotateCamera(const glm::vec2 &rotation) {
 
 Scene::~Scene(){
     thread_pool_m.join();
-    thread_pool_m.~thread_pool();
 };

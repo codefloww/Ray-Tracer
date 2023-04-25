@@ -5,10 +5,10 @@
 #include <iostream>
 #include "app/app.hpp"
 
-#define CAP_FPS
+//#define CAP_FPS
 #define SHOW_FPS
 
-constexpr float kFpsCap = 30.0f;
+constexpr float kFpsCap = 80.0f;
 constexpr int kWidth = 640;
 constexpr int kHeight = 480;
 
