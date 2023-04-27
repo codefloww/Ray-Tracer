@@ -2,7 +2,7 @@
 // Created by paul on 3/12/23.
 //
 
-#include "sphere.hpp"
+#include "objects/sphere.hpp"
 #include <cmath>
 
 bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,

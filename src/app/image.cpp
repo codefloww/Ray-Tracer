@@ -2,7 +2,7 @@
 // Created by paul on 3/8/23.
 //
 
-#include "image.hpp"
+#include "app/image.hpp"
 
 Image::~Image() {
     if (texture_m != nullptr) {
@@ -30,7 +30,8 @@ void Image::setPixel(int x, int y, double r, double g, double b, double a) {
     a_channel_m[x][y] = a;
 }
 
-void Image::display() const {
+void Image::display() {
+    computeMaxValues();
     auto *temp_pixels = new Uint32[width_m * height_m];
 
     memset(temp_pixels, 0, width_m * height_m * sizeof(Uint32));
@@ -78,12 +79,12 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-Uint32 Image::convertColor(double r, double g, double b, double a) {
+Uint32 Image::convertColor(double r, double g, double b, double a) const{
     Uint32 color = 0;
-    auto r8 = static_cast<unsigned char>(r);
-    auto g8 = static_cast<unsigned char>(g);
-    auto b8 = static_cast<unsigned char>(b);
-    auto a8 = static_cast<unsigned char>(a);
+    auto r8 = static_cast<unsigned char>(r / max_overall_m * 255);
+    auto g8 = static_cast<unsigned char>(g / max_overall_m * 255);
+    auto b8 = static_cast<unsigned char>(b / max_overall_m * 255);
+    auto a8 = static_cast<unsigned char>(a / max_overall_m * 255);
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     color = (r8 << 24) + (g8 << 16) + (b8 << 8) + a8;
@@ -108,4 +109,30 @@ std::vector<double> Image::getPixelColor(int x, int y) const {
 
 glm::vec3 Image::getPixel(int x, int y) const {
     return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y]};
+}
+
+void Image::computeMaxValues() {
+    for (int x = 0; x < width_m; x++) {
+
+        for (int y = 0; y < height_m; y++) {
+            if (r_channel_m[x][y] > max_red_m) {
+                max_red_m = r_channel_m[x][y];
+            }
+            if (g_channel_m[x][y] > max_green_m) {
+                max_green_m = g_channel_m[x][y];
+            }
+            if (b_channel_m[x][y] > max_blue_m) {
+                max_blue_m = b_channel_m[x][y];
+            }
+            if (max_red_m > max_overall_m) {
+                max_overall_m = max_red_m;
+            }
+            if (max_green_m > max_overall_m) {
+                max_overall_m = max_green_m;
+            }
+            if (max_blue_m > max_overall_m) {
+                max_overall_m = max_blue_m;
+            }
+        }
+    }
 }
