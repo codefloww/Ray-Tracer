@@ -2,7 +2,7 @@
 // Created by paul on 3/31/23.
 //
 
-#include "objects/plane.hpp"
+#include "plane.hpp"
 
 constexpr double kEpsilon = 0.0001f;
 

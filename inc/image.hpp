@@ -17,11 +17,6 @@ class Image {
     std::vector<std::vector<double>> a_channel_m;
     Sint32 width_m = 0;
     Sint32 height_m = 0;
-
-    double max_red_m = 0.0;
-    double max_green_m = 0.0;
-    double max_blue_m = 0.0;
-    double max_overall_m = 0.0;
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 
@@ -34,7 +29,7 @@ public:
 
     glm::vec3 getPixel(int x, int y) const;
 
-    void display();
+    void display() const;
 
     [[nodiscard]] std::vector<double> getPixelColor(int x, int y) const;
 
@@ -42,11 +37,9 @@ public:
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] Uint32 convertColor(double r, double g, double b, double a) const;
+    [[nodiscard]] static Uint32 convertColor(double r, double g, double b, double a);
 
     void initTexture();
-
-    void computeMaxValues();
 };
 
 #endif //RAY_TRACER_IMAGE_HPP

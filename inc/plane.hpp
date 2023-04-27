@@ -7,7 +7,7 @@
 
 #include <glm/glm.hpp>
 #include "transformation.hpp"
-#include "objects/object.hpp"
+#include "object.hpp"
 
 class Plane : public Object {
 public:

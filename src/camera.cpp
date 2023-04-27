@@ -2,7 +2,7 @@
 // Created by paul on 3/11/23.
 //
 
-#include "app/camera.hpp"
+#include "camera.hpp"
 
 Camera::Camera() {
     position_m = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -78,8 +78,7 @@ void Camera::updateCameraGeometry() {
 }
 
 bool Camera::createRay(double x, double y, Ray &camera_ray) const {
-    glm::vec3 point_on_screen =
-            screen_center_m + screen_u_m * static_cast<float>(x) + screen_v_m * static_cast<float>(y);
+    glm::vec3 point_on_screen = screen_center_m + screen_u_m * static_cast<float>(x) + screen_v_m * static_cast<float>(y);
     camera_ray = Ray::getRayFromPoints(position_m, point_on_screen);
     return true;
 }

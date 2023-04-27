@@ -8,11 +8,11 @@
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <memory>
-#include "app/image.hpp"
-#include "app/camera.hpp"
-#include "objects/sphere.hpp"
-#include "objects/plane.hpp"
-#include "lights/point_light.hpp"
+#include "image.hpp"
+#include "camera.hpp"
+#include "sphere.hpp"
+#include "plane.hpp"
+#include "point_light.hpp"
 
 class Scene {
     Camera camera_m;
@@ -33,12 +33,7 @@ public:
 
     bool render(Image &output_image);
 
-    void internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
-                        glm::vec3 &loc_normal, glm::vec3 &loc_color) const;
-
-    [[nodiscard]] glm::vec3
-    computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
-                 const glm::vec3 &loc_normal, const glm::vec3 &loc_color) const;
+    bool internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color);
 
     void moveCamera(CameraMovement direction);
 

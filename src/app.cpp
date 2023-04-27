@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "app/app.hpp"
+#include "app.hpp"
 
 #define CAP_FPS
 #define SHOW_FPS
