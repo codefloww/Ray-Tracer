@@ -89,20 +89,17 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-Uint32 Image::convertColor(double r, double g, double b, double a) const{
-    Uint32 color = 0;
-    auto r8 = static_cast<unsigned char>(r / max_overall_m * 255);
-    auto g8 = static_cast<unsigned char>(g / max_overall_m * 255);
-    auto b8 = static_cast<unsigned char>(b / max_overall_m * 255);
-    auto a8 = static_cast<unsigned char>(a / max_overall_m * 255);
+Uint32 Image::convertColor(double r, double g, double b, double a) const {
+    auto red = static_cast<Uint32>(255 * r / max_color_m);
+    auto blue = static_cast<Uint32>(255 * b / max_color_m);
+    auto green = static_cast<Uint32>(255 * g / max_color_m);
+    auto alpha = static_cast<Uint32>(255 * a / max_color_m);
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    color = (r8 << 24) + (g8 << 16) + (b8 << 8) + a8;
+    return red << 24 | (green << 16) | (blue << 8) | alpha;
 #else
-    color = (a8 << 24) + (b8 << 16) + (g8 << 8) + r8;
+    return alpha << 24 | (blue << 16) | (green << 8) | red;
 #endif
-
-    return color;
 }
 
 int Image::getWidth() const {
@@ -114,27 +111,15 @@ int Image::getHeight() const {
 }
 
 void Image::computeMaxValues() {
+    double max_red = 0.0;
+    double max_green = 0.0;
+    double max_blue = 0.0;
     for (int x = 0; x < width_m; x++) {
-
         for (int y = 0; y < height_m; y++) {
-            if (r_channel_m[x][y] > max_red_m) {
-                max_red_m = r_channel_m[x][y];
-            }
-            if (g_channel_m[x][y] > max_green_m) {
-                max_green_m = g_channel_m[x][y];
-            }
-            if (b_channel_m[x][y] > max_blue_m) {
-                max_blue_m = b_channel_m[x][y];
-            }
-            if (max_red_m > max_overall_m) {
-                max_overall_m = max_red_m;
-            }
-            if (max_green_m > max_overall_m) {
-                max_overall_m = max_green_m;
-            }
-            if (max_blue_m > max_overall_m) {
-                max_overall_m = max_blue_m;
-            }
+            max_red = std::max(max_red, r_channel_m[x][y]);
+            max_green = std::max(max_green, g_channel_m[x][y]);
+            max_blue = std::max(max_blue, b_channel_m[x][y]);
         }
     }
+    max_color_m = std::max(max_red, std::max(max_green, max_blue));
 }

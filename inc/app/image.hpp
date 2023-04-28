@@ -18,10 +18,7 @@ class Image {
     int width_m = 0;
     int height_m = 0;
 
-    double max_red_m = 0.0;
-    double max_green_m = 0.0;
-    double max_blue_m = 0.0;
-    double max_overall_m = 0.0;
+    double max_color_m = 0.0;
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 
@@ -32,7 +29,7 @@ public:
 
     void setPixel(int x, int y, double r, double g, double b, double a);
 
-    glm::vec4 getPixel(int x, int y) const;
+    [[nodiscard]] glm::vec4 getPixel(int x, int y) const;
 
     void display();
 
