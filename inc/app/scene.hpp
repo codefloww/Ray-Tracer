@@ -17,7 +17,6 @@
 #include "objects/sphere.hpp"
 #include "objects/plane.hpp"
 #include "lights/point_light.hpp"
-#include "threadpool/thread_pool.h"
 
 class Scene {
     Camera camera_m;
