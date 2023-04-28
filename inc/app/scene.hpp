@@ -11,7 +11,6 @@
 #include <SDL2/SDL.h>
 #include <glm/gtx/rotate_vector.hpp>
 #include <memory>
-#include <boost/asio.hpp>
 #include "app/image.hpp"
 #include "app/camera.hpp"
 #include "objects/sphere.hpp"
@@ -22,7 +21,6 @@ class Scene {
     Camera camera_m;
     std::vector<std::shared_ptr<Object>> object_list_m;
     std::vector<std::shared_ptr<PointLight>> light_list_m;
-    boost::asio::thread_pool thread_pool_m;
 
 public:
     enum class CameraMovement {
@@ -36,7 +34,7 @@ public:
 
     Scene();
 
-    bool render(Image &output_image);
+    void render(Image &output_image);
 
     void internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
                         glm::vec3 &loc_normal, glm::vec3 &loc_color) const;
@@ -48,10 +46,6 @@ public:
     void moveCamera(CameraMovement direction);
 
     void rotateCamera(const glm::vec2 &rotation);
-
-    bool renderImagePart(std::pair<int, int> boundaries, Image &output_image);
-
-    ~Scene();
 };
 
 #endif //RAY_TRACER_SCENE_HPP

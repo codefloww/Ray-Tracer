@@ -4,10 +4,10 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 #include "app/scene.hpp"
+#include <oneapi/tbb/parallel_for.h>
+#include <oneapi/tbb/blocked_range2d.h>
 
-unsigned int constexpr THREADS_NUMBER = 8;
-
-Scene::Scene(): thread_pool_m{THREADS_NUMBER}{
+Scene::Scene() {
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
     camera_m.setDirection(glm::vec3(0.0f, 1.0f, 0.0f));
     camera_m.setUp(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -56,70 +56,47 @@ Scene::Scene(): thread_pool_m{THREADS_NUMBER}{
     object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
+void Scene::render(Image &output_image) {
+    namespace tbb = oneapi::tbb;
+    using range_t = tbb::blocked_range2d<int>;
 
-bool Scene::render(Image &output_image) {
-    int height = output_image.getHeight();
+    const int width = output_image.getWidth();
+    const int height = output_image.getHeight();
 
-    unsigned int whole_part = height / THREADS_NUMBER; // make height unsigned in future
-    unsigned int remainder = height % THREADS_NUMBER;
-    unsigned int current_step = 0;
-    unsigned int next_step = (remainder > 0) ? whole_part + 1 : whole_part;
-    remainder = (remainder > 0) ? remainder - 1 : remainder;
-
-    std::vector<std::future<bool>> responses;
-
-    for (unsigned int thread_number = 0; thread_number < THREADS_NUMBER; thread_number++){
-        std::pair<int, int> image_part {current_step, next_step};
-        current_step = next_step;
-        next_step += (remainder > 0) ? whole_part + 1 : whole_part;
-        remainder = (remainder > 0) ? remainder - 1 : remainder;
-        std::packaged_task<bool()> task([this, image_part, &output_image]
-                                        { return renderImagePart(image_part, output_image); });
-        responses.push_back(boost::asio::post(thread_pool_m, std::move(task)));
-    }
-
-    for (auto &future_response: responses){
-        auto response = future_response.get();
-        if (!response){
-            return false;
+    tbb::parallel_for(range_t{0, height, 0, width},
+        [&](const range_t& range) {
+            for (int y = range.rows().begin(); y < range.rows().end(); ++y) {
+                for (int x = range.cols().begin(); x < range.cols().end(); ++x) {
+                    Ray camera_ray;
+                    glm::vec3 int_point;
+                    glm::vec3 loc_normal;
+                    glm::vec3 loc_color;
+                    double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
+                    double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
+                    double norm_x = static_cast<double>(x) * x_factor - 1.0;
+                    double norm_y = static_cast<double>(y) * y_factor - 1.0;
+                    camera_m.createRay(norm_x, norm_y, camera_ray);
+                    internalRender(x, y, camera_ray, output_image, int_point, loc_normal, loc_color);
+                }
+            }
         }
-    }
-    return true;
-}
-
-bool Scene::renderImagePart(std::pair<int, int> boundaries, Image &output_image){
-    auto [lower_bound, upper_bound] = boundaries;
-    int width = output_image.getWidth();
-    int height = output_image.getHeight();
-
-    Ray camera_ray;
-    glm::vec3 int_point;
-    glm::vec3 loc_normal;
-    glm::vec3 loc_color;
-    double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
-    double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
-    for (int y = lower_bound; y < upper_bound; y++) {
-        for (int x = 0; x < width; x++) {
-            double norm_x = static_cast<double>(x) * x_factor - 1.0;
-            double norm_y = static_cast<double>(y) * y_factor - 1.0;
-            camera_m.createRay(norm_x, norm_y, camera_ray);
-            internalRender(x, y, camera_ray, output_image, int_point, loc_normal, loc_color);
-        }
-    }
-    return true;
+    );
 }
 
 void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
-                           glm::vec3 &loc_normal, glm::vec3 &loc_color) const{
+                           glm::vec3 &loc_normal, glm::vec3 &loc_color) const {
     bool blank = true;
     std::shared_ptr<Object> closest_object;
     glm::vec3 closest_int_point;
     glm::vec3 closest_loc_normal;
     glm::vec3 closest_loc_color;
     double min_distance = std::numeric_limits<double>::max();
-    // intersection part
+
     for (const auto &object_m: object_list_m) {
-        bool valid_intersection = object_m->testIntersections(camera_ray, int_point, loc_normal, loc_color);
+        bool valid_intersection = object_m->testIntersections(camera_ray,
+                                                              int_point,
+                                                              loc_normal,
+                                                              loc_color);
         if (valid_intersection) {
             blank = false;
             double distance = glm::length(camera_ray.getOrigin() - int_point);
@@ -132,17 +109,22 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
             }
         }
     }
-    // illumination part
+
     if (!blank) {
-        glm::vec3 output_color = computeColor(camera_ray, closest_object, closest_int_point, closest_loc_normal, closest_loc_color);
+        glm::vec3 output_color = computeColor(camera_ray,
+                                              closest_object,
+                                              closest_int_point,
+                                              closest_loc_normal,
+                                              closest_loc_color);
         output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
-    }else{
+    } else {
         output_image.setPixel(x, y, 0.2, 0.2, 0.2, 1.0);
     }
 }
 
-glm::vec3 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object>& current_object, const glm::vec3 &int_point,
-                              const glm::vec3 &loc_normal, const glm::vec3 &loc_color) const{
+glm::vec3
+Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
+                    const glm::vec3 &loc_normal, const glm::vec3 &loc_color) const {
     float ambient_intensity = 0.05f;
     double intensity{};
     glm::vec3 color{};
@@ -151,15 +133,13 @@ glm::vec3 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Objec
     glm::vec3 specular_color{};
     glm::vec3 diffuse_color{};
 
-    bool valid_illumination = false;
+    bool valid_illumination;
     bool illuminated = false;
     for (const auto &light_m: light_list_m) {
         valid_illumination = light_m->computeDiffIllum(int_point, loc_normal,
                                                        object_list_m,
                                                        current_object, color, intensity);
-        // specular part of illumination
         specular_color += light_m->computeSpecIllum(camera_ray, int_point, loc_normal);
-        // ambient part of illumination
         ambient_color += ambient_intensity * light_m->getColor();
 
         if (valid_illumination) {
@@ -167,13 +147,15 @@ glm::vec3 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Objec
             diffuse_color += color * static_cast<float>(intensity);
         }
     }
-    if (illuminated) {
-        output_color = loc_color * (ambient_color / static_cast<float>(light_list_m.size()) + diffuse_color + specular_color);
-    } else {
-        output_color = loc_color * ambient_color / static_cast<float>(light_list_m.size());
-    }
-    return output_color;
 
+    auto ambient_term = ambient_color / static_cast<float>(light_list_m.size());
+    if (illuminated) {
+        output_color = loc_color * (ambient_term + diffuse_color + specular_color);
+    } else {
+        output_color = loc_color * ambient_term;
+    }
+
+    return output_color;
 }
 
 void Scene::moveCamera(CameraMovement direction) {
@@ -211,7 +193,3 @@ void Scene::rotateCamera(const glm::vec2 &rotation) {
     camera_m.setUp(glm::rotate(camera_m.getUp(), rotation.y, x_axis));
     camera_m.updateCameraGeometry();
 }
-
-Scene::~Scene(){
-    thread_pool_m.join();
-};
