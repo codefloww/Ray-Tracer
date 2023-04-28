@@ -1,6 +1,6 @@
 #include "app/app.hpp"
 
-int main(int argc, char* argv[]) {
+int main() {
     Application app;
     return app.onExecute();
 }
