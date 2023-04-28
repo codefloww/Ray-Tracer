@@ -3,6 +3,7 @@
 //
 
 #include "app/image.hpp"
+#include <algorithm>
 
 Image::~Image() {
     if (texture_m != nullptr) {
