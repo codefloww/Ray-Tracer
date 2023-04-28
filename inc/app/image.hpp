@@ -15,8 +15,8 @@ class Image {
     std::vector<std::vector<double>> g_channel_m;
     std::vector<std::vector<double>> b_channel_m;
     std::vector<std::vector<double>> a_channel_m;
-    Sint32 width_m = 0;
-    Sint32 height_m = 0;
+    int width_m = 0;
+    int height_m = 0;
 
     double max_red_m = 0.0;
     double max_green_m = 0.0;
@@ -32,11 +32,9 @@ public:
 
     void setPixel(int x, int y, double r, double g, double b, double a);
 
-    glm::vec3 getPixel(int x, int y) const;
+    glm::vec4 getPixel(int x, int y) const;
 
     void display();
-
-    [[nodiscard]] std::vector<double> getPixelColor(int x, int y) const;
 
     [[nodiscard]] int getWidth() const;
 

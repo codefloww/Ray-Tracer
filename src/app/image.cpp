@@ -30,6 +30,10 @@ void Image::setPixel(int x, int y, double r, double g, double b, double a) {
     a_channel_m[x][y] = a;
 }
 
+glm::vec4 Image::getPixel(int x, int y) const {
+    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y], a_channel_m[x][y]};
+}
+
 void Image::display() {
     computeMaxValues();
     auto *temp_pixels = new Uint32[width_m * height_m];
@@ -38,11 +42,15 @@ void Image::display() {
 
     for (int y = 0; y < height_m; y++) {
         for (int x = 0; x < width_m; x++) {
-            temp_pixels[y * width_m + x] = convertColor(r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y],
+            temp_pixels[y * width_m + x] = convertColor(r_channel_m[x][y],
+                                                        g_channel_m[x][y],
+                                                        b_channel_m[x][y],
                                                         a_channel_m[x][y]);
         }
     }
-    SDL_UpdateTexture(texture_m, nullptr, temp_pixels, width_m * sizeof(Uint32));
+
+    auto uint32_size = static_cast<int>(sizeof(Uint32));
+    SDL_UpdateTexture(texture_m, nullptr, temp_pixels, width_m * uint32_size);
 
     delete[] temp_pixels;
 
@@ -60,21 +68,23 @@ void Image::initTexture() {
     Uint32 r_mask, g_mask, b_mask, a_mask;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    r_mask = 0xff000000;
-    g_mask = 0x00ff0000;
-    b_mask = 0x0000ff00;
-    a_mask = 0x000000ff;
+    r_mask = 0xFF000000;
+    g_mask = 0x00FF0000;
+    b_mask = 0x0000FF00;
+    a_mask = 0x000000FF;
 #else
-    r_mask = 0x000000ff;
-    g_mask = 0x0000ff00;
-    b_mask = 0x00ff0000;
-    a_mask = 0xff000000;
+    r_mask = 0x000000FF;
+    g_mask = 0x0000FF00;
+    b_mask = 0x00FF0000;
+    a_mask = 0xFF000000;
 #endif
+
     if (texture_m != nullptr) {
         SDL_DestroyTexture(texture_m);
     }
     SDL_Surface *temp_surface = SDL_CreateRGBSurface(0, width_m, height_m, 32,
                                                      r_mask, g_mask, b_mask, a_mask);
+
     texture_m = SDL_CreateTextureFromSurface(renderer_m, temp_surface);
     SDL_FreeSurface(temp_surface);
 }
@@ -101,14 +111,6 @@ int Image::getWidth() const {
 
 int Image::getHeight() const {
     return height_m;
-}
-
-std::vector<double> Image::getPixelColor(int x, int y) const {
-    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y], a_channel_m[x][y]};
-}
-
-glm::vec3 Image::getPixel(int x, int y) const {
-    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y]};
 }
 
 void Image::computeMaxValues() {
