@@ -3,6 +3,7 @@
 //
 
 #include "app/image.hpp"
+#include <algorithm>
 
 Image::~Image() {
     if (texture_m != nullptr) {
@@ -20,6 +21,8 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     height_m = height;
     renderer_m = renderer;
 
+    min_exposure_m = 0.9;
+
     initTexture();
 }
 
@@ -30,6 +33,10 @@ void Image::setPixel(int x, int y, double r, double g, double b, double a) {
     a_channel_m[x][y] = a;
 }
 
+glm::vec4 Image::getPixel(int x, int y) const {
+    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y], a_channel_m[x][y]};
+}
+
 void Image::display() {
     computeMaxValues();
     auto *temp_pixels = new Uint32[width_m * height_m];
@@ -38,11 +45,15 @@ void Image::display() {
 
     for (int y = 0; y < height_m; y++) {
         for (int x = 0; x < width_m; x++) {
-            temp_pixels[y * width_m + x] = convertColor(r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y],
+            temp_pixels[y * width_m + x] = convertColor(r_channel_m[x][y],
+                                                        g_channel_m[x][y],
+                                                        b_channel_m[x][y],
                                                         a_channel_m[x][y]);
         }
     }
-    SDL_UpdateTexture(texture_m, nullptr, temp_pixels, width_m * sizeof(Uint32));
+
+    auto uint32_size = static_cast<int>(sizeof(Uint32));
+    SDL_UpdateTexture(texture_m, nullptr, temp_pixels, width_m * uint32_size);
 
     delete[] temp_pixels;
 
@@ -60,39 +71,38 @@ void Image::initTexture() {
     Uint32 r_mask, g_mask, b_mask, a_mask;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    r_mask = 0xff000000;
-    g_mask = 0x00ff0000;
-    b_mask = 0x0000ff00;
-    a_mask = 0x000000ff;
+    r_mask = 0xFF000000;
+    g_mask = 0x00FF0000;
+    b_mask = 0x0000FF00;
+    a_mask = 0x000000FF;
 #else
-    r_mask = 0x000000ff;
-    g_mask = 0x0000ff00;
-    b_mask = 0x00ff0000;
-    a_mask = 0xff000000;
+    r_mask = 0x000000FF;
+    g_mask = 0x0000FF00;
+    b_mask = 0x00FF0000;
+    a_mask = 0xFF000000;
 #endif
+
     if (texture_m != nullptr) {
         SDL_DestroyTexture(texture_m);
     }
     SDL_Surface *temp_surface = SDL_CreateRGBSurface(0, width_m, height_m, 32,
                                                      r_mask, g_mask, b_mask, a_mask);
+
     texture_m = SDL_CreateTextureFromSurface(renderer_m, temp_surface);
     SDL_FreeSurface(temp_surface);
 }
 
-Uint32 Image::convertColor(double r, double g, double b, double a) const{
-    Uint32 color = 0;
-    auto r8 = static_cast<unsigned char>(r / max_overall_m * 255);
-    auto g8 = static_cast<unsigned char>(g / max_overall_m * 255);
-    auto b8 = static_cast<unsigned char>(b / max_overall_m * 255);
-    auto a8 = static_cast<unsigned char>(a / max_overall_m * 255);
+Uint32 Image::convertColor(double r, double g, double b, double a) const {
+    auto red = static_cast<Uint32>(255 * r / max_color_m);
+    auto blue = static_cast<Uint32>(255 * b / max_color_m);
+    auto green = static_cast<Uint32>(255 * g / max_color_m);
+    auto alpha = static_cast<Uint32>(255 * a / max_color_m);
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    color = (r8 << 24) + (g8 << 16) + (b8 << 8) + a8;
+    return red << 24 | (green << 16) | (blue << 8) | alpha;
 #else
-    color = (a8 << 24) + (b8 << 16) + (g8 << 8) + r8;
+    return alpha << 24 | (blue << 16) | (green << 8) | red;
 #endif
-
-    return color;
 }
 
 int Image::getWidth() const {
@@ -103,36 +113,22 @@ int Image::getHeight() const {
     return height_m;
 }
 
-std::vector<double> Image::getPixelColor(int x, int y) const {
-    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y], a_channel_m[x][y]};
-}
-
-glm::vec3 Image::getPixel(int x, int y) const {
-    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y]};
-}
-
 void Image::computeMaxValues() {
+    double max_red = 0.0;
+    double max_green = 0.0;
+    double max_blue = 0.0;
     for (int x = 0; x < width_m; x++) {
-
         for (int y = 0; y < height_m; y++) {
-            if (r_channel_m[x][y] > max_red_m) {
-                max_red_m = r_channel_m[x][y];
-            }
-            if (g_channel_m[x][y] > max_green_m) {
-                max_green_m = g_channel_m[x][y];
-            }
-            if (b_channel_m[x][y] > max_blue_m) {
-                max_blue_m = b_channel_m[x][y];
-            }
-            if (max_red_m > max_overall_m) {
-                max_overall_m = max_red_m;
-            }
-            if (max_green_m > max_overall_m) {
-                max_overall_m = max_green_m;
-            }
-            if (max_blue_m > max_overall_m) {
-                max_overall_m = max_blue_m;
-            }
+            max_red = std::max(max_red, r_channel_m[x][y]);
+            max_green = std::max(max_green, g_channel_m[x][y]);
+            max_blue = std::max(max_blue, b_channel_m[x][y]);
         }
     }
+
+    double max_color = std::max({max_red, max_green, max_blue});
+
+    if (max_color < min_exposure_m) {
+        return;
+    }
+    max_color_m = max_color;
 }
