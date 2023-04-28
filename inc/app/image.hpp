@@ -19,6 +19,8 @@ class Image {
     int height_m = 0;
 
     double max_color_m = 0.0;
+    double min_exposure_m = 0.0;
+
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 

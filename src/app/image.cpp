@@ -20,6 +20,8 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     height_m = height;
     renderer_m = renderer;
 
+    min_exposure_m = 0.9;
+
     initTexture();
 }
 
@@ -121,5 +123,11 @@ void Image::computeMaxValues() {
             max_blue = std::max(max_blue, b_channel_m[x][y]);
         }
     }
-    max_color_m = std::max(max_red, std::max(max_green, max_blue));
+
+    double max_color = std::max({max_red, max_green, max_blue});
+
+    if (max_color < min_exposure_m) {
+        return;
+    }
+    max_color_m = max_color;
 }
