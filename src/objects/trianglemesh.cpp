@@ -71,8 +71,8 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
 
     for (const auto &tri: triangles) {
-        glm::vec3 tri_int_point, tri_loc_normal, tri_loc_color;
-        if (tri->testIntersections(local_ray, tri_int_point, tri_loc_normal, tri_loc_color)) {
+        glm::vec3 tri_int_point, tri_loc_normal;
+        if (tri->testIntersections(local_ray, tri_int_point, tri_loc_normal)) {
             tri_int_point = transformation_m.applyTransform(tri_int_point, Direction::FORWARD);
             tri_loc_normal = glm::normalize(transformation_m.applyTransform(tri_loc_normal, Direction::FORWARD));
             float dist = glm::distance(cast_ray.getOrigin(), tri_int_point);
