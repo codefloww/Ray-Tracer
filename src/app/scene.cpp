@@ -2,8 +2,9 @@
 // Created by paul on 3/11/23.
 //
 
-#include <glm/gtx/rotate_vector.hpp>
 #include "app/scene.hpp"
+#include "objects/trianglemesh.hpp"
+#include <glm/gtx/rotate_vector.hpp>
 #include <oneapi/tbb/parallel_for.h>
 #include <oneapi/tbb/blocked_range2d.h>
 
@@ -22,38 +23,48 @@ Scene::Scene() {
     light_list_m[1]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
     light_list_m[1]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
 
-    object_list_m.emplace_back(std::make_shared<Sphere>());
-    object_list_m.emplace_back(std::make_shared<Sphere>());
-    object_list_m.emplace_back(std::make_shared<Sphere>());
+//    object_list_m.emplace_back(std::make_shared<Sphere>());
+//    object_list_m.emplace_back(std::make_shared<Sphere>());
+//    object_list_m.emplace_back(std::make_shared<Sphere>());
+//
+//    Transformation transformation1;
+//    transformation1.setTransform(glm::vec3(-1.5f, 0.0f, 0.0f),
+//                                 glm::vec3(0.0f, 0.0f, 0.0f),
+//                                 glm::vec3(0.5f, 0.5f, 0.75f));
+//    Transformation transformation2;
+//    transformation2.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
+//                                 glm::vec3(0.0f, 0.0f, 0.0f),
+//                                 glm::vec3(0.75f, 0.5f, 0.5f));
+//    Transformation transformation3;
+//    transformation3.setTransform(glm::vec3(1.5f, 0.0f, 0.0f),
+//                                 glm::vec3(0.0f, 0.0f, 0.0f),
+//                                 glm::vec3(0.75f, 0.75f, 0.75f));
+//
+//    object_list_m[0]->setTransformation(transformation1);
+//    object_list_m[1]->setTransformation(transformation2);
+//    object_list_m[2]->setTransformation(transformation3);
+//
+//    object_list_m[0]->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
+//    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+//    object_list_m[2]->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
+//
+//    object_list_m.emplace_back(std::make_shared<Plane>());
+//    Transformation transformation4;
+//    transformation4.setTransform(glm::vec3(0.0f, 1.0f, -1.0f),
+//                                 glm::vec3(0.1f, 0.0f, 0.0f),
+//                                 glm::vec3(5.0f, 5.0f, 1.0f));
+//    object_list_m[3]->setTransformation(transformation4);
+//    object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+
+    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/suzanne.obj"));
 
     Transformation transformation1;
-    transformation1.setTransform(glm::vec3(-1.5f, 0.0f, 0.0f),
-                                 glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.5f, 0.5f, 0.75f));
-    Transformation transformation2;
-    transformation2.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.75f, 0.5f, 0.5f));
-    Transformation transformation3;
-    transformation3.setTransform(glm::vec3(1.5f, 0.0f, 0.0f),
-                                 glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.75f, 0.75f, 0.75f));
+    transformation1.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
+                                 glm::vec3(1.0f, 1.0f, 1.0f));
 
     object_list_m[0]->setTransformation(transformation1);
-    object_list_m[1]->setTransformation(transformation2);
-    object_list_m[2]->setTransformation(transformation3);
-
-    object_list_m[0]->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
-    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-    object_list_m[2]->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
-
-    object_list_m.emplace_back(std::make_shared<Plane>());
-    Transformation transformation4;
-    transformation4.setTransform(glm::vec3(0.0f, 1.0f, -1.0f),
-                                 glm::vec3(0.1f, 0.0f, 0.0f),
-                                 glm::vec3(5.0f, 5.0f, 1.0f));
-    object_list_m[3]->setTransformation(transformation4);
-    object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+    object_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 0.0f));
 }
 
 void Scene::render(Image &output_image) {
