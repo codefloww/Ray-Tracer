@@ -7,8 +7,8 @@ find_package(SDL2 REQUIRED)
 find_package(glm REQUIRED)
 find_package(TBB REQUIRED)
 
-file(GLOB_RECURSE SOURCES src/*.cpp src/*/*.cpp src/*.cc main.cpp)
-file(GLOB_RECURSE HEADERS inc/*.hpp inc/*.h inc/*/*.h)
+file(GLOB_RECURSE SOURCES src/*.cpp src/*/*.cpp src/*.cc main.cpp external/src/*.cpp external/src/*.cc)
+file(GLOB_RECURSE HEADERS inc/*.hpp inc/*.h inc/*/*.h inc/*/*.hpp external/inc/*.hpp external/inc/*.h)
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
