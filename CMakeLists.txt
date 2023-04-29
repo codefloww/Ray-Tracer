@@ -16,6 +16,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${GLM_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${TBB_INCLUDE_DIRS})
 
+include_directories(external/inc)
+
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${GLM_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} TBB::tbb)
