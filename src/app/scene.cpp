@@ -172,24 +172,24 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
 void Scene::moveCamera(CameraMovement direction) {
     switch (direction) {
         case CameraMovement::FORWARD:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection());
+            camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection()*0.1f);
             break;
         case CameraMovement::BACKWARD:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection());
+            camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection()*0.1f);
             break;
         case CameraMovement::LEFT:
             camera_m.setPosition(
-                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getUp(), camera_m.getDirection())));
+                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getUp(), camera_m.getDirection()))*0.1f);
             break;
         case CameraMovement::RIGHT:
             camera_m.setPosition(
-                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp())));
+                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp()))*0.1f);
             break;
         case CameraMovement::UP:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getUp());
+            camera_m.setPosition(camera_m.getPosition() + camera_m.getUp()*0.1f);
             break;
         case CameraMovement::DOWN:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getUp());
+            camera_m.setPosition(camera_m.getPosition() - camera_m.getUp()*0.1f);
             break;
     }
 

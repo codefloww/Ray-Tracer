@@ -8,7 +8,7 @@
 //#define CAP_FPS
 #define SHOW_FPS
 
-constexpr float kFpsCap = 80.0f;
+constexpr float kFpsCap = 30.0f;
 constexpr int kWidth = 640;
 constexpr int kHeight = 480;
 
@@ -93,16 +93,16 @@ void Application::onEvent(const SDL_Event *event) {
                 scene_m.moveCamera(Scene::CameraMovement::BACKWARD);
                 break;
             case SDLK_w:
-                scene_m.rotateCamera(glm::vec2(0.0f, 0.05f));
+                scene_m.rotateCamera(glm::vec2(0.0f, 0.01f));
                 break;
             case SDLK_s:
-                scene_m.rotateCamera(glm::vec2(0.0f, -0.05f));
+                scene_m.rotateCamera(glm::vec2(0.0f, -0.01f));
                 break;
             case SDLK_a:
-                scene_m.rotateCamera(glm::vec2(0.05f, 0.0f));
+                scene_m.rotateCamera(glm::vec2(0.01f, 0.0f));
                 break;
             case SDLK_d:
-                scene_m.rotateCamera(glm::vec2(-0.05f, 0.0f));
+                scene_m.rotateCamera(glm::vec2(-0.01f, 0.0f));
                 break;
 
             default:
