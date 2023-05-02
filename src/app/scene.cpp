@@ -56,7 +56,8 @@ Scene::Scene() {
 //    object_list_m[3]->setTransformation(transformation4);
 //    object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 
-    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/suzanne.obj"));
+//    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/suzanne.obj"));
+    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/cube.obj"));
 
     Transformation transformation1;
     transformation1.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
