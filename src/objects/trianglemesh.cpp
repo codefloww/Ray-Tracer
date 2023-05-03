@@ -88,9 +88,9 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
     bool hit = false;
     float closest_hit = std::numeric_limits<float>::max();
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
+    glm::vec3 tri_int_point, tri_loc_normal;
 
     for (const auto &tri: triangles) {
-        glm::vec3 tri_int_point, tri_loc_normal;
         if (tri->testIntersections(local_ray, tri_int_point, tri_loc_normal)) {
             tri_int_point = transformation_m.applyTransform(tri_int_point, Direction::FORWARD);
             float dist = glm::distance(cast_ray.getOrigin(), tri_int_point);

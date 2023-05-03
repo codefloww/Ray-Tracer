@@ -18,7 +18,7 @@ protected:
 public:
     void setTransformation(const Transformation &transformation);
 
-    Transformation getTransformation() const;
+    Transformation &getTransformation();
 
     Material &getMaterial();
 

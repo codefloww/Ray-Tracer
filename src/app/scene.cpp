@@ -17,7 +17,7 @@ Scene::Scene() {
     camera_m.updateCameraGeometry();
 
     light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[0]->setPosition(glm::vec3(-25.0f, -10.0f, 25.0f));
+    light_list_m[0]->setPosition(glm::vec3(-0.0f, -10.0f, 25.0f));
     light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
     light_list_m.emplace_back(std::make_shared<PointLight>());
     light_list_m[1]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
@@ -60,7 +60,6 @@ Scene::Scene() {
 //                                 glm::vec3(0.0f, 0.0f, 0.0f),
 //                                 glm::vec3(0.75f, 0.75f, 0.75f));
 //
-//    object_list_m[0]->setTransformation(transformation1);
 //    object_list_m[1]->setTransformation(transformation2);
 //    object_list_m[2]->setTransformation(transformation3);
 //
@@ -194,24 +193,26 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
 void Scene::moveCamera(CameraMovement direction) {
     switch (direction) {
         case CameraMovement::FORWARD:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection()*0.1f);
+            camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection() * 0.1f);
             break;
         case CameraMovement::BACKWARD:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection()*0.1f);
+            camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection() * 0.1f);
             break;
         case CameraMovement::LEFT:
             camera_m.setPosition(
-                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getUp(), camera_m.getDirection()))*0.1f);
+                    camera_m.getPosition() +
+                    glm::normalize(glm::cross(camera_m.getUp(), camera_m.getDirection())) * 0.1f);
             break;
         case CameraMovement::RIGHT:
             camera_m.setPosition(
-                    camera_m.getPosition() + glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp()))*0.1f);
+                    camera_m.getPosition() +
+                    glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp())) * 0.1f);
             break;
         case CameraMovement::UP:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getUp()*0.1f);
+            camera_m.setPosition(camera_m.getPosition() + camera_m.getUp() * 0.1f);
             break;
         case CameraMovement::DOWN:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getUp()*0.1f);
+            camera_m.setPosition(camera_m.getPosition() - camera_m.getUp() * 0.1f);
             break;
     }
 

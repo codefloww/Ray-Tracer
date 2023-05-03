@@ -21,7 +21,7 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     height_m = height;
     renderer_m = renderer;
 
-    min_exposure_m = 0.9;
+    min_exposure_m = 1.0;
 
     initTexture();
 }

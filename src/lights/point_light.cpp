@@ -16,13 +16,13 @@ bool PointLight::computeDiffIllum(const glm::vec3 &int_point, const glm::vec3 &l
                                   double &intensity) const {
 
     Ray light_ray(int_point, position_m - int_point);
-    glm::vec3 betweeen_int_point;
+    glm::vec3 between_int_point;
     glm::vec3 between_loc_normal;
     for (const auto &object: object_list) {
         if (object == current_object) {
             continue;
         }
-        if (object->testIntersections(light_ray, betweeen_int_point, between_loc_normal, between_loc_color)) {
+        if (object->testIntersections(light_ray, between_int_point, between_loc_normal)) {
             color = color_m;
             intensity = 0.0;
             return false;

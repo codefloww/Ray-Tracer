@@ -8,7 +8,7 @@ void Object::setTransformation(const Transformation &transformation) {
     transformation_m = transformation;
 }
 
-Transformation Object::getTransformation() const {
+Transformation& Object::getTransformation() {
     return transformation_m;
 }
 
