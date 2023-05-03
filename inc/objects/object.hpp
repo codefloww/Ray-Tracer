@@ -8,21 +8,28 @@
 #include <glm/glm.hpp>
 #include "ray.hpp"
 #include "transformation.hpp"
+#include "material.hpp"
 
 class Object {
 protected:
     Transformation transformation_m;
-    glm::vec3 base_color_m = glm::vec3(255.0f, 0.0f, 0.0f);
+    Material material_m;
 
 public:
     void setTransformation(const Transformation &transformation);
 
-    Transformation getTransformation() const;
+    [[nodiscard]] Transformation getTransformation() const;
 
-    void setColor(const glm::vec3 &color);
+    [[nodiscard]] Material getMaterial() const;
+
+    virtual void setMaterial(const Material &material) {
+        material_m = material;
+    };
 
     virtual bool
-    testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const = 0;
+    testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const = 0;
+
+    virtual ~Object() = default;
 };
 
 #endif //RAY_TRACER_OBJECT_HPP

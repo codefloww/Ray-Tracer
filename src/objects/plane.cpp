@@ -7,7 +7,7 @@
 constexpr double kEpsilon = 0.0001f;
 
 bool
-Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal, glm::vec3 &loc_color) const {
+Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
     glm::vec3 k = local_ray.getDirection();
 
@@ -30,6 +30,5 @@ Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &l
     glm::vec3 plane_origin = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 0.0f), Direction::FORWARD);
     loc_normal = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 1.0f), Direction::FORWARD) - plane_origin;
     loc_normal = glm::normalize(loc_normal);
-    loc_color = base_color_m;
     return true;
 }

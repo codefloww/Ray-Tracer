@@ -15,8 +15,9 @@ class TriangleMesh : public Object {
 public:
     explicit TriangleMesh(const std::string &filename);
 
-    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
-                           glm::vec3 &loc_color) const override;
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const override;
+
+    void setMaterial(const Material &material) override;
 
 public:
     std::vector<tinyobj::shape_t> shapes;

@@ -48,10 +48,10 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
                 tinyobj::real_t tx = attributes.texcoords[2 * idx.texcoord_index + 0];
                 tinyobj::real_t ty = attributes.texcoords[2 * idx.texcoord_index + 1];
 
-                vertices.emplace_back(
-                        glm::vec3{vx, vy, vz},
-                        glm::vec3{nx, ny, nz},
-                        glm::vec2{tx, ty}
+                // emplace_back causes a compilation error with clang
+                vertices.push_back({glm::vec3{vx, vy, vz},
+                                      glm::vec3{nx, ny, nz},
+                                      glm::vec2{tx, ty}}
                 );
             }
             offset += vertex;
@@ -64,14 +64,34 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
     }
 }
 
-bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
-                                     glm::vec3 &loc_color) const {
+// override setMaterial to set the material of all the triangles
+void TriangleMesh::setMaterial(const Material &material) {
+    material_m = material;
+    for(auto &part_material:materials){
+        part_material.ambient[0] = material_m.getAmbient()[0];
+        part_material.ambient[1] = material_m.getAmbient()[1];
+        part_material.ambient[2] = material_m.getAmbient()[2];
+
+        part_material.diffuse[0] = material_m.getDiffuse()[0];
+        part_material.diffuse[1] = material_m.getDiffuse()[1];
+        part_material.diffuse[2] = material_m.getDiffuse()[2];
+
+        part_material.specular[0] = material_m.getSpecular()[0];
+        part_material.specular[1] = material_m.getSpecular()[1];
+        part_material.specular[2] = material_m.getSpecular()[2];
+
+        part_material.shininess = material_m.getShininess();
+    }
+}
+
+bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
     bool hit = false;
     float closest_hit = std::numeric_limits<float>::max();
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
+    glm::vec3 tri_int_point;
+    glm::vec3 tri_loc_normal;
 
     for (const auto &tri: triangles) {
-        glm::vec3 tri_int_point, tri_loc_normal;
         if (tri->testIntersections(local_ray, tri_int_point, tri_loc_normal)) {
             tri_int_point = transformation_m.applyTransform(tri_int_point, Direction::FORWARD);
             float dist = glm::distance(cast_ray.getOrigin(), tri_int_point);
@@ -80,7 +100,6 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
                 closest_hit = dist;
                 int_point = tri_int_point;
                 loc_normal = glm::normalize(transformation_m.applyTransform(tri_loc_normal, Direction::FORWARD));
-                loc_color = base_color_m;
                 hit = true;
             }
         }

@@ -37,11 +37,11 @@ public:
     void render(Image &output_image);
 
     void internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
-                        glm::vec3 &loc_normal, glm::vec3 &loc_color) const;
+                        glm::vec3 &loc_normal) const;
 
     [[nodiscard]] glm::vec3
     computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
-                 const glm::vec3 &loc_normal, const glm::vec3 &loc_color) const;
+                 const glm::vec3 &loc_normal) const;
 
     void moveCamera(CameraMovement direction);
 
