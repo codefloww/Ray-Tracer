@@ -48,10 +48,10 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
                 tinyobj::real_t tx = attributes.texcoords[2 * idx.texcoord_index + 0];
                 tinyobj::real_t ty = attributes.texcoords[2 * idx.texcoord_index + 1];
 
-                vertices.emplace_back(
+                vertices.emplace_back(Vertex{
                         glm::vec3{vx, vy, vz},
                         glm::vec3{nx, ny, nz},
-                        glm::vec2{tx, ty}
+                        glm::vec2{tx, ty}}
                 );
             }
             offset += vertex;
