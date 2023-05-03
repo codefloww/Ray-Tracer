@@ -16,7 +16,7 @@ glm::vec3 Material::getSpecular() const {
     return specular_m;
 }
 
-double Material::getShininess() const {
+float Material::getShininess() const {
     return shininess_m;
 }
 
@@ -32,12 +32,12 @@ void Material::setSpecular(const glm::vec3 &specular) {
     specular_m = specular;
 }
 
-void Material::setShininess(double shininess) {
+void Material::setShininess(float shininess) {
     shininess_m = shininess;
 }
 
 void Material::setupMaterial(const glm::vec3 &ambient, const glm::vec3 &diffuse, const glm::vec3 &specular,
-                             double shininess) {
+                             float shininess) {
     ambient_m = ambient;
     diffuse_m = diffuse;
     specular_m = specular;

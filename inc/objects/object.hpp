@@ -18,9 +18,9 @@ protected:
 public:
     void setTransformation(const Transformation &transformation);
 
-    Transformation &getTransformation();
+    [[nodiscard]] Transformation getTransformation() const;
 
-    Material &getMaterial();
+    [[nodiscard]] Material getMaterial() const;
 
     virtual void setMaterial(const Material &material) {
         material_m = material;

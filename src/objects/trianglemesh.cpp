@@ -48,10 +48,10 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
                 tinyobj::real_t tx = attributes.texcoords[2 * idx.texcoord_index + 0];
                 tinyobj::real_t ty = attributes.texcoords[2 * idx.texcoord_index + 1];
 
-                vertices.emplace_back(Vertex{
-                        glm::vec3{vx, vy, vz},
-                        glm::vec3{nx, ny, nz},
-                        glm::vec2{tx, ty}}
+                // emplace_back causes a compilation error with clang
+                vertices.push_back({glm::vec3{vx, vy, vz},
+                                      glm::vec3{nx, ny, nz},
+                                      glm::vec2{tx, ty}}
                 );
             }
             offset += vertex;
@@ -88,7 +88,8 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
     bool hit = false;
     float closest_hit = std::numeric_limits<float>::max();
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
-    glm::vec3 tri_int_point, tri_loc_normal;
+    glm::vec3 tri_int_point;
+    glm::vec3 tri_loc_normal;
 
     for (const auto &tri: triangles) {
         if (tri->testIntersections(local_ray, tri_int_point, tri_loc_normal)) {
