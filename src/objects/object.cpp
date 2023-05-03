@@ -12,6 +12,6 @@ Transformation Object::getTransformation() const {
     return transformation_m;
 }
 
-void Object::setColor(const glm::vec3 &color) {
-    base_color_m = color;
+Material& Object::getMaterial() {
+    return material_m;
 }

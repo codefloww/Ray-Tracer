@@ -64,8 +64,27 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
     }
 }
 
-bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
-                                     glm::vec3 &loc_color) const {
+// override setMaterial to set the material of all the triangles
+void TriangleMesh::setMaterial(const Material &material) {
+    material_m = material;
+    for(auto &part_material:materials){
+        part_material.ambient[0] = material_m.getAmbient()[0];
+        part_material.ambient[1] = material_m.getAmbient()[1];
+        part_material.ambient[2] = material_m.getAmbient()[2];
+
+        part_material.diffuse[0] = material_m.getDiffuse()[0];
+        part_material.diffuse[1] = material_m.getDiffuse()[1];
+        part_material.diffuse[2] = material_m.getDiffuse()[2];
+
+        part_material.specular[0] = material_m.getSpecular()[0];
+        part_material.specular[1] = material_m.getSpecular()[1];
+        part_material.specular[2] = material_m.getSpecular()[2];
+
+        part_material.shininess = material_m.getShininess();
+    }
+}
+
+bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
     bool hit = false;
     float closest_hit = std::numeric_limits<float>::max();
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
@@ -80,7 +99,6 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
                 closest_hit = dist;
                 int_point = tri_int_point;
                 loc_normal = glm::normalize(transformation_m.applyTransform(tri_loc_normal, Direction::FORWARD));
-                loc_color = base_color_m;
                 hit = true;
             }
         }

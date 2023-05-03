@@ -18,7 +18,6 @@ bool PointLight::computeDiffIllum(const glm::vec3 &int_point, const glm::vec3 &l
     Ray light_ray(int_point, position_m - int_point);
     glm::vec3 betweeen_int_point;
     glm::vec3 between_loc_normal;
-    glm::vec3 between_loc_color;
     for (const auto &object: object_list) {
         if (object == current_object) {
             continue;
@@ -43,14 +42,34 @@ bool PointLight::computeDiffIllum(const glm::vec3 &int_point, const glm::vec3 &l
 }
 
 glm::vec3
-PointLight::computeSpecIllum(const Ray &camera_ray, const glm::vec3 &int_point, const glm::vec3 &loc_normal) const {
+PointLight::computeSpecIllum(const Ray &camera_ray, const std::vector<std::shared_ptr<Object>> &object_list,
+                             const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
+                             const glm::vec3 &loc_normal) const {
     float spec_intensity = 0.5f;
+    float shininess = current_object->getMaterial().getShininess();
     glm::vec3 view_dir = glm::normalize(camera_ray.getOrigin() - int_point);
     glm::vec3 light_dir = glm::normalize(position_m - int_point);
+
+    // test whether there is object between light source and intersection point
+    Ray light_ray(int_point, light_dir);
+    bool direct_lighted = true;
+    for (const auto &object: object_list) {
+        if (object == current_object) {
+            continue;
+        }
+        glm::vec3 between_int_point;
+        glm::vec3 between_loc_normal;
+        if (object->testIntersections(light_ray, between_int_point, between_loc_normal)) {
+            direct_lighted = false;
+            break;
+        }
+    }
+
+    if (!direct_lighted) {
+        return {0.0f, 0.0f, 0.0f};
+    }
     glm::vec3 halfway_dir = glm::normalize(light_dir + view_dir);
-//    glm::vec3 reflect_dir = glm::reflect(-light_dir, loc_normal); // phong model
-//    float spec_angle = std::pow(glm::max(glm::dot(view_dir, reflect_dir), 0.0f), 16);
-    float spec_angle = std::pow(glm::max(glm::dot(loc_normal, halfway_dir), 0.0f), 32); // blinn-phong model
+    float spec_angle = std::pow(glm::max(glm::dot(loc_normal, halfway_dir), 0.0f), shininess);
     return spec_intensity * spec_angle * color_m;
 }
 

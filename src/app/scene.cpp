@@ -23,14 +23,34 @@ Scene::Scene() {
     light_list_m[1]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
     light_list_m[1]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
 
-//    object_list_m.emplace_back(std::make_shared<Sphere>());
-//    object_list_m.emplace_back(std::make_shared<Sphere>());
-//    object_list_m.emplace_back(std::make_shared<Sphere>());
-//
-//    Transformation transformation1;
-//    transformation1.setTransform(glm::vec3(-1.5f, 0.0f, 0.0f),
-//                                 glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.5f, 0.5f, 0.75f));
+    object_list_m.emplace_back(std::make_shared<Sphere>());
+    Transformation transformation1;
+    transformation1.setTransform(glm::vec3(-1.5f, 0.0f, 0.0f),
+                                 glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(0.5f, 0.5f, 0.75f));
+    Material material1;
+    material1.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
+                            glm::vec3(0.0f, 1.0f, 0.0f),
+                            glm::vec3(1.0f, 1.0f, 1.0f),
+                            32.0f);
+    object_list_m[0]->setMaterial(material1);
+    object_list_m[0]->setTransformation(transformation1);
+
+    object_list_m.emplace_back(std::make_shared<Plane>());
+    Transformation transplane;
+    transplane.setTransform(glm::vec3(0.0f, 0.0f, -1.0f),
+                            glm::vec3(0.0f, 0.0f, 0.0f),
+                            glm::vec3(5.0f, 5.0f, 1.0f));
+
+    Material material2;
+    material2.setupMaterial(glm::vec3(0.0f, 0.0f, 1.0f),
+                            glm::vec3(0.0f, 0.0f, 1.0f),
+                            glm::vec3(0.0f, 0.0f, 1.0f),
+                            32.0f);
+    object_list_m[1]->setTransformation(transplane);
+    object_list_m[1]->setMaterial(material2);
+//    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+
 //    Transformation transformation2;
 //    transformation2.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
 //                                 glm::vec3(0.0f, 0.0f, 0.0f),
@@ -59,13 +79,17 @@ Scene::Scene() {
 //    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/suzanne.obj"));
     object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/cube.obj"));
 
-    Transformation transformation1;
-    transformation1.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
-                                 glm::vec3(1.0f, 1.0f, 1.0f));
-
-    object_list_m[0]->setTransformation(transformation1);
-    object_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 0.0f));
+    Transformation dda1;
+    dda1.setTransform(glm::vec3(4.0f, 0.0f, 2.0f),
+                      glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
+                      glm::vec3(2.0f, 2.0f, 2.0f));
+    object_list_m[2]->setTransformation(dda1);
+    Material material3;
+    material3.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
+                            glm::vec3(1.0f, 0.5f, 0.5f),
+                            glm::vec3(1.0f, 1.0f, 1.0f),
+                            256.0f);
+    object_list_m[2]->setMaterial(material3);
 }
 
 void Scene::render(Image &output_image) {
@@ -76,39 +100,36 @@ void Scene::render(Image &output_image) {
     const int height = output_image.getHeight();
 
     tbb::parallel_for(range_t{0, height, 0, width},
-        [&](const range_t& range) {
-            for (int y = range.rows().begin(); y < range.rows().end(); ++y) {
-                for (int x = range.cols().begin(); x < range.cols().end(); ++x) {
-                    Ray camera_ray;
-                    glm::vec3 int_point;
-                    glm::vec3 loc_normal;
-                    glm::vec3 loc_color;
-                    double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
-                    double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
-                    double norm_x = static_cast<double>(x) * x_factor - 1.0;
-                    double norm_y = static_cast<double>(y) * y_factor - 1.0;
-                    camera_m.createRay(norm_x, norm_y, camera_ray);
-                    internalRender(x, y, camera_ray, output_image, int_point, loc_normal, loc_color);
-                }
-            }
-        }
+                      [&](const range_t &range) {
+                          for (int y = range.rows().begin(); y < range.rows().end(); ++y) {
+                              for (int x = range.cols().begin(); x < range.cols().end(); ++x) {
+                                  Ray camera_ray;
+                                  glm::vec3 int_point;
+                                  glm::vec3 loc_normal;
+                                  double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
+                                  double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
+                                  double norm_x = static_cast<double>(x) * x_factor - 1.0;
+                                  double norm_y = static_cast<double>(y) * y_factor - 1.0;
+                                  camera_m.createRay(norm_x, norm_y, camera_ray);
+                                  internalRender(x, y, camera_ray, output_image, int_point, loc_normal);
+                              }
+                          }
+                      }
     );
 }
 
 void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
-                           glm::vec3 &loc_normal, glm::vec3 &loc_color) const {
+                           glm::vec3 &loc_normal) const {
     bool blank = true;
     std::shared_ptr<Object> closest_object;
     glm::vec3 closest_int_point;
     glm::vec3 closest_loc_normal;
-    glm::vec3 closest_loc_color;
     double min_distance = std::numeric_limits<double>::max();
 
     for (const auto &object_m: object_list_m) {
         bool valid_intersection = object_m->testIntersections(camera_ray,
                                                               int_point,
-                                                              loc_normal,
-                                                              loc_color);
+                                                              loc_normal);
         if (valid_intersection) {
             blank = false;
             double distance = glm::length(camera_ray.getOrigin() - int_point);
@@ -117,7 +138,6 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
                 closest_object = object_m;
                 closest_int_point = int_point;
                 closest_loc_normal = loc_normal;
-                closest_loc_color = loc_color;
             }
         }
     }
@@ -126,8 +146,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
         glm::vec3 output_color = computeColor(camera_ray,
                                               closest_object,
                                               closest_int_point,
-                                              closest_loc_normal,
-                                              closest_loc_color);
+                                              closest_loc_normal);
         output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
     } else {
         output_image.setPixel(x, y, 0.2, 0.2, 0.2, 1.0);
@@ -136,7 +155,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
 
 glm::vec3
 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
-                    const glm::vec3 &loc_normal, const glm::vec3 &loc_color) const {
+                    const glm::vec3 &loc_normal) const {
     float ambient_intensity = 0.05f;
     double intensity{};
     glm::vec3 color{};
@@ -151,7 +170,7 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
         valid_illumination = light_m->computeDiffIllum(int_point, loc_normal,
                                                        object_list_m,
                                                        current_object, color, intensity);
-        specular_color += light_m->computeSpecIllum(camera_ray, int_point, loc_normal);
+        specular_color += light_m->computeSpecIllum(camera_ray, object_list_m, current_object, int_point, loc_normal);
         ambient_color += ambient_intensity * light_m->getColor();
 
         if (valid_illumination) {
@@ -162,9 +181,11 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
 
     auto ambient_term = ambient_color / static_cast<float>(light_list_m.size());
     if (illuminated) {
-        output_color = loc_color * (ambient_term + diffuse_color + specular_color);
+        output_color = ambient_term * current_object->getMaterial().getAmbient() +
+                       diffuse_color * current_object->getMaterial().getDiffuse() +
+                       specular_color * current_object->getMaterial().getSpecular();
     } else {
-        output_color = loc_color * ambient_term;
+        output_color = current_object->getMaterial().getAmbient() * ambient_term;
     }
 
     return output_color;

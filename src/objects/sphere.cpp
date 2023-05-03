@@ -5,8 +5,7 @@
 #include "objects/sphere.hpp"
 #include <cmath>
 
-bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal,
-                               glm::vec3 &loc_color) const {
+bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
 
     double b = 2.0 * glm::dot(local_ray.getOrigin(), local_ray.getDirection());
@@ -36,7 +35,5 @@ bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::v
     int_point = transformation_m.applyTransform(loc_int_point, Direction::FORWARD);
     glm::vec3 sphere_origin = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 0.0f), Direction::FORWARD);
     loc_normal = glm::normalize(int_point - sphere_origin);
-
-    loc_color = base_color_m;
     return true;
 }
