@@ -46,12 +46,10 @@ glm::vec3 PointLight::computeSpecularIllumination(const glm::vec3 &int_point,
                                                   const Ray &light_ray,
                                                   const glm::vec3 &view_dir,
                                                   float shininess) const {
-    glm::vec3 temp = -light_ray.getDirection();
-    glm::vec3 light_reflect_dir{temp - 2.0f * dot(temp, loc_normal) * loc_normal}; // Always normalized(no)
-//    glm::vec3 light_dir = glm::normalize(position_m - int_point);
-//    glm::vec3 halfway_dir = glm::normalize(light_dir + view_dir);
-    float spec = std::pow(glm::max(glm::dot(view_dir, light_reflect_dir), 0.0f), shininess);
-    return m_spec_intensity * spec * color_m;
+    glm::vec3 light_dir = light_ray.getDirection();
+    glm::vec3 halfway_dir = glm::normalize(light_dir + view_dir);
+    float spec = std::pow(glm::max(glm::dot(loc_normal, halfway_dir), 0.0f), shininess);
+    return spec * m_spec_intensity * color_m;
 }
 
 double PointLight::getAttenuation(const glm::vec3 &int_point) const {

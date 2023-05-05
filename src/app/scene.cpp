@@ -35,7 +35,7 @@ Scene::Scene() {
     material1.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
                             glm::vec3(0.0f, 1.0f, 0.0f),
                             glm::vec3(1.0f, 1.0f, 1.0f),
-                            32.0f);
+                            128.0f);
     object_list_m[0]->setMaterial(material1);
     object_list_m[0]->setTransformation(transformation1);
 
@@ -49,7 +49,7 @@ Scene::Scene() {
     material2.setupMaterial(glm::vec3(0.0f, 0.0f, 1.0f),
                             glm::vec3(0.0f, 0.0f, 1.0f),
                             glm::vec3(0.0f, 0.0f, 1.0f),
-                            32.0f);
+                            128.0f);
     object_list_m[1]->setTransformation(transplane);
     object_list_m[1]->setMaterial(material2);
 //    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -167,7 +167,7 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
     glm::vec3 specular_color{};
     glm::vec3 diffuse_color{};
     glm::vec3 view_dir{normalize(camera_ray.getOrigin() - int_point)};
-    glm::vec3 reflect_dir{view_dir - 2.0f * dot(view_dir, loc_normal)}; // Always normalized(no)
+    glm::vec3 reflect_dir{view_dir - 2.0f * dot(view_dir, loc_normal)}; // Always normalized
     Ray light_ray;
 
     float shininess = current_object->getMaterial().getShininess();
