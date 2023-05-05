@@ -4,6 +4,9 @@
 
 #include "app/image.hpp"
 #include <algorithm>
+#include <iostream>
+
+double STANDART_MAX_COLOR = 0.05;
 
 Image::~Image() {
     if (texture_m != nullptr) {
@@ -93,10 +96,10 @@ void Image::initTexture() {
 }
 
 Uint32 Image::convertColor(double r, double g, double b, double a) const {
-    auto red = static_cast<Uint32>(255 * r / max_color_m);
-    auto blue = static_cast<Uint32>(255 * b / max_color_m);
-    auto green = static_cast<Uint32>(255 * g / max_color_m);
-    auto alpha = static_cast<Uint32>(255 * a / max_color_m);
+    auto red = static_cast<Uint32>((255 * r) / max_color_m);
+    auto blue = static_cast<Uint32>((255 * b) / max_color_m);
+    auto green = static_cast<Uint32>((255 * g) / max_color_m);
+    auto alpha = static_cast<Uint32>(255 * a);
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     return red << 24 | (green << 16) | (blue << 8) | alpha;
@@ -125,10 +128,11 @@ void Image::computeMaxValues() {
         }
     }
 
-    double max_color = std::max({max_red, max_green, max_blue});
+    double max_color = std::max({max_red, max_green, max_blue, STANDART_MAX_COLOR});
 
-    if (max_color < min_exposure_m) {
-        return;
-    }
+    //std::cout << max_color << std::endl;
+//    if (max_color < min_exposure_m) {
+//        return;
+//    }
     max_color_m = max_color;
 }

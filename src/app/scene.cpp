@@ -19,15 +19,18 @@ Scene::Scene() {
     light_list_m.emplace_back(std::make_shared<PointLight>());
     light_list_m[0]->setPosition(glm::vec3(-0.0f, -10.0f, 25.0f));
     light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-    light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[1]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
-    light_list_m[1]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
+//    light_list_m.emplace_back(std::make_shared<PointLight>());
+//    light_list_m[0]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
+//    light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
+//    light_list_m.emplace_back(std::make_shared<PointLight>());
+//    light_list_m[0]->setPosition(glm::vec3(0.0f, -2.0f, 0.0f));
+//    light_list_m[0]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 
     object_list_m.emplace_back(std::make_shared<Sphere>());
     Transformation transformation1;
     transformation1.setTransform(glm::vec3(-1.5f, 0.0f, 0.0f),
                                  glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.5f, 0.5f, 0.75f));
+                                 glm::vec3(0.5f, 0.5f, 0.5f));
     Material material1;
     material1.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
                             glm::vec3(0.0f, 1.0f, 0.0f),
@@ -40,7 +43,7 @@ Scene::Scene() {
     Transformation transplane;
     transplane.setTransform(glm::vec3(0.0f, 0.0f, -1.0f),
                             glm::vec3(0.0f, 0.0f, 0.0f),
-                            glm::vec3(5.0f, 5.0f, 1.0f));
+                            glm::vec3(50.0f, 50.0f, 1.0f));
 
     Material material2;
     material2.setupMaterial(glm::vec3(0.0f, 0.0f, 1.0f),
@@ -76,19 +79,19 @@ Scene::Scene() {
 //    object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 
 //    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/suzanne.obj"));
-    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/cube.obj"));
-
-    Transformation dda1;
-    dda1.setTransform(glm::vec3(4.0f, 0.0f, 2.0f),
-                      glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
-                      glm::vec3(2.0f, 2.0f, 2.0f));
-    object_list_m[2]->setTransformation(dda1);
-    Material material3;
-    material3.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
-                            glm::vec3(1.0f, 0.5f, 0.5f),
-                            glm::vec3(1.0f, 1.0f, 1.0f),
-                            256.0f);
-    object_list_m[2]->setMaterial(material3);
+//    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/cube.obj"));
+//
+//    Transformation dda1;
+//    dda1.setTransform(glm::vec3(4.0f, 0.0f, 2.0f),
+//                      glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
+//                      glm::vec3(2.0f, 2.0f, 2.0f));
+//    object_list_m[2]->setTransformation(dda1);
+//    Material material3;
+//    material3.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
+//                            glm::vec3(1.0f, 0.5f, 0.5f),
+//                            glm::vec3(1.0f, 1.0f, 1.0f),
+//                            256.0f);
+//    object_list_m[2]->setMaterial(material3);
 }
 
 void Scene::render(Image &output_image) {
@@ -141,41 +144,46 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
         }
     }
 
+    closest_loc_normal = glm::normalize(closest_loc_normal);
     if (!blank) {
         glm::vec3 output_color = computeColor(camera_ray,
                                               closest_object,
                                               closest_int_point,
                                               closest_loc_normal);
+        //std::cout << output_color.r << " " << output_color.g << " " << output_color.b << " " <<std::endl;
         output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
     } else {
-        output_image.setPixel(x, y, 0.2, 0.2, 0.2, 1.0);
+        output_image.setPixel(x, y, 0.01, 0.01, 0.01, 1.0);
     }
 }
 
 glm::vec3
 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
                     const glm::vec3 &loc_normal) const {
-    float ambient_intensity = 0.05f;
-    double intensity{};
+    float ambient_intensity = 0.005f;
     glm::vec3 color{};
     glm::vec3 output_color{};
     glm::vec3 ambient_color{};
     glm::vec3 specular_color{};
     glm::vec3 diffuse_color{};
+    glm::vec3 view_dir{normalize(camera_ray.getOrigin() - int_point)};
+    glm::vec3 reflect_dir{view_dir - 2.0f * dot(view_dir, loc_normal)}; // Always normalized(no)
+    Ray light_ray;
+
+    float shininess = current_object->getMaterial().getShininess();
 
     bool valid_illumination;
     bool illuminated = false;
     for (const auto &light_m: light_list_m) {
-        valid_illumination = light_m->computeDiffIllum(int_point, loc_normal,
-                                                       object_list_m,
-                                                       current_object, color, intensity);
-        specular_color += light_m->computeSpecIllum(camera_ray, object_list_m, current_object, int_point, loc_normal);
-        ambient_color += ambient_intensity * light_m->getColor();
-
+        valid_illumination = light_m->testIlluminationPresence(int_point, object_list_m, current_object);
         if (valid_illumination) {
             illuminated = true;
-            diffuse_color += color * static_cast<float>(intensity);
+            light_ray = Ray(int_point, light_m->position_m - int_point); // From the intersection point to the light point
+            auto attenuation = light_m->getAttenuation(int_point);
+            diffuse_color += static_cast<float>(attenuation) * light_m->computeDiffuseIllumination(int_point, loc_normal, light_ray, color);
+            specular_color += static_cast<float>(attenuation) * light_m->computeSpecularIllumination(int_point, loc_normal, light_ray, view_dir, shininess);
         }
+        ambient_color += ambient_intensity * light_m->getColor();
     }
 
     auto ambient_term = ambient_color / static_cast<float>(light_list_m.size());
@@ -184,7 +192,7 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
                        diffuse_color * current_object->getMaterial().getDiffuse() +
                        specular_color * current_object->getMaterial().getSpecular();
     } else {
-        output_color = current_object->getMaterial().getAmbient() * ambient_term;
+        output_color = ambient_term * current_object->getMaterial().getAmbient();
     }
 
     return output_color;

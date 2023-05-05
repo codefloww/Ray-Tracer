@@ -10,6 +10,8 @@
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
+extern double STANDART_MAX_COLOR;
+
 class Image {
     std::vector<std::vector<double>> r_channel_m;
     std::vector<std::vector<double>> g_channel_m;

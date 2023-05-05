@@ -12,7 +12,7 @@ void LightSource::setColor(const glm::vec3 &color) {
     color_m = color;
 }
 
-void LightSource::setIntensity(double intensity) {
+void LightSource::setIntensity(float intensity) {
     intensity_m = intensity;
 }
 
