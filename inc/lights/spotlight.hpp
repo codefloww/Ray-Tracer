@@ -1,20 +1,23 @@
-//
-// Created by paul on 3/18/23.
-//
-
-#ifndef RAY_TRACER_POINT_LIGHT_HPP
-#define RAY_TRACER_POINT_LIGHT_HPP
+#ifndef RAY_TRACER_SPOTLIGHT_HPP
+#define RAY_TRACER_SPOTLIGHT_HPP
 
 #include "light_source.hpp"
 
 
-extern float POINT_ATTENUATION_CONSTANT_MEMBER;
-extern float POINT_ATTENUATION_LINEAR_MEMBER;
-extern float POINT_ATTENUATION_QUADRATIC_MEMBER;
+extern float SPOTLIGHT_ATTENUATION_CONSTANT_MEMBER;
+extern float SPOTLIGHT_ATTENUATION_LINEAR_MEMBER;
+extern float SPOTLIGHT_ATTENUATION_QUADRATIC_MEMBER;
 
-class PointLight : public LightSource {
+class Spotlight : public LightSource {
 private:
-    glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 position_m;
+    glm::vec3 spot_direction_m;
+    float inner_cone_angle_m;
+    float inner_cone_cos_m;
+    float outer_cone_angle_m;
+    float outer_cone_cos_m;
+    float epsilon_m; // Cos difference between outer and inner cone angles.
+
 
     [[nodiscard]] bool testIlluminationPresence(const glm::vec3 &int_point,
                                                 const std::vector<std::shared_ptr<Object>> &object_list,
@@ -30,8 +33,15 @@ private:
                                                   const glm::vec3 &view_dir) const override;
 
     [[nodiscard]] double getAttenuation(const glm::vec3 &int_point) const override;
+
+    [[nodiscard]] bool testIfInCone(const float angle_cos) const {
+        if (angle_cos < outer_cone_cos_m){
+            return false;
+        }
+        return true;
+    }
 public:
-    explicit PointLight(glm::vec3 position);
+    Spotlight(glm::vec3 position, glm::vec3 direction, float inner_angle, float outer_angle);
 
     void computeIllumination(const glm::vec3 &int_point,
                              const glm::vec3 &loc_normal,
@@ -43,4 +53,4 @@ public:
                              glm::vec3 &ambient_component) const override;
 };
 
-#endif //RAY_TRACER_POINT_LIGHT_HPP
+#endif //RAY_TRACER_SPOTLIGHT_HPP

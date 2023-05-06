@@ -30,8 +30,12 @@ void PointLight::computeIllumination(const glm::vec3 &int_point,
         diffuse_component = attenuation * computeDiffuseIllumination(int_point, loc_normal, light_ray);
         specular_component.first = attenuation * m_spec_intensity * color_m * intensity_m;
         specular_component.second = computeSpecularMultiplier(loc_normal, light_ray, view_dir);
-        ambient_component = m_ambient_intensity * color_m;
     }
+    else{
+        diffuse_component = {0, 0, 0};
+        specular_component = {{0, 0, 0}, 0};
+    }
+    ambient_component = m_ambient_intensity * color_m;
 }
 
 bool PointLight::testIlluminationPresence(const glm::vec3 &int_point,

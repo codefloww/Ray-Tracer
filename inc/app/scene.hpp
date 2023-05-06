@@ -11,6 +11,7 @@
 #include "objects/plane.hpp"
 #include "lights/point_light.hpp"
 #include "lights/directional_light.hpp"
+#include "lights/spotlight.hpp"
 #include "objects/trianglemesh.hpp"
 #include <oneapi/tbb/parallel_for.h>
 #include <oneapi/tbb/blocked_range2d.h>

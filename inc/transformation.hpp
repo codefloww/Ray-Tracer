@@ -35,6 +35,8 @@ public:
 
     [[nodiscard]] glm::vec3 applyTransform(const glm::vec3 &vec, Direction dir) const;
 
+    [[nodiscard]] glm::vec3 applyLinearTransform(const glm::vec3 &vec, Direction dir) const;
+
     void printTransform(Direction dir) const;
 
     static void printMatrix(const glm::mat4x4 &mat);

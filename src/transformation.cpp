@@ -50,6 +50,16 @@ glm::vec3 Transformation::applyTransform(const glm::vec3 &vec, Direction dir) co
     return glm::vec3{new_vec};
 }
 
+glm::vec3 Transformation::applyLinearTransform(const glm::vec3 &vec, Direction dir) const { // Apply transformation without its "affine part". Usable for directions - normals, for instance.
+    auto new_vec = glm::vec4(vec, 0.0f);
+    if (dir == Direction::FORWARD) {
+        new_vec = forw_transform_m * new_vec;
+    } else {
+        new_vec = back_transform_m * new_vec;
+    }
+    return new_vec;
+}
+
 void Transformation::printTransform(Direction dir) const {
     if (dir == Direction::FORWARD) {
         printMatrix(forw_transform_m);

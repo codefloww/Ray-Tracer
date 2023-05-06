@@ -6,9 +6,11 @@
 #define RAY_TRACER_LIGHT_SOURCE_HPP
 
 #include "objects/object.hpp"
+#include "ray.hpp"
 #include <vector>
 #include <glm/glm.hpp>
 #include <memory>
+#include <algorithm>
 
 class LightSource {
 private:
@@ -26,6 +28,7 @@ private:
                                                           const glm::vec3 &view_dir) const = 0;
 
     [[nodiscard]] virtual double getAttenuation(const glm::vec3 &int_point) const = 0;
+
 protected:
     glm::vec3 color_m = glm::vec3(1.0f, 1.0f, 1.0f);
     float intensity_m = 1.0f;

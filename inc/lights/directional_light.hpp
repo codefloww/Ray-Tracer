@@ -1,9 +1,7 @@
 #ifndef RAY_TRACER_DIRECTIONAL_LIGHT_H
 #define RAY_TRACER_DIRECTIONAL_LIGHT_H
 
-#include <vector>
 #include "light_source.hpp"
-#include "ray.hpp"
 
 extern float DIRECTIONAL_ATTENUATION_CONSTANT_MEMBER;
 extern float DIRECTIONAL_ATTENUATION_LINEAR_MEMBER;
