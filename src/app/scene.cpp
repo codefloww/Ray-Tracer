@@ -146,9 +146,10 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
                                               closest_object,
                                               closest_int_point,
                                               closest_loc_normal);
-        output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
+
+        output_image.setPixel(x, y, output_color);
     } else {
-        output_image.setPixel(x, y, 0.2, 0.2, 0.2, 1.0);
+        output_image.setPixel(x, y, output_image.bg_color_m);
     }
 }
 
