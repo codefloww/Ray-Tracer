@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 
 extern double STANDART_MAX_COLOR;
+extern float GAMMA;
 
 class Image {
     std::vector<std::vector<double>> r_channel_m;
@@ -41,11 +42,13 @@ public:
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] Uint32 convertColor(double r, double g, double b, double a) const;
+    [[nodiscard]] glm::vec4 convertColor(double r, double g, double b, double a) const;
 
     void initTexture();
 
     void computeMaxValues();
+
+    static Uint32 postProcess(glm::vec4 rgba);
 };
 
 #endif //RAY_TRACER_IMAGE_HPP

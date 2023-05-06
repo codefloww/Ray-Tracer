@@ -7,6 +7,7 @@
 #include <iostream>
 
 double STANDART_MAX_COLOR = 0.05;
+float GAMMA = 2.2;
 
 Image::~Image() {
     if (texture_m != nullptr) {
@@ -48,10 +49,10 @@ void Image::display() {
 
     for (int y = 0; y < height_m; y++) {
         for (int x = 0; x < width_m; x++) {
-            temp_pixels[y * width_m + x] = convertColor(r_channel_m[x][y],
+            temp_pixels[y * width_m + x] = postProcess(convertColor(r_channel_m[x][y],
                                                         g_channel_m[x][y],
                                                         b_channel_m[x][y],
-                                                        a_channel_m[x][y]);
+                                                        a_channel_m[x][y]));
         }
     }
 
@@ -95,17 +96,12 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-Uint32 Image::convertColor(double r, double g, double b, double a) const {
-    auto red = static_cast<Uint32>((255 * r) / max_color_m);
-    auto blue = static_cast<Uint32>((255 * b) / max_color_m);
-    auto green = static_cast<Uint32>((255 * g) / max_color_m);
-    auto alpha = static_cast<Uint32>(255 * a);
+glm::vec4 Image::convertColor(double r, double g, double b, double a) const {
+    auto red = (r / max_color_m);
+    auto green = (g / max_color_m);
+    auto blue = (b / max_color_m);
 
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    return red << 24 | (green << 16) | (blue << 8) | alpha;
-#else
-    return alpha << 24 | (blue << 16) | (green << 8) | red;
-#endif
+    return {red, green, blue, a};
 }
 
 int Image::getWidth() const {
@@ -135,4 +131,18 @@ void Image::computeMaxValues() {
 //        return;
 //    }
     max_color_m = max_color;
+}
+
+Uint32 Image::postProcess(glm::vec4 rgba) {
+    auto corrected_rgba = rgba; //TODO: optimize and turn it on: glm::pow(rgba, glm::vec4{1.0f/GAMMA, 1.0f/GAMMA, 1.0f/GAMMA, 1.0f}); // rgba is in [0, 1]
+    Uint8 red = corrected_rgba.r * 255; // so corrected_rgba as well
+    Uint8 green = corrected_rgba.g * 255;
+    Uint8 blue = corrected_rgba.b * 255;
+    Uint8 alpha = corrected_rgba.a * 255;
+
+    #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+        return red << 24 | (green << 16) | (blue << 8) | alpha;
+    #else
+        return alpha << 24 | (blue << 16) | (green << 8) | red;
+    #endif
 }
