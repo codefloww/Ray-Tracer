@@ -16,8 +16,8 @@ Scene::Scene() {
     camera_m.setAspectRatio(4.0 / 3.0);
     camera_m.updateCameraGeometry();
 
-    light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[0]->setPosition(glm::vec3(-0.0f, -10.0f, 25.0f));
+    light_list_m.emplace_back(std::make_shared<PointLight>(glm::vec3(-0.0f, -10.0f, 25.0f)));
+    //light_list_m[0]->setPosition(glm::vec3(-0.0f, -10.0f, 25.0f));
     light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 //    light_list_m.emplace_back(std::make_shared<PointLight>());
 //    light_list_m[0]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
@@ -39,19 +39,32 @@ Scene::Scene() {
     object_list_m[0]->setMaterial(material1);
     object_list_m[0]->setTransformation(transformation1);
 
-    object_list_m.emplace_back(std::make_shared<Plane>());
-    Transformation transplane;
-    transplane.setTransform(glm::vec3(0.0f, 0.0f, -1.0f),
-                            glm::vec3(0.0f, 0.0f, 0.0f),
-                            glm::vec3(50.0f, 50.0f, 1.0f));
-
-    Material material2;
-    material2.setupMaterial(glm::vec3(0.0f, 0.0f, 1.0f),
-                            glm::vec3(0.0f, 0.0f, 1.0f),
-                            glm::vec3(0.0f, 0.0f, 1.0f),
+    object_list_m.emplace_back(std::make_shared<Sphere>());
+    Transformation transformation5;
+    transformation5.setTransform(glm::vec3(1.5f, 0.0f, 0.0f),
+                                 glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(0.5f, 0.5f, 0.5f));
+    Material material5;
+    material5.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
+                            glm::vec3(0.0f, 1.0f, 0.0f),
+                            glm::vec3(1.0f, 1.0f, 1.0f),
                             128.0f);
-    object_list_m[1]->setTransformation(transplane);
-    object_list_m[1]->setMaterial(material2);
+    object_list_m[1]->setMaterial(material5);
+    object_list_m[1]->setTransformation(transformation5);
+
+//    object_list_m.emplace_back(std::make_shared<Plane>());
+//    Transformation transplane;
+//    transplane.setTransform(glm::vec3(0.0f, 0.0f, -1.0f),
+//                            glm::vec3(0.0f, 0.0f, 0.0f),
+//                            glm::vec3(50.0f, 50.0f, 1.0f));
+//
+//    Material material2;
+//    material2.setupMaterial(glm::vec3(0.0f, 0.0f, 1.0f),
+//                            glm::vec3(0.0f, 0.0f, 1.0f),
+//                            glm::vec3(0.0f, 0.0f, 1.0f),
+//                            128.0f);
+//    object_list_m[1]->setTransformation(transplane);
+//    object_list_m[1]->setMaterial(material2);
 //    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 
 //    Transformation transformation2;
@@ -160,40 +173,34 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
 glm::vec3
 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
                     const glm::vec3 &loc_normal) const {
-    float ambient_intensity = 0.005f;
     glm::vec3 color{};
-    glm::vec3 output_color{};
-    glm::vec3 ambient_color{};
-    glm::vec3 specular_color{};
     glm::vec3 diffuse_color{};
+    glm::vec3 specular_color{};
+    glm::vec3 ambient_color{};
+    glm::vec3 output_color{};
     glm::vec3 view_dir{normalize(camera_ray.getOrigin() - int_point)};
     glm::vec3 reflect_dir{view_dir - 2.0f * dot(view_dir, loc_normal)}; // Always normalized
     Ray light_ray;
 
+    glm::vec3 diffuse_component{};
+    std::pair<glm::vec3, float> specular_component{};
+    glm::vec3 ambient_component{};
+
     float shininess = current_object->getMaterial().getShininess();
 
-    bool valid_illumination;
-    bool illuminated = false;
     for (const auto &light_m: light_list_m) {
-        valid_illumination = light_m->testIlluminationPresence(int_point, object_list_m, current_object);
-        if (valid_illumination) {
-            illuminated = true;
-            light_ray = Ray(int_point, light_m->position_m - int_point); // From the intersection point to the light point
-            auto attenuation = light_m->getAttenuation(int_point);
-            diffuse_color += static_cast<float>(attenuation) * light_m->computeDiffuseIllumination(int_point, loc_normal, light_ray, color);
-            specular_color += static_cast<float>(attenuation) * light_m->computeSpecularIllumination(int_point, loc_normal, light_ray, view_dir, shininess);
-        }
-        ambient_color += ambient_intensity * light_m->getColor();
+        light_m->computeIllumination(int_point, loc_normal, object_list_m, current_object,
+                                     view_dir, diffuse_component, specular_component, ambient_component);
+        diffuse_color += diffuse_component;
+        float spec = std::pow(specular_component.second, shininess);
+        specular_color += spec * specular_component.first;
+        ambient_color += ambient_component;
     }
-
     auto ambient_term = ambient_color / static_cast<float>(light_list_m.size());
-    if (illuminated) {
-        output_color = ambient_term * current_object->getMaterial().getAmbient() +
-                       diffuse_color * current_object->getMaterial().getDiffuse() +
-                       specular_color * current_object->getMaterial().getSpecular();
-    } else {
-        output_color = ambient_term * current_object->getMaterial().getAmbient();
-    }
+
+    output_color = ambient_term * current_object->getMaterial().getAmbient() +
+                   diffuse_color * current_object->getMaterial().getDiffuse() +
+                   specular_color * current_object->getMaterial().getSpecular();
 
     return output_color;
 }
