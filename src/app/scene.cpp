@@ -19,76 +19,19 @@ Scene::Scene() {
     light_list_m.emplace_back(std::make_shared<PointLight>());
     light_list_m[0]->setPosition(glm::vec3(-0.0f, -10.0f, 25.0f));
     light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-    light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[1]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
-    light_list_m[1]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
 
     object_list_m.emplace_back(std::make_shared<Sphere>());
-    Transformation transformation1;
-    transformation1.setTransform(glm::vec3(-1.5f, 0.0f, 0.0f),
+    Transformation transformation5;
+    transformation5.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
                                  glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.5f, 0.5f, 0.75f));
+                                 glm::vec3(1.0f, 1.0f, 1.0f));
+    object_list_m[0]->setTransformation(transformation5);
     Material material1;
-    material1.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
-                            glm::vec3(0.0f, 1.0f, 0.0f),
+    material1.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
+                            glm::vec3(0.4f, 0.5f, 0.9f),
                             glm::vec3(1.0f, 1.0f, 1.0f),
-                            32.0f);
+                            128.0f);
     object_list_m[0]->setMaterial(material1);
-    object_list_m[0]->setTransformation(transformation1);
-
-    object_list_m.emplace_back(std::make_shared<Plane>());
-    Transformation transplane;
-    transplane.setTransform(glm::vec3(0.0f, 0.0f, -1.0f),
-                            glm::vec3(0.0f, 0.0f, 0.0f),
-                            glm::vec3(5.0f, 5.0f, 1.0f));
-
-    Material material2;
-    material2.setupMaterial(glm::vec3(0.0f, 0.0f, 1.0f),
-                            glm::vec3(0.0f, 0.0f, 1.0f),
-                            glm::vec3(0.0f, 0.0f, 1.0f),
-                            32.0f);
-    object_list_m[1]->setTransformation(transplane);
-    object_list_m[1]->setMaterial(material2);
-//    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-
-//    Transformation transformation2;
-//    transformation2.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.75f, 0.5f, 0.5f));
-//    Transformation transformation3;
-//    transformation3.setTransform(glm::vec3(1.5f, 0.0f, 0.0f),
-//                                 glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.75f, 0.75f, 0.75f));
-//
-//    object_list_m[1]->setTransformation(transformation2);
-//    object_list_m[2]->setTransformation(transformation3);
-//
-//    object_list_m[0]->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
-//    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-//    object_list_m[2]->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
-//
-//    object_list_m.emplace_back(std::make_shared<Plane>());
-//    Transformation transformation4;
-//    transformation4.setTransform(glm::vec3(0.0f, 1.0f, -1.0f),
-//                                 glm::vec3(0.1f, 0.0f, 0.0f),
-//                                 glm::vec3(5.0f, 5.0f, 1.0f));
-//    object_list_m[3]->setTransformation(transformation4);
-//    object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-
-//    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/suzanne.obj"));
-    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/cube.obj"));
-
-    Transformation dda1;
-    dda1.setTransform(glm::vec3(4.0f, 0.0f, 2.0f),
-                      glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
-                      glm::vec3(2.0f, 2.0f, 2.0f));
-    object_list_m[2]->setTransformation(dda1);
-    Material material3;
-    material3.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
-                            glm::vec3(1.0f, 0.5f, 0.5f),
-                            glm::vec3(1.0f, 1.0f, 1.0f),
-                            256.0f);
-    object_list_m[2]->setMaterial(material3);
 }
 
 void Scene::render(Image &output_image) {
