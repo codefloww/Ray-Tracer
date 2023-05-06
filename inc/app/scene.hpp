@@ -5,22 +5,26 @@
 #ifndef RAY_TRACER_SCENE_HPP
 #define RAY_TRACER_SCENE_HPP
 
+#include "app/image.hpp"
+#include "app/camera.hpp"
+#include "objects/sphere.hpp"
+#include "objects/plane.hpp"
+#include "lights/point_light.hpp"
+#include "lights/directional_light.hpp"
+#include "objects/trianglemesh.hpp"
+#include <oneapi/tbb/parallel_for.h>
+#include <oneapi/tbb/blocked_range2d.h>
 #include <vector>
 #include <functional>
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <glm/gtx/rotate_vector.hpp>
 #include <memory>
-#include "app/image.hpp"
-#include "app/camera.hpp"
-#include "objects/sphere.hpp"
-#include "objects/plane.hpp"
-#include "lights/point_light.hpp"
 
 class Scene {
     Camera camera_m;
     std::vector<std::shared_ptr<Object>> object_list_m;
-    std::vector<std::shared_ptr<PointLight>> light_list_m;
+    std::vector<std::shared_ptr<LightSource>> light_list_m;
 
 public:
     enum class CameraMovement {

@@ -3,10 +3,6 @@
 //
 
 #include "app/scene.hpp"
-#include "objects/trianglemesh.hpp"
-#include <glm/gtx/rotate_vector.hpp>
-#include <oneapi/tbb/parallel_for.h>
-#include <oneapi/tbb/blocked_range2d.h>
 
 Scene::Scene() {
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
@@ -17,8 +13,10 @@ Scene::Scene() {
     camera_m.updateCameraGeometry();
 
     light_list_m.emplace_back(std::make_shared<PointLight>(glm::vec3(-0.0f, -10.0f, 25.0f)));
-    //light_list_m[0]->setPosition(glm::vec3(-0.0f, -10.0f, 25.0f));
-    light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    light_list_m.emplace_back(std::make_shared<DirectionalLight>(glm::vec3(1.0f, -2.0f, -1.0f)));
+    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    light_list_m.back()->setIntensity(0.01f);
 //    light_list_m.emplace_back(std::make_shared<PointLight>());
 //    light_list_m[0]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
 //    light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
