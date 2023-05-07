@@ -31,11 +31,11 @@ void Camera::moveDown(const float speed) {
 }
 
 void Camera::moveLeft(const float speed) {
-    position_m += speed * glm::normalize(glm::cross(screen_up_m, direction_m));
+    position_m += speed * glm::cross(screen_up_m, direction_m);
 }
 
 void Camera::moveRight(const float speed) {
-    position_m += speed * glm::normalize(glm::cross(direction_m, screen_up_m));
+    position_m += speed * glm::cross(direction_m, screen_up_m);
 }
 
 void Camera::moveForward(const float speed) {
@@ -113,12 +113,12 @@ glm::vec3 Camera::getScreenCenter() const {
 }
 
 glm::vec3 Camera::getXAxis() const {
-    return glm::normalize(glm::cross(direction_m, screen_up_m));
+    return glm::cross(direction_m, screen_up_m);
 }
 
 void Camera::updateCameraGeometry() {
-    screen_u_m = glm::normalize(glm::cross(direction_m, screen_up_m));
-    screen_v_m = glm::normalize(glm::cross(direction_m, screen_u_m));
+    screen_u_m = glm::cross(direction_m, screen_up_m);
+    screen_v_m = glm::cross(direction_m, screen_u_m);
     screen_center_m = position_m + direction_m * static_cast<float>(lens_distance_m);
     screen_u_m *= static_cast<float>(width_m);
     screen_v_m *= static_cast<float>(width_m / aspect_ratio_m);
