@@ -5,9 +5,6 @@
 #include <iostream>
 #include "lights/point_light.hpp"
 
-constexpr float POINT_ATTENUATION_CONSTANT_MEMBER = 1.0f;
-constexpr float POINT_ATTENUATION_LINEAR_MEMBER = 0.09f;
-constexpr float POINT_ATTENUATION_QUADRATIC_MEMBER = 0.032f;
 
 PointLight::PointLight(glm::vec3 position) : LightSource(), position_m(position) {
     color_m = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -85,6 +82,6 @@ float PointLight::computeSpecularMultiplier(const glm::vec3 &loc_normal,
 
 double PointLight::getAttenuation(const glm::vec3 &int_point) const {
     double distance = glm::length((position_m - int_point));
-    return 1.0f / (POINT_ATTENUATION_CONSTANT_MEMBER + POINT_ATTENUATION_LINEAR_MEMBER * distance + POINT_ATTENUATION_QUADRATIC_MEMBER * distance * distance);
+    return 1.0f / (M_ATTENUATION_CONSTANT_MEMBER + M_ATTENUATION_LINEAR_MEMBER * distance + M_ATTENUATION_QUADRATIC_MEMBER * distance * distance);
 }
 

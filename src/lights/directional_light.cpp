@@ -1,10 +1,6 @@
 #include <iostream>
 #include "lights/directional_light.hpp"
 
-constexpr float DIRECTIONAL_ATTENUATION_CONSTANT_MEMBER = 1.0f;
-constexpr float DIRECTIONAL_ATTENUATION_LINEAR_MEMBER = 0.0f;
-constexpr float DIRECTIONAL_ATTENUATION_QUADRATIC_MEMBER = 0.0f;
-
 DirectionalLight::DirectionalLight(glm::vec3 direction) : LightSource() {
     m_direction = normalize(direction);
     color_m = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -68,9 +64,7 @@ float DirectionalLight::computeSpecularMultiplier(const glm::vec3 &loc_normal,
 }
 
 double DirectionalLight::getAttenuation(const glm::vec3 &int_point) const {
-    //double distance = glm::length((position_m - int_point));
-    //return 1.0f / (DIRECTIONAL_ATTENUATION_CONSTANT_MEMBER + DIRECTIONAL_ATTENUATION_LINEAR_MEMBER * distance + DIRECTIONAL_ATTENUATION_QUADRATIC_MEMBER * distance * distance);
-    return 1.0f;
+    return 1.0f / (M_ATTENUATION_CONSTANT_MEMBER + M_ATTENUATION_LINEAR_MEMBER * m_distance + M_ATTENUATION_QUADRATIC_MEMBER * m_distance * m_distance);
 }
 
 

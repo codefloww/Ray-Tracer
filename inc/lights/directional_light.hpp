@@ -3,13 +3,14 @@
 
 #include "light_source.hpp"
 
-extern const float DIRECTIONAL_ATTENUATION_CONSTANT_MEMBER;
-extern const float DIRECTIONAL_ATTENUATION_LINEAR_MEMBER;
-extern const float DIRECTIONAL_ATTENUATION_QUADRATIC_MEMBER;
-
 class DirectionalLight : public LightSource {
 private:
+    static constexpr float M_ATTENUATION_CONSTANT_MEMBER = 1.0f;
+    static constexpr float M_ATTENUATION_LINEAR_MEMBER = 0.0f;
+    static constexpr float M_ATTENUATION_QUADRATIC_MEMBER = 0.0f;
+
     glm::vec3 m_direction {1.0f, 1.0f, 1.0f};
+    float m_distance = 1000.0f;
 
     [[nodiscard]] static inline bool testIlluminationPresence(const std::vector<std::shared_ptr<Object>> &object_list,
                                                        const std::shared_ptr<Object> &current_object,

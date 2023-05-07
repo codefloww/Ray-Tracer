@@ -1,9 +1,6 @@
 #include <iostream>
 #include "lights/spotlight.hpp"
 
-constexpr float SPOTLIGHT_ATTENUATION_CONSTANT_MEMBER = 1.0f;
-constexpr float SPOTLIGHT_ATTENUATION_LINEAR_MEMBER = 0.045f;
-constexpr float SPOTLIGHT_ATTENUATION_QUADRATIC_MEMBER = 0.0075f;
 
 Spotlight::Spotlight(glm::vec3 position, glm::vec3 direction, float inner_angle, float outer_angle) :
     LightSource(), position_m(position), spot_direction_m(normalize(direction)), inner_cone_angle_m(inner_angle),
@@ -88,9 +85,16 @@ float Spotlight::computeSpecularMultiplier(const glm::vec3 &loc_normal,
     return glm::max(glm::dot(loc_normal, halfway_dir), 0.0f);
 }
 
+bool Spotlight::testIfInCone(const float angle_cos) const {
+    if (angle_cos < outer_cone_cos_m){
+        return false;
+    }
+    return true;
+}
+
 double Spotlight::getAttenuation(const glm::vec3 &int_point) const {
     double distance = glm::length((position_m - int_point));
-    return 1.0f / (SPOTLIGHT_ATTENUATION_CONSTANT_MEMBER + SPOTLIGHT_ATTENUATION_LINEAR_MEMBER * distance + SPOTLIGHT_ATTENUATION_QUADRATIC_MEMBER * distance * distance);
+    return 1.0f / (M_ATTENUATION_CONSTANT_MEMBER + M_ATTENUATION_LINEAR_MEMBER * distance + M_ATTENUATION_QUADRATIC_MEMBER * distance * distance);
 }
 
 

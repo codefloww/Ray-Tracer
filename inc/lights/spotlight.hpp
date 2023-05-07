@@ -4,12 +4,12 @@
 #include "light_source.hpp"
 
 
-extern const float SPOTLIGHT_ATTENUATION_CONSTANT_MEMBER;
-extern const float SPOTLIGHT_ATTENUATION_LINEAR_MEMBER;
-extern const float SPOTLIGHT_ATTENUATION_QUADRATIC_MEMBER;
-
 class Spotlight : public LightSource {
 private:
+    static constexpr float M_ATTENUATION_CONSTANT_MEMBER = 1.0f;
+    static constexpr float M_ATTENUATION_LINEAR_MEMBER = 0.045f;
+    static constexpr float M_ATTENUATION_QUADRATIC_MEMBER = 0.0075f;
+
     glm::vec3 position_m;
     glm::vec3 spot_direction_m;
     float inner_cone_angle_m;
@@ -19,28 +19,24 @@ private:
     float epsilon_m; // Cos difference between outer and inner cone angles.
 
 
-    [[nodiscard]] inline static bool testIlluminationPresence(const glm::vec3 &int_point,
+    [[nodiscard]] static bool testIlluminationPresence(const glm::vec3 &int_point,
                                                               const glm::vec3 &to_light_unnormalized,
                                                               const std::vector<std::shared_ptr<Object>> &object_list,
                                                               const std::shared_ptr<Object> &current_object,
                                                               const Ray &light_ray);
 
-    [[nodiscard]] inline glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
+    [[nodiscard]] glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
                                                        const glm::vec3 &loc_normal,
                                                        const Ray &light_ray) const override;
 
-    [[nodiscard]] inline float computeSpecularMultiplier(const glm::vec3 &loc_normal,
+    [[nodiscard]] float computeSpecularMultiplier(const glm::vec3 &loc_normal,
                                                   const Ray &light_ray,
                                                   const glm::vec3 &view_dir) const override;
 
-    [[nodiscard]] inline double getAttenuation(const glm::vec3 &int_point) const override;
+    [[nodiscard]] double getAttenuation(const glm::vec3 &int_point) const override;
 
-    [[nodiscard]] inline bool testIfInCone(const float angle_cos) const {
-        if (angle_cos < outer_cone_cos_m){
-            return false;
-        }
-        return true;
-    }
+    [[nodiscard]] bool testIfInCone(float angle_cos) const;
+
 public:
     Spotlight(glm::vec3 position, glm::vec3 direction, float inner_angle, float outer_angle);
 

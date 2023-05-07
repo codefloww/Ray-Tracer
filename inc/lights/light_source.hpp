@@ -1,7 +1,3 @@
-//
-// Created by paul on 3/18/23.
-//
-
 #ifndef RAY_TRACER_LIGHT_SOURCE_HPP
 #define RAY_TRACER_LIGHT_SOURCE_HPP
 
@@ -14,10 +10,9 @@
 
 class LightSource {
 private:
-//    [[nodiscard]] virtual bool testIlluminationPresence(const glm::vec3 &int_point,
-//                                                        const std::vector<std::shared_ptr<Object>> &object_list,
-//                                                        const std::shared_ptr<Object> &current_object,
-//                                                        const Ray &light_ray) const = 0;
+    static constexpr float M_ATTENUATION_CONSTANT_MEMBER = 1.0f;
+    static constexpr float M_ATTENUATION_LINEAR_MEMBER = 0.0f;
+    static constexpr float M_ATTENUATION_QUADRATIC_MEMBER = 0.0f;
 
     [[nodiscard]] virtual glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
                                                                const glm::vec3 &loc_normal,
@@ -36,9 +31,6 @@ protected:
     float m_ambient_intensity;
 
 public:
-
-    //void setPosition(const glm::vec3 &position);
-
     void setColor(const glm::vec3 &color);
 
     [[nodiscard]] glm::vec3 getColor() const;

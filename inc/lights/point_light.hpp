@@ -8,12 +8,12 @@
 #include "light_source.hpp"
 
 
-extern const float POINT_ATTENUATION_CONSTANT_MEMBER;
-extern const float POINT_ATTENUATION_LINEAR_MEMBER;
-extern const float POINT_ATTENUATION_QUADRATIC_MEMBER;
-
 class PointLight : public LightSource {
 private:
+    static constexpr float M_ATTENUATION_CONSTANT_MEMBER = 1.0f;
+    static constexpr float M_ATTENUATION_LINEAR_MEMBER = 0.09f;
+    static constexpr float M_ATTENUATION_QUADRATIC_MEMBER = 0.032f;
+
     glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
 
     [[nodiscard]] inline static bool testIlluminationPresence(const glm::vec3 &int_point,
