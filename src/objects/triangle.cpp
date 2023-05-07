@@ -14,7 +14,7 @@ Triangle::Triangle(const Vertex &v1, const Vertex &v2, const Vertex &v3) {
 }
 
 bool Triangle::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
-    constexpr double kEpsilon = 0.0001;
+    constexpr float kEpsilon = 0.0001;
 
     glm::vec3 p_vec = glm::cross(cast_ray.getDirection(), e2_m);
     float determinant = glm::dot(e1_m, p_vec);

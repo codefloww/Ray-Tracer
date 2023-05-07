@@ -13,7 +13,7 @@ PointLight::PointLight() : LightSource() {
 bool PointLight::computeDiffIllum(const glm::vec3 &int_point, const glm::vec3 &loc_normal,
                                   const std::vector<std::shared_ptr<Object>> &object_list,
                                   const std::shared_ptr<Object> &current_object, glm::vec3 &color,
-                                  double &intensity) const {
+                                  float &intensity) const {
 
     Ray light_ray(int_point, position_m - int_point);
     glm::vec3 between_int_point;
@@ -29,14 +29,14 @@ bool PointLight::computeDiffIllum(const glm::vec3 &int_point, const glm::vec3 &l
         }
     }
 
-    double angle = glm::acos(glm::dot(loc_normal, light_ray.getDirection()));
+    float angle = glm::acos(glm::dot(loc_normal, light_ray.getDirection()));
     if (angle > glm::half_pi<decltype(angle)>()) {
         color = color_m;
         intensity = 0.0;
         return false;
     } else {
         color = color_m;
-        intensity = intensity_m * (1.0 - (angle / glm::half_pi<decltype(angle)>()));
+        intensity = intensity_m * static_cast<float>(1.0 - (angle / glm::half_pi<decltype(angle)>()));
         return true;
     }
 }

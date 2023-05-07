@@ -11,27 +11,25 @@
 #include <glm/glm.hpp>
 
 class Image {
-    std::vector<std::vector<double>> r_channel_m;
-    std::vector<std::vector<double>> g_channel_m;
-    std::vector<std::vector<double>> b_channel_m;
-    std::vector<std::vector<double>> a_channel_m;
     int width_m = 0;
     int height_m = 0;
-
-    double max_color_m = 0.0;
-    double min_exposure_m = 0.0;
 
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 
+    Uint32 *pixels_m = nullptr;
+    glm::vec3 bg_color_m{};
+
 public:
     ~Image();
 
+    Image() = default;
+
+    Image(const Image &) = delete;
+
+    Image &operator=(const Image &) = delete;
+
     void initialize(int width, int height, SDL_Renderer *renderer);
-
-    void setPixel(int x, int y, double r, double g, double b, double a);
-
-    [[nodiscard]] glm::vec4 getPixel(int x, int y) const;
 
     void display();
 
@@ -39,11 +37,13 @@ public:
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] Uint32 convertColor(double r, double g, double b, double a) const;
+    [[nodiscard]] glm::vec3 getBgColor() const;
+
+    void setPixel(int x, int y, glm::vec3 color) const;
+
+    [[nodiscard]] static Uint32 convertColor(float r, float g, float b);
 
     void initTexture();
-
-    void computeMaxValues();
 };
 
 #endif //RAY_TRACER_IMAGE_HPP

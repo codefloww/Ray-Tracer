@@ -9,62 +9,27 @@ Image::~Image() {
     if (texture_m != nullptr) {
         SDL_DestroyTexture(texture_m);
     }
+
+    delete[] pixels_m;
 }
 
 void Image::initialize(int width, int height, SDL_Renderer *renderer) {
-    r_channel_m.resize(width, std::vector<double>(height, 0.0));
-    g_channel_m.resize(width, std::vector<double>(height, 0.0));
-    b_channel_m.resize(width, std::vector<double>(height, 0.0));
-    a_channel_m.resize(width, std::vector<double>(height, 0.0));
-
     width_m = width;
     height_m = height;
     renderer_m = renderer;
 
-    min_exposure_m = 1.0;
+    bg_color_m = glm::vec3(0.0, 0.0, 0.0);
+
+    pixels_m = new Uint32[width_m * height_m];
 
     initTexture();
 }
 
-void Image::setPixel(int x, int y, double r, double g, double b, double a) {
-    r_channel_m[x][y] = r;
-    g_channel_m[x][y] = g;
-    b_channel_m[x][y] = b;
-    a_channel_m[x][y] = a;
-}
-
-glm::vec4 Image::getPixel(int x, int y) const {
-    return {r_channel_m[x][y], g_channel_m[x][y], b_channel_m[x][y], a_channel_m[x][y]};
-}
-
 void Image::display() {
-    computeMaxValues();
-    auto *temp_pixels = new Uint32[width_m * height_m];
-
-    memset(temp_pixels, 0, width_m * height_m * sizeof(Uint32));
-
-    for (int y = 0; y < height_m; y++) {
-        for (int x = 0; x < width_m; x++) {
-            temp_pixels[y * width_m + x] = convertColor(r_channel_m[x][y],
-                                                        g_channel_m[x][y],
-                                                        b_channel_m[x][y],
-                                                        a_channel_m[x][y]);
-        }
-    }
-
     auto uint32_size = static_cast<int>(sizeof(Uint32));
-    SDL_UpdateTexture(texture_m, nullptr, temp_pixels, width_m * uint32_size);
+    SDL_UpdateTexture(texture_m, nullptr, pixels_m, width_m * uint32_size);
 
-    delete[] temp_pixels;
-
-    SDL_Rect src_rect;
-    SDL_Rect bounds;
-    src_rect.x = 0;
-    src_rect.y = 0;
-    src_rect.w = width_m;
-    src_rect.h = height_m;
-    bounds = src_rect;
-    SDL_RenderCopy(renderer_m, texture_m, &src_rect, &bounds);
+    SDL_RenderCopy(renderer_m, texture_m, nullptr, nullptr);
 }
 
 void Image::initTexture() {
@@ -92,16 +57,26 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-Uint32 Image::convertColor(double r, double g, double b, double a) const {
-    auto red = static_cast<Uint32>(255 * r / max_color_m);
-    auto blue = static_cast<Uint32>(255 * b / max_color_m);
-    auto green = static_cast<Uint32>(255 * g / max_color_m);
-    auto alpha = static_cast<Uint32>(255 * a / max_color_m);
+void Image::setPixel(int x, int y, glm::vec3 color) const {
+    auto index = y * width_m + x;
+    pixels_m[index] = convertColor(color.r, color.g, color.b);
+}
+
+Uint32 Image::convertColor(float r, float g, float b) {
+    if (r > 1.0) r = 1.0;
+    if (g > 1.0) g = 1.0;
+    if (b > 1.0) b = 1.0;
+
+    auto red = static_cast<Uint8>(255 * r);
+    auto blue = static_cast<Uint8>(255 * b);
+    auto green = static_cast<Uint8>(255 * g);
+    auto alpha = 0xFF000000;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    alpha = 0x000000FF;
     return red << 24 | (green << 16) | (blue << 8) | alpha;
 #else
-    return alpha << 24 | (blue << 16) | (green << 8) | red;
+    return alpha | (blue << 16) | (green << 8) | red;
 #endif
 }
 
@@ -113,22 +88,6 @@ int Image::getHeight() const {
     return height_m;
 }
 
-void Image::computeMaxValues() {
-    double max_red = 0.0;
-    double max_green = 0.0;
-    double max_blue = 0.0;
-    for (int x = 0; x < width_m; x++) {
-        for (int y = 0; y < height_m; y++) {
-            max_red = std::max(max_red, r_channel_m[x][y]);
-            max_green = std::max(max_green, g_channel_m[x][y]);
-            max_blue = std::max(max_blue, b_channel_m[x][y]);
-        }
-    }
-
-    double max_color = std::max({max_red, max_green, max_blue});
-
-    if (max_color < min_exposure_m) {
-        return;
-    }
-    max_color_m = max_color;
+glm::vec3 Image::getBgColor() const {
+    return bg_color_m;
 }

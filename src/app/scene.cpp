@@ -9,6 +9,9 @@
 #include <oneapi/tbb/blocked_range2d.h>
 
 Scene::Scene() {
+    camera_movement_speed_m = 7.5f;
+    camera_rotation_speed_m = 7.5f;
+
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
     camera_m.setDirection(glm::vec3(0.0f, 1.0f, 0.0f));
     camera_m.setUp(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -19,79 +22,22 @@ Scene::Scene() {
     light_list_m.emplace_back(std::make_shared<PointLight>());
     light_list_m[0]->setPosition(glm::vec3(-0.0f, -10.0f, 25.0f));
     light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-    light_list_m.emplace_back(std::make_shared<PointLight>());
-    light_list_m[1]->setPosition(glm::vec3(25.0f, -10.0f, 25.0f));
-    light_list_m[1]->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
 
     object_list_m.emplace_back(std::make_shared<Sphere>());
-    Transformation transformation1;
-    transformation1.setTransform(glm::vec3(-1.5f, 0.0f, 0.0f),
+    Transformation transformation5;
+    transformation5.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
                                  glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.5f, 0.5f, 0.75f));
+                                 glm::vec3(1.0f, 1.0f, 1.0f));
+    object_list_m[0]->setTransformation(transformation5);
     Material material1;
-    material1.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
-                            glm::vec3(0.0f, 1.0f, 0.0f),
+    material1.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
+                            glm::vec3(0.4f, 0.5f, 0.9f),
                             glm::vec3(1.0f, 1.0f, 1.0f),
-                            32.0f);
+                            128.0f);
     object_list_m[0]->setMaterial(material1);
-    object_list_m[0]->setTransformation(transformation1);
-
-    object_list_m.emplace_back(std::make_shared<Plane>());
-    Transformation transplane;
-    transplane.setTransform(glm::vec3(0.0f, 0.0f, -1.0f),
-                            glm::vec3(0.0f, 0.0f, 0.0f),
-                            glm::vec3(5.0f, 5.0f, 1.0f));
-
-    Material material2;
-    material2.setupMaterial(glm::vec3(0.0f, 0.0f, 1.0f),
-                            glm::vec3(0.0f, 0.0f, 1.0f),
-                            glm::vec3(0.0f, 0.0f, 1.0f),
-                            32.0f);
-    object_list_m[1]->setTransformation(transplane);
-    object_list_m[1]->setMaterial(material2);
-//    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-
-//    Transformation transformation2;
-//    transformation2.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.75f, 0.5f, 0.5f));
-//    Transformation transformation3;
-//    transformation3.setTransform(glm::vec3(1.5f, 0.0f, 0.0f),
-//                                 glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.75f, 0.75f, 0.75f));
-//
-//    object_list_m[1]->setTransformation(transformation2);
-//    object_list_m[2]->setTransformation(transformation3);
-//
-//    object_list_m[0]->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
-//    object_list_m[1]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-//    object_list_m[2]->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
-//
-//    object_list_m.emplace_back(std::make_shared<Plane>());
-//    Transformation transformation4;
-//    transformation4.setTransform(glm::vec3(0.0f, 1.0f, -1.0f),
-//                                 glm::vec3(0.1f, 0.0f, 0.0f),
-//                                 glm::vec3(5.0f, 5.0f, 1.0f));
-//    object_list_m[3]->setTransformation(transformation4);
-//    object_list_m[3]->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-
-//    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/suzanne.obj"));
-    object_list_m.emplace_back(std::make_shared<TriangleMesh>("../models/cube.obj"));
-
-    Transformation dda1;
-    dda1.setTransform(glm::vec3(4.0f, 0.0f, 2.0f),
-                      glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
-                      glm::vec3(2.0f, 2.0f, 2.0f));
-    object_list_m[2]->setTransformation(dda1);
-    Material material3;
-    material3.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
-                            glm::vec3(1.0f, 0.5f, 0.5f),
-                            glm::vec3(1.0f, 1.0f, 1.0f),
-                            256.0f);
-    object_list_m[2]->setMaterial(material3);
 }
 
-void Scene::render(Image &output_image) {
+void Scene::render(Image &output_image) const {
     namespace tbb = oneapi::tbb;
     using range_t = tbb::blocked_range2d<int>;
 
@@ -105,10 +51,10 @@ void Scene::render(Image &output_image) {
                                   Ray camera_ray;
                                   glm::vec3 int_point;
                                   glm::vec3 loc_normal;
-                                  double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
-                                  double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
-                                  double norm_x = static_cast<double>(x) * x_factor - 1.0;
-                                  double norm_y = static_cast<double>(y) * y_factor - 1.0;
+                                  float x_factor = 2 / (static_cast<float>(width));
+                                  float y_factor = 2 / (static_cast<float>(height));
+                                  float norm_x = static_cast<float>(x) * x_factor - 1;
+                                  float norm_y = static_cast<float>(y) * y_factor - 1;
                                   camera_m.createRay(norm_x, norm_y, camera_ray);
                                   internalRender(x, y, camera_ray, output_image, int_point, loc_normal);
                               }
@@ -123,7 +69,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
     std::shared_ptr<Object> closest_object;
     glm::vec3 closest_int_point;
     glm::vec3 closest_loc_normal;
-    double min_distance = std::numeric_limits<double>::max();
+    float min_distance = std::numeric_limits<float>::max();
 
     for (const auto &object_m: object_list_m) {
         bool valid_intersection = object_m->testIntersections(camera_ray,
@@ -131,7 +77,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
                                                               loc_normal);
         if (valid_intersection) {
             blank = false;
-            double distance = glm::length(camera_ray.getOrigin() - int_point);
+            float distance = glm::length(camera_ray.getOrigin() - int_point);
             if (distance < min_distance) {
                 min_distance = distance;
                 closest_object = object_m;
@@ -146,17 +92,17 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
                                               closest_object,
                                               closest_int_point,
                                               closest_loc_normal);
-        output_image.setPixel(x, y, output_color.r, output_color.g, output_color.b, 1.0);
+
+        output_image.setPixel(x, y, output_color);
     } else {
-        output_image.setPixel(x, y, 0.2, 0.2, 0.2, 1.0);
+        output_image.setPixel(x, y, output_image.getBgColor());
     }
 }
 
-glm::vec3
-Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
-                    const glm::vec3 &loc_normal) const {
+glm::vec3 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object,
+                              const glm::vec3 &int_point, const glm::vec3 &loc_normal) const {
     float ambient_intensity = 0.05f;
-    double intensity{};
+    float intensity{};
     glm::vec3 color{};
     glm::vec3 output_color{};
     glm::vec3 ambient_color{};
@@ -174,7 +120,7 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
 
         if (valid_illumination) {
             illuminated = true;
-            diffuse_color += color * static_cast<float>(intensity);
+            diffuse_color += color * intensity;
         }
     }
 
@@ -193,37 +139,43 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
 void Scene::moveCamera(CameraMovement direction) {
     switch (direction) {
         case CameraMovement::FORWARD:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection() * 0.1f);
+            camera_m.moveForward(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::BACKWARD:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection() * 0.1f);
+            camera_m.moveBackward(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::LEFT:
-            camera_m.setPosition(
-                    camera_m.getPosition() +
-                    glm::normalize(glm::cross(camera_m.getUp(), camera_m.getDirection())) * 0.1f);
+            camera_m.moveLeft(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::RIGHT:
-            camera_m.setPosition(
-                    camera_m.getPosition() +
-                    glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp())) * 0.1f);
+            camera_m.moveRight(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::UP:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getUp() * 0.1f);
+            camera_m.moveUp(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::DOWN:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getUp() * 0.1f);
+            camera_m.moveDown(camera_movement_speed_m * update_time_m);
             break;
     }
 
     camera_m.updateCameraGeometry();
 }
 
-void Scene::rotateCamera(const glm::vec2 &rotation) {
-    glm::vec3 x_axis = glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp()));
-    camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.x, camera_m.getUp()));
+void Scene::rotateCamera(CameraRotation direction) {
+    switch (direction) {
+        case CameraRotation::LEFT:
+            camera_m.rotateLeft(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+        case CameraRotation::RIGHT:
+            camera_m.rotateRight(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+        case CameraRotation::UP:
+            camera_m.rotateUp(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+        case CameraRotation::DOWN:
+            camera_m.rotateDown(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+    }
 
-    camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.y, x_axis));
-    camera_m.setUp(glm::rotate(camera_m.getUp(), rotation.y, x_axis));
     camera_m.updateCameraGeometry();
 }
