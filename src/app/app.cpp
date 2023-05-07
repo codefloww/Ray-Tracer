@@ -48,10 +48,8 @@ int Application::onExecute() {
             if (event.type == SDL_QUIT) {
                 is_running_m = false;
             }
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    is_running_m = false;
-                }
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
+                is_running_m = false;
             }
         }
 
