@@ -3,6 +3,7 @@
 //
 
 #include "app/camera.hpp"
+#include <glm/gtx/rotate_vector.hpp>
 
 Camera::Camera() {
     position_m = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -19,6 +20,48 @@ void Camera::setPosition(const glm::vec3 &new_position) {
 
 void Camera::setDirection(const glm::vec3 &new_direction) {
     direction_m = glm::normalize(new_direction);
+}
+
+void Camera::moveUp(const float speed) {
+    position_m += speed * screen_up_m;
+}
+
+void Camera::moveDown(const float speed) {
+    position_m -= speed * screen_up_m;
+}
+
+void Camera::moveLeft(const float speed) {
+    position_m += speed * glm::normalize(glm::cross(screen_up_m, direction_m));
+}
+
+void Camera::moveRight(const float speed) {
+    position_m += speed * glm::normalize(glm::cross(direction_m, screen_up_m));
+}
+
+void Camera::moveForward(const float speed) {
+    position_m += speed * direction_m;
+}
+
+void Camera::moveBackward(const float speed) {
+    position_m -= speed * direction_m;
+}
+
+void Camera::rotateUp(const float speed) {
+    setDirection(glm::rotate(direction_m, speed, getXAxis()));
+    setUp(glm::rotate(screen_up_m, speed, getXAxis()));
+}
+
+void Camera::rotateDown(const float speed) {
+    setDirection(glm::rotate(direction_m, -speed, getXAxis()));
+    setUp(glm::rotate(screen_up_m, -speed, getXAxis()));
+}
+
+void Camera::rotateLeft(const float speed) {
+    setDirection(glm::rotate(direction_m, speed, screen_up_m));
+}
+
+void Camera::rotateRight(const float speed) {
+    setDirection(glm::rotate(direction_m, -speed, screen_up_m));
 }
 
 void Camera::setUp(const glm::vec3 &new_up) {
@@ -67,6 +110,10 @@ glm::vec3 Camera::getV() const {
 
 glm::vec3 Camera::getScreenCenter() const {
     return screen_center_m;
+}
+
+glm::vec3 Camera::getXAxis() const {
+    return glm::normalize(glm::cross(direction_m, screen_up_m));
 }
 
 void Camera::updateCameraGeometry() {

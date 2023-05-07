@@ -45,9 +45,17 @@ int Application::onExecute() {
         Uint64 start = SDL_GetPerformanceCounter();
 
         while (SDL_PollEvent(&event)) {
-            onEvent(&event);
+            if (event.type == SDL_QUIT) {
+                is_running_m = false;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    is_running_m = false;
+                }
+            }
         }
-        onLoop();
+
+        onEvent();
         onRender();
 #ifdef CAP_FPS
         Uint64 end = SDL_GetPerformanceCounter();
@@ -62,6 +70,7 @@ int Application::onExecute() {
         float elapsed_for_counter =
                 static_cast<float>(end_for_counter - start) / static_cast<float>(SDL_GetPerformanceFrequency());
         std::cout << "FPS:" << std::to_string(1.0f / elapsed_for_counter) << std::endl;
+        scene_m.update_time_m = elapsed_for_counter;
 #endif // SHOW_FPS
     }
 
@@ -69,50 +78,40 @@ int Application::onExecute() {
     return 0;
 }
 
-void Application::onEvent(const SDL_Event *event) {
-    if (event->type == SDL_QUIT) {
-        is_running_m = false;
-    } else if (event->type == SDL_KEYDOWN) {
-        switch (event->key.keysym.sym) {
-            case SDLK_j:
-                scene_m.moveCamera(Scene::CameraMovement::DOWN);
-                break;
-            case SDLK_k:
-                scene_m.moveCamera(Scene::CameraMovement::UP);
-                break;
-            case SDLK_h:
-                scene_m.moveCamera(Scene::CameraMovement::LEFT);
-                break;
-            case SDLK_l:
-                scene_m.moveCamera(Scene::CameraMovement::RIGHT);
-                break;
-            case SDLK_u:
-                scene_m.moveCamera(Scene::CameraMovement::FORWARD);
-                break;
-            case SDLK_i:
-                scene_m.moveCamera(Scene::CameraMovement::BACKWARD);
-                break;
-            case SDLK_w:
-                scene_m.rotateCamera(glm::vec2(0.0f, 0.01f));
-                break;
-            case SDLK_s:
-                scene_m.rotateCamera(glm::vec2(0.0f, -0.01f));
-                break;
-            case SDLK_a:
-                scene_m.rotateCamera(glm::vec2(0.01f, 0.0f));
-                break;
-            case SDLK_d:
-                scene_m.rotateCamera(glm::vec2(-0.01f, 0.0f));
-                break;
+void Application::onEvent() {
+    auto *keyboard_state = SDL_GetKeyboardState(nullptr);
 
-            default:
-                break;
-        }
+    if (keyboard_state[SDL_SCANCODE_W]) {
+        scene_m.moveCamera(Scene::CameraMovement::FORWARD);
     }
-}
+    if (keyboard_state[SDL_SCANCODE_S]) {
+        scene_m.moveCamera(Scene::CameraMovement::BACKWARD);
+    }
+    if (keyboard_state[SDL_SCANCODE_A]) {
+        scene_m.moveCamera(Scene::CameraMovement::LEFT);
+    }
+    if (keyboard_state[SDL_SCANCODE_D]) {
+        scene_m.moveCamera(Scene::CameraMovement::RIGHT);
+    }
+    if (keyboard_state[SDL_SCANCODE_Q]) {
+        scene_m.moveCamera(Scene::CameraMovement::DOWN);
+    }
+    if (keyboard_state[SDL_SCANCODE_E]) {
+        scene_m.moveCamera(Scene::CameraMovement::UP);
+    }
 
-void Application::onLoop() const {
-    // do nothing for now
+    if (keyboard_state[SDL_SCANCODE_UP]) {
+        scene_m.rotateCamera(Scene::CameraRotation::UP);
+    }
+    if (keyboard_state[SDL_SCANCODE_DOWN]) {
+        scene_m.rotateCamera(Scene::CameraRotation::DOWN);
+    }
+    if (keyboard_state[SDL_SCANCODE_LEFT]) {
+        scene_m.rotateCamera(Scene::CameraRotation::LEFT);
+    }
+    if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+        scene_m.rotateCamera(Scene::CameraRotation::RIGHT);
+    }
 }
 
 void Application::onRender() {

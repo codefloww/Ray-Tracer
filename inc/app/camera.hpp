@@ -26,13 +26,33 @@ public:
 
     void setDirection(const glm::vec3 &new_direction);
 
+    void moveUp(float speed);
+
+    void moveDown(float speed);
+
+    void moveLeft(float speed);
+
+    void moveRight(float speed);
+
+    void moveForward(float speed);
+
+    void moveBackward(float speed);
+
+    void rotateUp(float speed);
+
+    void rotateDown(float speed);
+
+    void rotateLeft(float speed);
+
+    void rotateRight(float speed);
+
     void setUp(const glm::vec3 &new_up);
 
-    void setLensDistance(const float new_lens_distance);
+    void setLensDistance(float new_lens_distance);
 
-    void setWidth(const float new_width);
+    void setWidth(float new_width);
 
-    void setAspectRatio(const float new_aspect_ratio);
+    void setAspectRatio(float new_aspect_ratio);
 
     [[nodiscard]] glm::vec3 getPosition() const;
 
@@ -46,7 +66,7 @@ public:
 
     [[nodiscard]] glm::vec3 getScreenCenter() const;
 
-    [[nodiscard]] double getLensDistance() const;
+    [[nodiscard]] glm::vec3 getXAxis() const;
 
     [[nodiscard]] float getLensDistance() const;
 
