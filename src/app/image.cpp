@@ -73,6 +73,7 @@ Uint32 Image::convertColor(float r, float g, float b) {
     auto alpha = 0xFF000000;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    alpha = 0x000000FF;
     return red << 24 | (green << 16) | (blue << 8) | alpha;
 #else
     return alpha | (blue << 16) | (green << 8) | red;
