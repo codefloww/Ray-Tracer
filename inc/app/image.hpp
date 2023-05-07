@@ -17,6 +17,9 @@ class Image {
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 
+    Uint32 *pixels_m = nullptr;
+    glm::vec3 bg_color_m{};
+
 public:
     ~Image();
 
@@ -26,9 +29,6 @@ public:
 
     Image &operator=(const Image &) = delete;
 
-    Uint32 *pixels_m = nullptr;
-    glm::vec3 bg_color_m{};
-
     void initialize(int width, int height, SDL_Renderer *renderer);
 
     void display();
@@ -36,6 +36,8 @@ public:
     [[nodiscard]] int getWidth() const;
 
     [[nodiscard]] int getHeight() const;
+
+    [[nodiscard]] glm::vec3 getBgColor() const;
 
     void setPixel(int x, int y, glm::vec3 color) const;
 

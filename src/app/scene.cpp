@@ -95,7 +95,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
 
         output_image.setPixel(x, y, output_color);
     } else {
-        output_image.setPixel(x, y, output_image.bg_color_m);
+        output_image.setPixel(x, y, output_image.getBgColor());
     }
 }
 

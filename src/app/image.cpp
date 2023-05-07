@@ -86,3 +86,7 @@ int Image::getWidth() const {
 int Image::getHeight() const {
     return height_m;
 }
+
+glm::vec3 Image::getBgColor() const {
+    return bg_color_m;
+}
