@@ -20,7 +20,7 @@ public:
 
     [[nodiscard]] glm::vec3 getDirection() const;
 
-    [[nodiscard]] glm::vec3 getPoint(double t) const;
+    [[nodiscard]] glm::vec3 getPoint(float t) const;
 
     static Ray getRayFromPoints(const glm::vec3 &origin, const glm::vec3 &destination);
 };

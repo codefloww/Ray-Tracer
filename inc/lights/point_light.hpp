@@ -18,7 +18,7 @@ public:
     bool computeDiffIllum(const glm::vec3 &int_point, const glm::vec3 &loc_normal,
                           const std::vector<std::shared_ptr<Object>> &object_list,
                           const std::shared_ptr<Object> &current_object,
-                          glm::vec3 &color, double &intensity) const;
+                          glm::vec3 &color, float &intensity) const;
 
     [[nodiscard]] glm::vec3
     computeSpecIllum(const Ray &camera_ray, const std::vector<std::shared_ptr<Object>> &object_list,

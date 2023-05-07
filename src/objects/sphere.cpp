@@ -8,9 +8,9 @@
 bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
 
-    double b = 2.0 * glm::dot(local_ray.getOrigin(), local_ray.getDirection());
-    double c = glm::dot(local_ray.getOrigin(), local_ray.getOrigin()) - 1.0f;
-    double discriminant = b * b - 4.0 * c;
+    float b = 2.0 * glm::dot(local_ray.getOrigin(), local_ray.getDirection());
+    float c = glm::dot(local_ray.getOrigin(), local_ray.getOrigin()) - 1.0f;
+    float discriminant = b * b - 4.0 * c;
 
     glm::vec3 loc_int_point;
 
@@ -18,9 +18,9 @@ bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::v
         return false;
     }
 
-    double num_sqrt = sqrt(discriminant);
-    double t1 = (-b + num_sqrt) / 2.0;
-    double t2 = (-b - num_sqrt) / 2.0;
+    float num_sqrt = sqrt(discriminant);
+    float t1 = (-b + num_sqrt) / 2.0;
+    float t2 = (-b - num_sqrt) / 2.0;
 
     if ((t1 < 0.0) || (t2 < 0.0)) {
         return false;

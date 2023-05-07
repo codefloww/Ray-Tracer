@@ -48,10 +48,10 @@ void Scene::render(Image &output_image) {
                                   Ray camera_ray;
                                   glm::vec3 int_point;
                                   glm::vec3 loc_normal;
-                                  double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
-                                  double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
-                                  double norm_x = static_cast<double>(x) * x_factor - 1.0;
-                                  double norm_y = static_cast<double>(y) * y_factor - 1.0;
+                                  float x_factor = 2 / (static_cast<float>(width));
+                                  float y_factor = 2 / (static_cast<float>(height));
+                                  float norm_x = static_cast<float>(x) * x_factor - 1;
+                                  float norm_y = static_cast<float>(y) * y_factor - 1;
                                   camera_m.createRay(norm_x, norm_y, camera_ray);
                                   internalRender(x, y, camera_ray, output_image, int_point, loc_normal);
                               }
@@ -66,7 +66,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
     std::shared_ptr<Object> closest_object;
     glm::vec3 closest_int_point;
     glm::vec3 closest_loc_normal;
-    double min_distance = std::numeric_limits<double>::max();
+    float min_distance = std::numeric_limits<float>::max();
 
     for (const auto &object_m: object_list_m) {
         bool valid_intersection = object_m->testIntersections(camera_ray,
@@ -74,7 +74,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
                                                               loc_normal);
         if (valid_intersection) {
             blank = false;
-            double distance = glm::length(camera_ray.getOrigin() - int_point);
+            float distance = glm::length(camera_ray.getOrigin() - int_point);
             if (distance < min_distance) {
                 min_distance = distance;
                 closest_object = object_m;
@@ -96,11 +96,10 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
     }
 }
 
-glm::vec3
-Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
-                    const glm::vec3 &loc_normal) const {
+glm::vec3 Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object,
+                              const glm::vec3 &int_point, const glm::vec3 &loc_normal) const {
     float ambient_intensity = 0.05f;
-    double intensity{};
+    float intensity{};
     glm::vec3 color{};
     glm::vec3 output_color{};
     glm::vec3 ambient_color{};
@@ -118,7 +117,7 @@ Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &curren
 
         if (valid_illumination) {
             illuminated = true;
-            diffuse_color += color * static_cast<float>(intensity);
+            diffuse_color += color * intensity;
         }
     }
 

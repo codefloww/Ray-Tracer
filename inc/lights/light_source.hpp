@@ -12,7 +12,7 @@ class LightSource {
 protected:
     glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 color_m = glm::vec3(1.0f, 1.0f, 1.0f);
-    double intensity_m = 1.0f;
+    float intensity_m = 1.0f;
 
 public:
     void setPosition(const glm::vec3 &position);
@@ -21,7 +21,7 @@ public:
 
     [[nodiscard]] glm::vec3 getColor() const;
 
-    void setIntensity(double intensity);
+    void setIntensity(float intensity);
 };
 
 #endif //RAY_TRACER_LIGHT_SOURCE_HPP

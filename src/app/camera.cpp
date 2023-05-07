@@ -25,15 +25,15 @@ void Camera::setUp(const glm::vec3 &new_up) {
     screen_up_m = glm::normalize(new_up);
 }
 
-void Camera::setLensDistance(const double &new_lens_distance) {
+void Camera::setLensDistance(const float new_lens_distance) {
     lens_distance_m = new_lens_distance;
 }
 
-void Camera::setWidth(const double &new_width) {
+void Camera::setWidth(const float new_width) {
     width_m = new_width;
 }
 
-void Camera::setAspectRatio(const double &new_aspect_ratio) {
+void Camera::setAspectRatio(const float new_aspect_ratio) {
     aspect_ratio_m = new_aspect_ratio;
 }
 
@@ -49,11 +49,11 @@ glm::vec3 Camera::getUp() const {
     return screen_up_m;
 }
 
-double Camera::getLensDistance() const {
+float Camera::getLensDistance() const {
     return lens_distance_m;
 }
 
-double Camera::getWidth() const {
+float Camera::getWidth() const {
     return width_m;
 }
 
@@ -77,7 +77,7 @@ void Camera::updateCameraGeometry() {
     screen_v_m *= static_cast<float>(width_m / aspect_ratio_m);
 }
 
-bool Camera::createRay(double x, double y, Ray &camera_ray) const {
+bool Camera::createRay(float x, float y, Ray &camera_ray) const {
     glm::vec3 point_on_screen =
             screen_center_m + screen_u_m * static_cast<float>(x) + screen_v_m * static_cast<float>(y);
     camera_ray = Ray::getRayFromPoints(position_m, point_on_screen);

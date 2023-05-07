@@ -4,7 +4,7 @@
 
 #include "objects/plane.hpp"
 
-constexpr double kEpsilon = 0.0001f;
+constexpr float kEpsilon = 0.0001f;
 
 bool
 Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
@@ -15,7 +15,7 @@ Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &l
         return false;
     }
 
-    double t = -local_ray.getOrigin().z / k.z;
+    float t = -local_ray.getOrigin().z / k.z;
     if (t < 0.0) {
         return false;
     }
