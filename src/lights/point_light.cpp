@@ -5,9 +5,9 @@
 #include <iostream>
 #include "lights/point_light.hpp"
 
-float POINT_ATTENUATION_CONSTANT_MEMBER = 1.0f;
-float POINT_ATTENUATION_LINEAR_MEMBER = 0.09f;
-float POINT_ATTENUATION_QUADRATIC_MEMBER = 0.032f;
+constexpr float POINT_ATTENUATION_CONSTANT_MEMBER = 1.0f;
+constexpr float POINT_ATTENUATION_LINEAR_MEMBER = 0.09f;
+constexpr float POINT_ATTENUATION_QUADRATIC_MEMBER = 0.032f;
 
 PointLight::PointLight(glm::vec3 position) : LightSource(), position_m(position) {
     color_m = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -24,8 +24,9 @@ void PointLight::computeIllumination(const glm::vec3 &int_point,
                          glm::vec3 &diffuse_component,
                          std::pair<glm::vec3, float> &specular_component,
                          glm::vec3 &ambient_component) const {
-    Ray light_ray(int_point, position_m - int_point); // From the intersection point to the light point
-    if (testIlluminationPresence(int_point, object_list, current_object, light_ray)){
+    glm::vec3 to_light_unnormalized(position_m - int_point);
+    Ray light_ray(int_point, to_light_unnormalized); // From the intersection point to the light point
+    if (testIlluminationPresence(int_point, to_light_unnormalized, object_list, current_object, light_ray)){
         auto attenuation = static_cast<float>(getAttenuation(int_point));
         diffuse_component = attenuation * computeDiffuseIllumination(int_point, loc_normal, light_ray);
         specular_component.first = attenuation * m_spec_intensity * color_m * intensity_m;
@@ -39,17 +40,29 @@ void PointLight::computeIllumination(const glm::vec3 &int_point,
 }
 
 bool PointLight::testIlluminationPresence(const glm::vec3 &int_point,
+                                          const glm::vec3 &to_light_unnormalized,
                                           const std::vector<std::shared_ptr<Object>> &object_list,
                                           const std::shared_ptr<Object> &current_object,
-                                          const Ray &light_ray) const {
-    glm::vec3 between_int_point;
-    glm::vec3 between_loc_normal;
+                                          const Ray &light_ray) {
+    glm::vec3 test_int_point;
+    glm::vec3 test_loc_normal;
+    glm::vec3 test_vector;
     for (const auto &object: object_list) {
         if (object == current_object) {
             continue;
         }
-        if (object->testIntersections(light_ray, between_int_point, between_loc_normal)) {
-            return false;
+        if (object->testIntersections(light_ray, test_int_point, test_loc_normal)) {
+            // Probably point light is closer than intersected object.
+            test_vector = test_int_point - int_point;
+            /* Unfortunately, we should check all three axis, because in the opposite case
+             * due to a floating point calculation errors we will get some undesired lines of light, where they shouldn't be.
+             * */
+            if (test_vector.x / to_light_unnormalized.x < 1.0 ||
+                test_vector.y / to_light_unnormalized.y < 1.0 ||
+                test_vector.z / to_light_unnormalized.z < 1.0){
+                // Intersected object yet closer
+                return false;
+            }
         }
     }
     return true;

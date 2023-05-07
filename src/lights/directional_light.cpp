@@ -1,9 +1,9 @@
 #include <iostream>
 #include "lights/directional_light.hpp"
 
-float DIRECTIONAL_ATTENUATION_CONSTANT_MEMBER = 1.0f;
-float DIRECTIONAL_ATTENUATION_LINEAR_MEMBER = 0.0f;
-float DIRECTIONAL_ATTENUATION_QUADRATIC_MEMBER = 0.0f;
+constexpr float DIRECTIONAL_ATTENUATION_CONSTANT_MEMBER = 1.0f;
+constexpr float DIRECTIONAL_ATTENUATION_LINEAR_MEMBER = 0.0f;
+constexpr float DIRECTIONAL_ATTENUATION_QUADRATIC_MEMBER = 0.0f;
 
 DirectionalLight::DirectionalLight(glm::vec3 direction) : LightSource() {
     m_direction = normalize(direction);
@@ -22,7 +22,7 @@ void DirectionalLight::computeIllumination(const glm::vec3 &int_point,
                                      std::pair<glm::vec3, float> &specular_component,
                                      glm::vec3 &ambient_component) const {
     Ray light_ray(int_point, -m_direction);
-    if (testIlluminationPresence(int_point, object_list, current_object, light_ray)){
+    if (testIlluminationPresence(object_list, current_object, light_ray)){
         auto attenuation = static_cast<float>(getAttenuation(int_point));
         diffuse_component = attenuation * computeDiffuseIllumination(int_point, loc_normal, light_ray);
         specular_component.first = attenuation * m_spec_intensity * color_m * intensity_m;
@@ -36,17 +36,16 @@ void DirectionalLight::computeIllumination(const glm::vec3 &int_point,
     ambient_component = m_ambient_intensity * color_m;
 }
 
-bool DirectionalLight::testIlluminationPresence(const glm::vec3 &int_point,
-                                          const std::vector<std::shared_ptr<Object>> &object_list,
-                                          const std::shared_ptr<Object> &current_object,
-                                          const Ray &light_ray) const {
-    glm::vec3 between_int_point;
-    glm::vec3 between_loc_normal;
+bool DirectionalLight::testIlluminationPresence(const std::vector<std::shared_ptr<Object>> &object_list,
+                                                const std::shared_ptr<Object> &current_object,
+                                                const Ray &light_ray) {
+    glm::vec3 test_int_point;
+    glm::vec3 test_loc_normal;
     for (const auto &object: object_list) {
         if (object == current_object) {
             continue;
         }
-        if (object->testIntersections(light_ray, between_int_point, between_loc_normal)) {
+        if (object->testIntersections(light_ray, test_int_point, test_loc_normal)) {
             return false;
         }
     }

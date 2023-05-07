@@ -10,31 +10,30 @@
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
-extern double STANDART_MAX_COLOR;
-extern float GAMMA;
+extern const float STANDARD_MAX_COLOR;
+extern const float GAMMA;
 
 class Image {
-    std::vector<std::vector<double>> r_channel_m;
-    std::vector<std::vector<double>> g_channel_m;
-    std::vector<std::vector<double>> b_channel_m;
-    std::vector<std::vector<double>> a_channel_m;
+    Uint32 *m_pixels = nullptr;
     int width_m = 0;
     int height_m = 0;
+    int m_pitch = 0;
 
-    double max_color_m = 0.0;
     double min_exposure_m = 0.0;
 
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 
 public:
+    float max_color_m = 0.0;
+
     ~Image();
 
     void initialize(int width, int height, SDL_Renderer *renderer);
 
-    void setPixel(int x, int y, double r, double g, double b, double a);
+    void setPixel(int x, int y, Uint32 color);
 
-    [[nodiscard]] glm::vec4 getPixel(int x, int y) const;
+    [[nodiscard]] Uint32 getPixel(int x, int y) const;
 
     void display();
 
@@ -42,11 +41,11 @@ public:
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] glm::vec4 convertColor(double r, double g, double b, double a) const;
+    [[nodiscard]] glm::vec4 convertColor(glm::vec4 color) const;
 
     void initTexture();
 
-    void computeMaxValues();
+    void resetColor();
 
     static Uint32 postProcess(glm::vec4 rgba);
 };

@@ -46,7 +46,7 @@ bool Triangle::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm:
     }
     int_point = cast_ray.getPoint(t);
 
-    if (glm::dot(normal_m, cast_ray.getDirection()) >= 0){ // TODO: probably there is a more optimized way to find appropriate direction
+    if (glm::dot(normal_m, cast_ray.getDirection()) >= 0.0f){ // TODO: probably there is a more optimized way to find appropriate direction
         loc_normal = -normal_m;
     }
     else{

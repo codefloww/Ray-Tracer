@@ -14,10 +14,10 @@
 
 class LightSource {
 private:
-    [[nodiscard]] virtual bool testIlluminationPresence(const glm::vec3 &int_point,
-                                                        const std::vector<std::shared_ptr<Object>> &object_list,
-                                                        const std::shared_ptr<Object> &current_object,
-                                                        const Ray &light_ray) const = 0;
+//    [[nodiscard]] virtual bool testIlluminationPresence(const glm::vec3 &int_point,
+//                                                        const std::vector<std::shared_ptr<Object>> &object_list,
+//                                                        const std::shared_ptr<Object> &current_object,
+//                                                        const Ray &light_ray) const = 0;
 
     [[nodiscard]] virtual glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
                                                                const glm::vec3 &loc_normal,

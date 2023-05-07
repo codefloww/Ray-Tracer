@@ -1,9 +1,9 @@
 #include <iostream>
 #include "lights/spotlight.hpp"
 
-float SPOTLIGHT_ATTENUATION_CONSTANT_MEMBER = 1.0f;
-float SPOTLIGHT_ATTENUATION_LINEAR_MEMBER = 0.045f;
-float SPOTLIGHT_ATTENUATION_QUADRATIC_MEMBER = 0.0075f;
+constexpr float SPOTLIGHT_ATTENUATION_CONSTANT_MEMBER = 1.0f;
+constexpr float SPOTLIGHT_ATTENUATION_LINEAR_MEMBER = 0.045f;
+constexpr float SPOTLIGHT_ATTENUATION_QUADRATIC_MEMBER = 0.0075f;
 
 Spotlight::Spotlight(glm::vec3 position, glm::vec3 direction, float inner_angle, float outer_angle) :
     LightSource(), position_m(position), spot_direction_m(normalize(direction)), inner_cone_angle_m(inner_angle),
@@ -27,9 +27,10 @@ void Spotlight::computeIllumination(const glm::vec3 &int_point,
                                      glm::vec3 &diffuse_component,
                                      std::pair<glm::vec3, float> &specular_component,
                                      glm::vec3 &ambient_component) const {
-    Ray light_ray(int_point, position_m - int_point); // From the intersection point to the light point
+    glm::vec3 to_light_unnormalized(position_m - int_point);
+    Ray light_ray(int_point, to_light_unnormalized); // From the intersection point to the light point
     float theta = glm::dot(light_ray.getDirection(), -spot_direction_m); // theta - angle between (int_point -> spotlight position) and (reversed spotlight direction)
-    if (testIfInCone(theta) && testIlluminationPresence(int_point, object_list, current_object, light_ray)){
+    if (testIfInCone(theta) && testIlluminationPresence(int_point, to_light_unnormalized, object_list, current_object, light_ray)){
         float spotlightCoefficient = std::clamp(((theta - outer_cone_cos_m) / epsilon_m), 0.0f, 1.0f);
         auto attenuation = static_cast<float>(getAttenuation(int_point));
         diffuse_component = spotlightCoefficient * attenuation * computeDiffuseIllumination(int_point, loc_normal, light_ray);
@@ -44,17 +45,29 @@ void Spotlight::computeIllumination(const glm::vec3 &int_point,
 }
 
 bool Spotlight::testIlluminationPresence(const glm::vec3 &int_point,
+                                          const glm::vec3 &to_light_unnormalized,
                                           const std::vector<std::shared_ptr<Object>> &object_list,
                                           const std::shared_ptr<Object> &current_object,
-                                          const Ray &light_ray) const {
-    glm::vec3 between_int_point;
-    glm::vec3 between_loc_normal;
+                                          const Ray &light_ray) {
+    glm::vec3 test_int_point;
+    glm::vec3 test_loc_normal;
+    glm::vec3 test_vector;
     for (const auto &object: object_list) {
         if (object == current_object) {
             continue;
         }
-        if (object->testIntersections(light_ray, between_int_point, between_loc_normal)) {
-            return false;
+        if (object->testIntersections(light_ray, test_int_point, test_loc_normal)) {
+            // Probably spotlight is closer than intersected object.
+            test_vector = test_int_point - int_point;
+            /* Unfortunately, we should check all three axis, because in the opposite case
+             * due to a floating point calculation errors we will get some undesired lines of light, where they shouldn't be.
+             * */
+            if (test_vector.x / to_light_unnormalized.x < 1.0 ||
+                test_vector.y / to_light_unnormalized.y < 1.0 ||
+                test_vector.z / to_light_unnormalized.z < 1.0){
+                // Intersected object yet closer
+                return false;
+            }
         }
     }
     return true;
