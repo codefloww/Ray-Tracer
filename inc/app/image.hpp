@@ -38,7 +38,7 @@ public:
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] glm::vec4 convertColor(glm::vec4 color) const;
+    [[nodiscard]] glm::vec4 convertColor(const glm::vec4 &color) const;
 
     void initTexture();
 

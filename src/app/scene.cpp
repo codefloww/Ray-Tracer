@@ -22,27 +22,30 @@ Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
 
     light_list_m.emplace_back(new PointLight(glm::vec3(-25.0f, -10.0f, 25.0f)));
     light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-    light_list_m.emplace_back(new PointLight(glm::vec3(25.0f, -10.0f, 25.0f)));
-    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
-
-    object_list_m.emplace_back(new TriangleMesh("../models/suzanne.obj"));
-
-    Transformation transformation1;
-    transformation1.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
-                                 glm::vec3(1.0f, 1.0f, 1.0f));
-
-    object_list_m.back()->setTransformation(transformation1);
+//    light_list_m.emplace_back(new PointLight(glm::vec3(25.0f, -10.0f, 25.0f)));
+//    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
+//
+//    object_list_m.emplace_back(new TriangleMesh("../models/suzanne.obj"));
+//
+//    Transformation transformation1;
+//    transformation1.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
+//                                 glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
+//                                 glm::vec3(1.0f, 1.0f, 1.0f));
+//
+//    object_list_m.back()->setTransformation(transformation1);
     Material material;
     material.setupMaterial(glm::vec3(1.0f, 1.0f, 0.0f),
                            glm::vec3(1.0f, 1.0f, 0.0f),
                            glm::vec3(1.0f, 1.0f, 0.0f),
                            256.0f);
+//    object_list_m.back()->setMaterial(material);
+
+    object_list_m.emplace_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1));
     object_list_m.back()->setMaterial(material);
 
 //    for (int i = 0; i < 100; i++){
 //        object_list_m.emplace_back(new Sphere(glm::vec3(0.0f, 3.0f+i*10, 0.0f), 1));
-//        object_list_m.back()->setMaterial(material3);
+//        object_list_m.back()->setMaterial(material);
 //    }
 }
 
@@ -89,9 +92,9 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
 
     for (const auto object_m: object_list_m) {
         if (object_m->testIntersections(camera_ray, int_point, loc_normal)) {
-            blank = false;
             float distance = glm::length(camera_ray.getOrigin() - int_point);
             if (distance < min_distance) {
+                blank = false;
                 min_distance = distance;
                 closest_object = object_m;
                 closest_int_point = int_point;

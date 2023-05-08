@@ -79,7 +79,7 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-glm::vec4 Image::convertColor(glm::vec4 color) const {
+glm::vec4 Image::convertColor(const glm::vec4 &color) const {
     return {(color.r / max_color_m), (color.g / max_color_m), (color.b / max_color_m), color.a};
 }
 
