@@ -5,35 +5,38 @@
 #include "objects/sphere.hpp"
 #include <cmath>
 
+Sphere::Sphere(glm::vec3 center, float radius): m_center(center), m_radius(radius){};
+
 bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
-    Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
-
-    double b = 2.0 * glm::dot(local_ray.getOrigin(), local_ray.getDirection());
-    double c = glm::dot(local_ray.getOrigin(), local_ray.getOrigin()) - 1.0f;
-    double discriminant = b * b - 4.0 * c;
-
-    glm::vec3 loc_int_point;
+    glm::vec3 to_ray = cast_ray.getOrigin() - m_center;
+    float a = length(cast_ray.getDirection());
+    float half_b = dot(to_ray, cast_ray.getDirection());
+    float c = std::pow(length(to_ray), 2) - m_radius * m_radius;
+    float discriminant = half_b*half_b - a*c;
 
     if (discriminant < 0.0) {
         return false;
     }
 
-    double num_sqrt = sqrt(discriminant);
-    double t1 = (-b + num_sqrt) / 2.0;
-    double t2 = (-b - num_sqrt) / 2.0;
+    float num_sqrt = sqrt(discriminant);
+    float t1 = (-half_b + num_sqrt) / a;
 
-    if ((t1 < 0.0) || (t2 < 0.0)) {
+    if (t1 < 0.0) { // t1 always bigger than t2, so we can check only it first.
         return false;
     }
 
-    if (t1 < t2) {
-        loc_int_point = local_ray.getPoint(t1);
-    } else {
-        loc_int_point = local_ray.getPoint(t2);
+    float t2 = (-half_b - num_sqrt) / a;
+
+    if (t2 < 0.0){
+        // We're inside the sphere
+        int_point = cast_ray.getPoint(t1);
+        loc_normal = -glm::normalize(int_point - m_center);
+    }
+    else{
+        // We're outside
+        int_point = cast_ray.getPoint(t2);
+        loc_normal = glm::normalize(int_point - m_center);
     }
 
-    int_point = transformation_m.applyTransform(loc_int_point, Direction::FORWARD);
-    glm::vec3 sphere_origin = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 0.0f), Direction::FORWARD);
-    loc_normal = glm::normalize(int_point - sphere_origin);
     return true;
 }

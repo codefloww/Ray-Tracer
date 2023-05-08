@@ -14,13 +14,13 @@ PointLight::PointLight(glm::vec3 position) : LightSource(), position_m(position)
 }
 
 void PointLight::computeIllumination(const glm::vec3 &int_point,
-                         const glm::vec3 &loc_normal,
-                         const std::vector<std::shared_ptr<Object>> &object_list,
-                         const std::shared_ptr<Object> &current_object,
-                         const glm::vec3 &view_dir,
-                         glm::vec3 &diffuse_component,
-                         std::pair<glm::vec3, float> &specular_component,
-                         glm::vec3 &ambient_component) const {
+                                     const glm::vec3 &loc_normal,
+                                     const std::vector<Object *> &object_list,
+                                     const Object * const current_object,
+                                     const glm::vec3 &view_dir,
+                                     glm::vec3 &diffuse_component,
+                                     std::pair<glm::vec3, float> &specular_component,
+                                     glm::vec3 &ambient_component) const {
     glm::vec3 to_light_unnormalized(position_m - int_point);
     Ray light_ray(int_point, to_light_unnormalized); // From the intersection point to the light point
     if (testIlluminationPresence(int_point, to_light_unnormalized, object_list, current_object, light_ray)){
@@ -38,8 +38,8 @@ void PointLight::computeIllumination(const glm::vec3 &int_point,
 
 bool PointLight::testIlluminationPresence(const glm::vec3 &int_point,
                                           const glm::vec3 &to_light_unnormalized,
-                                          const std::vector<std::shared_ptr<Object>> &object_list,
-                                          const std::shared_ptr<Object> &current_object,
+                                          const std::vector<Object *> &object_list,
+                                          const Object * const current_object,
                                           const Ray &light_ray) {
     glm::vec3 test_int_point;
     glm::vec3 test_loc_normal;

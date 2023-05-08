@@ -13,7 +13,7 @@ Image::~Image() {
     if (texture_m != nullptr) {
         SDL_DestroyTexture(texture_m);
     }
-    delete m_pixels;
+    delete[] m_pixels;
 
 }
 

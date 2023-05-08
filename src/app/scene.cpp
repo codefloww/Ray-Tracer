@@ -14,18 +14,28 @@ Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
     light_list_m.emplace_back(std::make_shared<PointLight>(glm::vec3(-0.0f, -10.0f, 25.0f)));
     light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 
-    object_list_m.emplace_back(std::make_shared<Sphere>());
-    Transformation transformation5;
-    transformation5.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(0.0f, 0.0f, 0.0f),
-                                 glm::vec3(1.0f, 1.0f, 1.0f));
-    object_list_m[0]->setTransformation(transformation5);
+    object_list_m.emplace_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f));
     Material material1;
-    material1.setupMaterial(glm::vec3(0.8f, 0.2f, 0.3f),
-                            glm::vec3(0.4f, 0.5f, 0.9f),
+    material1.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
+                            glm::vec3(0.0f, 1.0f, 0.0f),
                             glm::vec3(1.0f, 1.0f, 1.0f),
                             128.0f);
     object_list_m[0]->setMaterial(material1);
+
+//    for (int i = 0; i < 100; i++){
+//        object_list_m.emplace_back(new Sphere());
+//        Transformation transformation;
+//        transformation.setTransform(glm::vec3(0.0f, 3.0f+i*3, 0.0f),
+//                                     glm::vec3(0.0f, 0.0f, 0.0f),
+//                                     glm::vec3(0.5f, 0.5f, 0.5f));
+//        Material material;
+//        material.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
+//                                glm::vec3(0.0f, 1.0f, 0.0f),
+//                                glm::vec3(1.0f, 1.0f, 1.0f),
+//                                128.0f);
+//        object_list_m.back()->setMaterial(material);
+//        object_list_m.back()->setTransformation(transformation);
+//    }
 }
 
 void Scene::render(Image &output_image) {
@@ -63,7 +73,7 @@ void Scene::render(Image &output_image) {
 void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
                            glm::vec3 &loc_normal) const {
     bool blank = true;
-    std::shared_ptr<Object> closest_object;
+    Object *closest_object;
     glm::vec3 closest_int_point;
     glm::vec3 closest_loc_normal;
     double min_distance = std::numeric_limits<double>::max();
@@ -93,15 +103,13 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
 }
 
 glm::vec3
-Scene::computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
+Scene::computeColor(const Ray &camera_ray, const Object* const current_object, const glm::vec3 &int_point,
                     const glm::vec3 &loc_normal) const {
-    glm::vec3 color{};
     glm::vec3 diffuse_color{};
     glm::vec3 specular_color{};
     glm::vec3 ambient_color{};
     glm::vec3 output_color{};
     glm::vec3 view_dir{normalize(camera_ray.getOrigin() - int_point)};
-    Ray light_ray;
 
     glm::vec3 diffuse_component{};
     std::pair<glm::vec3, float> specular_component{};

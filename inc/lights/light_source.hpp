@@ -39,12 +39,14 @@ public:
 
     virtual void computeIllumination(const glm::vec3 &int_point,
                                      const glm::vec3 &loc_normal,
-                                     const std::vector<std::shared_ptr<Object>> &object_list,
-                                     const std::shared_ptr<Object> &current_object,
+                                     const std::vector<Object *> &object_list,
+                                     const Object * current_object,
                                      const glm::vec3 &view_dir,
                                      glm::vec3 &diffuse_component,
                                      std::pair<glm::vec3, float> &specular_component,
                                      glm::vec3 &ambient_component) const = 0;
+
+    virtual ~LightSource() = default;
 };
 
 #endif //RAY_TRACER_LIGHT_SOURCE_HPP

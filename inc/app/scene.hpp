@@ -26,7 +26,7 @@
 
 class Scene {
     Camera camera_m;
-    std::vector<std::shared_ptr<Object>> object_list_m;
+    std::vector<Object *> object_list_m;
     std::vector<std::shared_ptr<LightSource>> light_list_m;
     glm::vec3 background_color_m;
 
@@ -48,7 +48,7 @@ public:
                         glm::vec3 &loc_normal) const;
 
     [[nodiscard]] glm::vec3
-    computeColor(const Ray &camera_ray, const std::shared_ptr<Object> &current_object, const glm::vec3 &int_point,
+    computeColor(const Ray &camera_ray, const Object* const current_object, const glm::vec3 &int_point,
                  const glm::vec3 &loc_normal) const;
 
     void moveCamera(CameraMovement direction);

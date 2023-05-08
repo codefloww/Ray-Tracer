@@ -20,10 +20,10 @@ private:
 
 
     [[nodiscard]] static bool testIlluminationPresence(const glm::vec3 &int_point,
-                                                              const glm::vec3 &to_light_unnormalized,
-                                                              const std::vector<std::shared_ptr<Object>> &object_list,
-                                                              const std::shared_ptr<Object> &current_object,
-                                                              const Ray &light_ray);
+                                                       const glm::vec3 &to_light_unnormalized,
+                                                       const std::vector<Object *> &object_list,
+                                                       const Object * current_object,
+                                                       const Ray &light_ray);
 
     [[nodiscard]] glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
                                                        const glm::vec3 &loc_normal,
@@ -42,12 +42,14 @@ public:
 
     void computeIllumination(const glm::vec3 &int_point,
                              const glm::vec3 &loc_normal,
-                             const std::vector<std::shared_ptr<Object>> &object_list,
-                             const std::shared_ptr<Object> &current_object,
+                             const std::vector<Object *> &object_list,
+                             const Object * current_object,
                              const glm::vec3 &view_dir,
                              glm::vec3 &diffuse_component,
                              std::pair<glm::vec3, float> &specular_component,
                              glm::vec3 &ambient_component) const override;
+
+    ~Spotlight() override = default;
 };
 
 #endif //RAY_TRACER_SPOTLIGHT_HPP

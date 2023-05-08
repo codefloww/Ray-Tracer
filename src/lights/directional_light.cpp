@@ -10,13 +10,13 @@ DirectionalLight::DirectionalLight(glm::vec3 direction) : LightSource() {
 }
 
 void DirectionalLight::computeIllumination(const glm::vec3 &int_point,
-                                     const glm::vec3 &loc_normal,
-                                     const std::vector<std::shared_ptr<Object>> &object_list,
-                                     const std::shared_ptr<Object> &current_object,
-                                     const glm::vec3 &view_dir,
-                                     glm::vec3 &diffuse_component,
-                                     std::pair<glm::vec3, float> &specular_component,
-                                     glm::vec3 &ambient_component) const {
+                                           const glm::vec3 &loc_normal,
+                                           const std::vector<Object *> &object_list,
+                                           const Object * current_object,
+                                           const glm::vec3 &view_dir,
+                                           glm::vec3 &diffuse_component,
+                                           std::pair<glm::vec3, float> &specular_component,
+                                           glm::vec3 &ambient_component) const {
     Ray light_ray(int_point, -m_direction);
     if (testIlluminationPresence(object_list, current_object, light_ray)){
         auto attenuation = static_cast<float>(getAttenuation(int_point));
@@ -32,8 +32,8 @@ void DirectionalLight::computeIllumination(const glm::vec3 &int_point,
     ambient_component = m_ambient_intensity * color_m;
 }
 
-bool DirectionalLight::testIlluminationPresence(const std::vector<std::shared_ptr<Object>> &object_list,
-                                                const std::shared_ptr<Object> &current_object,
+bool DirectionalLight::testIlluminationPresence(const std::vector<Object *> &object_list,
+                                                const Object * current_object,
                                                 const Ray &light_ray) {
     glm::vec3 test_int_point;
     glm::vec3 test_loc_normal;
