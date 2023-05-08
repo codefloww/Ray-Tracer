@@ -15,7 +15,7 @@ Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &l
         return false;
     }
 
-    double t = -local_ray.getOrigin().z / k.z;
+    float t = -local_ray.getOrigin().z / k.z;
     if (t < 0.0f) {
         return false;
     }

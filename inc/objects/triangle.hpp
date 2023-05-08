@@ -31,7 +31,7 @@ public:
      * @warning For the Triangle class, the transformation of cast ray into object space and back
      * relies exclusively on the caller method.
      */
-    bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const;
+    bool testIntersections(const Ray &cast_ray, glm::vec3 &loc_normal, float &distance) const;
 };
 
 #endif //RAY_TRACER_TRIANGLE_HPP

@@ -1,4 +1,13 @@
 #include "app/scene.hpp"
+#include "objects/sphere.hpp"
+#include "objects/plane.hpp"
+#include "lights/point_light.hpp"
+#include "lights/directional_light.hpp"
+#include "lights/spotlight.hpp"
+#include "objects/trianglemesh.hpp"
+#include <oneapi/tbb/parallel_for.h>
+#include <oneapi/tbb/blocked_range2d.h>
+#include <oneapi/tbb/enumerable_thread_specific.h>
 
 tbb::enumerable_thread_specific<float> local_max_color;
 
@@ -11,30 +20,29 @@ Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
     camera_m.setAspectRatio(4.0 / 3.0);
     camera_m.updateCameraGeometry();
 
-    light_list_m.emplace_back(std::make_shared<PointLight>(glm::vec3(-0.0f, -10.0f, 25.0f)));
-    light_list_m[0]->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    light_list_m.emplace_back(new PointLight(glm::vec3(-25.0f, -10.0f, 25.0f)));
+    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    light_list_m.emplace_back(new PointLight(glm::vec3(25.0f, -10.0f, 25.0f)));
+    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
 
-    object_list_m.emplace_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f));
-    Material material1;
-    material1.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
-                            glm::vec3(0.0f, 1.0f, 0.0f),
-                            glm::vec3(1.0f, 1.0f, 1.0f),
-                            128.0f);
-    object_list_m[0]->setMaterial(material1);
+    object_list_m.emplace_back(new TriangleMesh("../models/suzanne.obj"));
+
+    Transformation transformation1;
+    transformation1.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
+                                 glm::vec3(1.0f, 1.0f, 1.0f));
+
+    object_list_m.back()->setTransformation(transformation1);
+    Material material;
+    material.setupMaterial(glm::vec3(1.0f, 1.0f, 0.0f),
+                           glm::vec3(1.0f, 1.0f, 0.0f),
+                           glm::vec3(1.0f, 1.0f, 0.0f),
+                           256.0f);
+    object_list_m.back()->setMaterial(material);
 
 //    for (int i = 0; i < 100; i++){
-//        object_list_m.emplace_back(new Sphere());
-//        Transformation transformation;
-//        transformation.setTransform(glm::vec3(0.0f, 3.0f+i*3, 0.0f),
-//                                     glm::vec3(0.0f, 0.0f, 0.0f),
-//                                     glm::vec3(0.5f, 0.5f, 0.5f));
-//        Material material;
-//        material.setupMaterial(glm::vec3(0.0f, 1.0f, 0.0f),
-//                                glm::vec3(0.0f, 1.0f, 0.0f),
-//                                glm::vec3(1.0f, 1.0f, 1.0f),
-//                                128.0f);
-//        object_list_m.back()->setMaterial(material);
-//        object_list_m.back()->setTransformation(transformation);
+//        object_list_m.emplace_back(new Sphere(glm::vec3(0.0f, 3.0f+i*10, 0.0f), 1));
+//        object_list_m.back()->setMaterial(material3);
 //    }
 }
 
@@ -64,8 +72,9 @@ void Scene::render(Image &output_image) {
     );
     output_image.resetColor();
     auto max_color = static_cast<float>(output_image.max_color_m);
-    for (const auto &local_color: local_max_color){
+    for (auto &local_color: local_max_color){
         max_color = std::max({local_color, max_color});
+        local_color = 0.0f;
     }
     output_image.max_color_m = max_color;
 }
@@ -76,12 +85,12 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
     Object *closest_object;
     glm::vec3 closest_int_point;
     glm::vec3 closest_loc_normal;
-    double min_distance = std::numeric_limits<double>::max();
+    float min_distance = std::numeric_limits<float>::max();
 
-    for (const auto &object_m: object_list_m) {
+    for (const auto object_m: object_list_m) {
         if (object_m->testIntersections(camera_ray, int_point, loc_normal)) {
             blank = false;
-            double distance = glm::length(camera_ray.getOrigin() - int_point);
+            float distance = glm::length(camera_ray.getOrigin() - int_point);
             if (distance < min_distance) {
                 min_distance = distance;
                 closest_object = object_m;
@@ -91,7 +100,6 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
         }
     }
 
-    closest_loc_normal = glm::normalize(closest_loc_normal);
     glm::vec3 output_color;
     if (!blank) {
         output_color = computeColor(camera_ray, closest_object, closest_int_point, closest_loc_normal);
@@ -112,17 +120,16 @@ Scene::computeColor(const Ray &camera_ray, const Object* const current_object, c
     glm::vec3 view_dir{normalize(camera_ray.getOrigin() - int_point)};
 
     glm::vec3 diffuse_component{};
-    std::pair<glm::vec3, float> specular_component{};
+    glm::vec3 specular_component{};
     glm::vec3 ambient_component{};
 
-    float shininess = current_object->getMaterial().getShininess();
-
-    for (const auto &light_m: light_list_m) {
+    for (const auto light_m: light_list_m) {
         // It is assumed that diffuse_color, specular_color and ambient_color will be reset in the computeIllumination().
         light_m->computeIllumination(int_point, loc_normal, object_list_m, current_object,
                                      view_dir, diffuse_component, specular_component, ambient_component);
-        Scene::accumulateColors(diffuse_component, specular_component, ambient_component,
-                                diffuse_color, specular_color, ambient_color, shininess);
+        diffuse_color += diffuse_component;
+        specular_color += specular_component;
+        ambient_color += ambient_component;
     }
 
     output_color = ambient_color * current_object->getMaterial().getAmbient() +
@@ -131,19 +138,6 @@ Scene::computeColor(const Ray &camera_ray, const Object* const current_object, c
 
     local_max_color.local() = std::max({local_max_color.local(), output_color.r, output_color.g, output_color.b});
     return output_color;
-}
-
-void Scene::accumulateColors(glm::vec3 diffuse_component,
-                                    std::pair<glm::vec3, float> specular_component,
-                                    glm::vec3 ambient_component,
-                                    glm::vec3 &diffuse_color,
-                                    glm::vec3 &specular_color,
-                                    glm::vec3 &ambient_color,
-                                    float shininess){
-    diffuse_color += diffuse_component;
-    float spec = std::pow(specular_component.second, shininess);
-    specular_color += spec * specular_component.first;
-    ambient_color += ambient_component;
 }
 
 void Scene::moveCamera(CameraMovement direction) {
@@ -187,6 +181,9 @@ void Scene::rotateCamera(const glm::vec2 &rotation) {
 Scene::~Scene() {
     for(const auto object_ptr: object_list_m){
         delete object_ptr;
+    }
+    for(const auto light_ptr: light_list_m){
+        delete light_ptr;
     }
 }
 

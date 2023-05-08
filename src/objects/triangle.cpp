@@ -13,7 +13,7 @@ Triangle::Triangle(const Vertex &v1, const Vertex &v2, const Vertex &v3) {
     normal_m = glm::normalize(glm::cross(e1_m, e2_m));
 }
 
-bool Triangle::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
+bool Triangle::testIntersections(const Ray &cast_ray, glm::vec3 &loc_normal, float &distance) const {
     constexpr double kEpsilon = 0.0001;
 
     glm::vec3 p_vec = glm::cross(cast_ray.getDirection(), e2_m);
@@ -39,12 +39,11 @@ bool Triangle::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm:
         return false;
     }
 
-    float t = glm::dot(e2_m, q_vec) * invDeterminant;
+    distance = glm::dot(e2_m, q_vec) * invDeterminant;
 
-    if (t < 0.0f){
+    if (distance < 0.0f){
         return false;
     }
-    int_point = cast_ray.getPoint(t);
 
     if (glm::dot(normal_m, cast_ray.getDirection()) >= 0.0f){ // TODO: probably there is a more optimized way to find appropriate direction
         loc_normal = -normal_m;

@@ -18,7 +18,7 @@ glm::vec3 Ray::getDirection() const {
     return direction_m;
 }
 
-glm::vec3 Ray::getPoint(double t) const {
+glm::vec3 Ray::getPoint(float t) const {
     return origin_m + direction_m * static_cast<float>(t);
 }
 

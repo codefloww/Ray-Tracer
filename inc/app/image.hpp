@@ -10,14 +10,11 @@
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
-extern const float STANDARD_MAX_COLOR;
-extern const float GAMMA;
-
 class Image {
-    Uint32 *m_pixels = nullptr;
+    Uint32 *pixels_m = nullptr;
     int width_m = 0;
     int height_m = 0;
-    int m_pitch = 0;
+    int pitch_m = 0;
 
     double min_exposure_m = 0.0;
 

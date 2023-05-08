@@ -10,9 +10,9 @@
 
 class LightSource {
 private:
-    static constexpr float M_ATTENUATION_CONSTANT_MEMBER = 1.0f;
-    static constexpr float M_ATTENUATION_LINEAR_MEMBER = 0.0f;
-    static constexpr float M_ATTENUATION_QUADRATIC_MEMBER = 0.0f;
+    static constexpr float kAttenConst = 1.0f;
+    static constexpr float kAttenLin = 0.0f;
+    static constexpr float kAttenQuad = 0.0f;
 
     [[nodiscard]] virtual glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
                                                                const glm::vec3 &loc_normal,
@@ -22,13 +22,13 @@ private:
                                                           const Ray &light_ray,
                                                           const glm::vec3 &view_dir) const = 0;
 
-    [[nodiscard]] virtual double getAttenuation(const glm::vec3 &int_point) const = 0;
+    [[nodiscard]] virtual float getAttenuation(const glm::vec3 &int_point) const = 0;
 
 protected:
     glm::vec3 color_m = glm::vec3(1.0f, 1.0f, 1.0f);
     float intensity_m = 1.0f;
-    float m_spec_intensity;
-    float m_ambient_intensity;
+    float spec_intensity_m = 1.0f;
+    float ambient_intensity_m = 0.05f;
 
 public:
     void setColor(const glm::vec3 &color);
@@ -43,7 +43,7 @@ public:
                                      const Object * current_object,
                                      const glm::vec3 &view_dir,
                                      glm::vec3 &diffuse_component,
-                                     std::pair<glm::vec3, float> &specular_component,
+                                     glm::vec3 &specular_component,
                                      glm::vec3 &ambient_component) const = 0;
 
     virtual ~LightSource() = default;

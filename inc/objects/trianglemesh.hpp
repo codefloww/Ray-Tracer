@@ -22,7 +22,7 @@ public:
 public:
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
-    std::vector<std::shared_ptr<Triangle>> triangles;
+    std::vector<Triangle *> triangles;
 };
 
 #endif //RAY_TRACER_TRIANGLEMESH_HPP

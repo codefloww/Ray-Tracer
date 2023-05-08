@@ -9,8 +9,8 @@
 PointLight::PointLight(glm::vec3 position) : LightSource(), position_m(position) {
     color_m = glm::vec3(1.0f, 1.0f, 1.0f);
     intensity_m = 1.0f;
-    m_spec_intensity = 0.5f;
-    m_ambient_intensity = 0.005f;
+    spec_intensity_m = 0.5f;
+    ambient_intensity_m = 0.005f;
 }
 
 void PointLight::computeIllumination(const glm::vec3 &int_point,
@@ -19,21 +19,21 @@ void PointLight::computeIllumination(const glm::vec3 &int_point,
                                      const Object * const current_object,
                                      const glm::vec3 &view_dir,
                                      glm::vec3 &diffuse_component,
-                                     std::pair<glm::vec3, float> &specular_component,
+                                     glm::vec3 &specular_component,
                                      glm::vec3 &ambient_component) const {
     glm::vec3 to_light_unnormalized(position_m - int_point);
     Ray light_ray(int_point, to_light_unnormalized); // From the intersection point to the light point
     if (testIlluminationPresence(int_point, to_light_unnormalized, object_list, current_object, light_ray)){
         auto attenuation = static_cast<float>(getAttenuation(int_point));
         diffuse_component = attenuation * computeDiffuseIllumination(int_point, loc_normal, light_ray);
-        specular_component.first = attenuation * m_spec_intensity * color_m * intensity_m;
-        specular_component.second = computeSpecularMultiplier(loc_normal, light_ray, view_dir);
+        specular_component = attenuation * spec_intensity_m * color_m * intensity_m *
+                             std::pow(computeSpecularMultiplier(loc_normal, light_ray, view_dir), current_object->getMaterial().getShininess());
     }
     else{
         diffuse_component = {0, 0, 0};
-        specular_component = {{0, 0, 0}, 0};
+        specular_component = {0, 0, 0};
     }
-    ambient_component = m_ambient_intensity * color_m;
+    ambient_component = ambient_intensity_m * color_m;
 }
 
 bool PointLight::testIlluminationPresence(const glm::vec3 &int_point,
@@ -80,8 +80,8 @@ float PointLight::computeSpecularMultiplier(const glm::vec3 &loc_normal,
     return glm::max(glm::dot(loc_normal, halfway_dir), 0.0f);
 }
 
-double PointLight::getAttenuation(const glm::vec3 &int_point) const {
-    double distance = glm::length((position_m - int_point));
-    return 1.0f / (M_ATTENUATION_CONSTANT_MEMBER + M_ATTENUATION_LINEAR_MEMBER * distance + M_ATTENUATION_QUADRATIC_MEMBER * distance * distance);
+float PointLight::getAttenuation(const glm::vec3 &int_point) const {
+    float distance = glm::length((position_m - int_point));
+    return 1.0f / (kAttenConst + kAttenLin * distance + kAttenQuad * distance * distance);
 }
 

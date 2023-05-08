@@ -5,13 +5,13 @@
 #include "objects/sphere.hpp"
 #include <cmath>
 
-Sphere::Sphere(glm::vec3 center, float radius): m_center(center), m_radius(radius){};
+Sphere::Sphere(glm::vec3 center, float radius): center_m(center), radius_m(radius){};
 
 bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
-    glm::vec3 to_ray = cast_ray.getOrigin() - m_center;
+    glm::vec3 to_ray = cast_ray.getOrigin() - center_m;
     float a = length(cast_ray.getDirection());
     float half_b = dot(to_ray, cast_ray.getDirection());
-    float c = std::pow(length(to_ray), 2) - m_radius * m_radius;
+    float c = std::pow(length(to_ray), 2) - radius_m * radius_m;
     float discriminant = half_b*half_b - a*c;
 
     if (discriminant < 0.0) {
@@ -30,12 +30,12 @@ bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::v
     if (t2 < 0.0){
         // We're inside the sphere
         int_point = cast_ray.getPoint(t1);
-        loc_normal = -glm::normalize(int_point - m_center);
+        loc_normal = -glm::normalize(int_point - center_m);
     }
     else{
         // We're outside
         int_point = cast_ray.getPoint(t2);
-        loc_normal = glm::normalize(int_point - m_center);
+        loc_normal = glm::normalize(int_point - center_m);
     }
 
     return true;

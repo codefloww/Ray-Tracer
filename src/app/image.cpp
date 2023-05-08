@@ -13,7 +13,7 @@ Image::~Image() {
     if (texture_m != nullptr) {
         SDL_DestroyTexture(texture_m);
     }
-    delete[] m_pixels;
+    delete[] pixels_m;
 
 }
 
@@ -21,29 +21,28 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     width_m = width;
     height_m = height;
 
-    m_pixels = new Uint32[width_m * height_m];
-    memset(m_pixels, 0, width_m * height_m * sizeof(Uint32));
+    pixels_m = new Uint32[width_m * height_m];
+    memset(pixels_m, 0, width_m * height_m * sizeof(Uint32));
 
     renderer_m = renderer;
 
     min_exposure_m = 1.0;
 
-    auto uint32_size = static_cast<int>(sizeof(Uint32));
-    m_pitch = width_m * uint32_size;
+    pitch_m = width_m * static_cast<int>(sizeof(Uint32));
 
     initTexture();
 }
 
 void Image::setPixel(int x, int y, Uint32 color) {
-    m_pixels[y * width_m + x] = color;
+    pixels_m[y * width_m + x] = color;
 }
 
 Uint32 Image::getPixel(int x, int y) const {
-    return m_pixels[y * width_m + x];
+    return pixels_m[y * width_m + x];
 }
 
 void Image::display() {
-    SDL_UpdateTexture(texture_m, nullptr, m_pixels, m_pitch);
+    SDL_UpdateTexture(texture_m, nullptr, pixels_m, pitch_m);
 
     SDL_Rect src_rect;
     SDL_Rect bounds;

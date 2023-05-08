@@ -8,8 +8,8 @@ Spotlight::Spotlight(glm::vec3 position, glm::vec3 direction, float inner_angle,
 
     color_m = glm::vec3(1.0f, 1.0f, 1.0f);
     intensity_m = 1.0f;
-    m_spec_intensity = 0.5f;
-    m_ambient_intensity = 0.005f;
+    spec_intensity_m = 0.5f;
+    ambient_intensity_m = 0.005f;
 
     inner_cone_cos_m = cos(glm::radians(inner_cone_angle_m));
     outer_cone_cos_m = cos(glm::radians(outer_cone_angle_m));
@@ -22,7 +22,7 @@ void Spotlight::computeIllumination(const glm::vec3 &int_point,
                                     const Object * current_object,
                                     const glm::vec3 &view_dir,
                                     glm::vec3 &diffuse_component,
-                                    std::pair<glm::vec3, float> &specular_component,
+                                    glm::vec3 &specular_component,
                                     glm::vec3 &ambient_component) const {
     glm::vec3 to_light_unnormalized(position_m - int_point);
     Ray light_ray(int_point, to_light_unnormalized); // From the intersection point to the light point
@@ -31,20 +31,20 @@ void Spotlight::computeIllumination(const glm::vec3 &int_point,
         float spotlightCoefficient = std::clamp(((theta - outer_cone_cos_m) / epsilon_m), 0.0f, 1.0f);
         auto attenuation = static_cast<float>(getAttenuation(int_point));
         diffuse_component = spotlightCoefficient * attenuation * computeDiffuseIllumination(int_point, loc_normal, light_ray);
-        specular_component.first = spotlightCoefficient * attenuation * m_spec_intensity * color_m * intensity_m;
-        specular_component.second = computeSpecularMultiplier(loc_normal, light_ray, view_dir);
+        specular_component = attenuation * spec_intensity_m * color_m * intensity_m *
+                             std::pow(computeSpecularMultiplier(loc_normal, light_ray, view_dir), current_object->getMaterial().getShininess());
     }
     else{
         diffuse_component = {0, 0, 0};
-        specular_component = {{0, 0, 0}, 0};
+        specular_component = {0, 0, 0};
     }
-    ambient_component = m_ambient_intensity * color_m;
+    ambient_component = ambient_intensity_m * color_m;
 }
 
 bool Spotlight::testIlluminationPresence(const glm::vec3 &int_point,
                                          const glm::vec3 &to_light_unnormalized,
                                          const std::vector<Object *> &object_list,
-                                         const Object * current_object,
+                                         const Object *current_object,
                                          const Ray &light_ray) {
     glm::vec3 test_int_point;
     glm::vec3 test_loc_normal;
@@ -92,9 +92,9 @@ bool Spotlight::testIfInCone(const float angle_cos) const {
     return true;
 }
 
-double Spotlight::getAttenuation(const glm::vec3 &int_point) const {
-    double distance = glm::length((position_m - int_point));
-    return 1.0f / (M_ATTENUATION_CONSTANT_MEMBER + M_ATTENUATION_LINEAR_MEMBER * distance + M_ATTENUATION_QUADRATIC_MEMBER * distance * distance);
+float Spotlight::getAttenuation(const glm::vec3 &int_point) const {
+    float distance = glm::length((position_m - int_point));
+    return 1.0f / (kAttenConst + kAttenLin * distance + kAttenQuad * distance * distance);
 }
 
 
