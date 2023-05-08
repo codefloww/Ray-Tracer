@@ -184,3 +184,9 @@ void Scene::rotateCamera(const glm::vec2 &rotation) {
     camera_m.updateCameraGeometry();
 }
 
+Scene::~Scene() {
+    for(const auto object_ptr: object_list_m){
+        delete object_ptr;
+    }
+}
+

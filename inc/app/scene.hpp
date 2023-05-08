@@ -62,6 +62,8 @@ public:
                                  glm::vec3 &specular_color,
                                  glm::vec3 &ambient_color,
                                  float shininess);
+
+    ~Scene();
 };
 
 #endif //RAY_TRACER_SCENE_HPP
