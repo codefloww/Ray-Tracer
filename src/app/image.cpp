@@ -6,7 +6,7 @@
 #include <algorithm>
 
 constexpr float STANDARD_MAX_COLOR = 0.05;
-constexpr float GAMMA = 2.2;
+//constexpr float GAMMA = 2.2;
 
 Image::~Image() {
     if (texture_m != nullptr) {
@@ -24,11 +24,7 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     memset(pixels_m, 0, width_m * height_m * sizeof(Uint32));
 
     renderer_m = renderer;
-
-    min_exposure_m = 1.0;
-
     pitch_m = width_m * static_cast<int>(sizeof(Uint32));
-
     max_color_m = STANDARD_MAX_COLOR;
 
     initTexture();

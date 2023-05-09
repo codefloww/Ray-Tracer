@@ -16,8 +16,6 @@ class Image {
     int height_m = 0;
     int pitch_m = 0;
 
-    double min_exposure_m = 0.0;
-
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 
@@ -41,8 +39,6 @@ public:
     [[nodiscard]] glm::vec4 convertColor(const glm::vec4 &color) const;
 
     void initTexture();
-
-    void resetColor();
 
     static Uint32 postProcess(glm::vec4 rgba);
 };
