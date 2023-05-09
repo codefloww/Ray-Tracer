@@ -12,8 +12,8 @@ Image::~Image() {
     if (texture_m != nullptr) {
         SDL_DestroyTexture(texture_m);
     }
-    delete[] pixels_m;
 
+    delete[] pixels_m;
 }
 
 void Image::initialize(int width, int height, SDL_Renderer *renderer) {
@@ -24,7 +24,6 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     memset(pixels_m, 0, width_m * height_m * sizeof(Uint32));
 
     renderer_m = renderer;
-    pitch_m = width_m * static_cast<int>(sizeof(Uint32));
     max_color_m = STANDARD_MAX_COLOR;
 
     initTexture();
@@ -39,16 +38,10 @@ Uint32 Image::getPixel(int x, int y) const {
 }
 
 void Image::display() {
-    SDL_UpdateTexture(texture_m, nullptr, pixels_m, pitch_m);
+    auto uint32_size = static_cast<int>(sizeof(Uint32));
+    SDL_UpdateTexture(texture_m, nullptr, pixels_m, width_m * uint32_size);
 
-    SDL_Rect src_rect;
-    SDL_Rect bounds;
-    src_rect.x = 0;
-    src_rect.y = 0;
-    src_rect.w = width_m;
-    src_rect.h = height_m;
-    bounds = src_rect;
-    SDL_RenderCopy(renderer_m, texture_m, &src_rect, &bounds);
+    SDL_RenderCopy(renderer_m, texture_m, nullptr, nullptr);
 }
 
 void Image::initTexture() {
@@ -96,8 +89,9 @@ Uint32 Image::postProcess(glm::vec4 rgba) {
     Uint8 alpha = corrected_rgba.a * 255;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    alpha = 0x000000FF;
     return red << 24 | (green << 16) | (blue << 8) | alpha;
 #else
-    return alpha << 24 | (blue << 16) | (green << 8) | red;
+    return alpha | (blue << 16) | (green << 8) | red;
 #endif
 }

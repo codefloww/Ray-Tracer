@@ -14,7 +14,6 @@ class Image {
     Uint32 *pixels_m = nullptr;
     int width_m = 0;
     int height_m = 0;
-    int pitch_m = 0;
 
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;

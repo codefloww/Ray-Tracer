@@ -40,9 +40,3 @@ bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::v
     int_point = transformation_m.applyTransform(loc_int_point, Direction::FORWARD);
     return true;
 }
-
-
-
-
-
-

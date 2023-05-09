@@ -8,8 +8,9 @@
 #include <oneapi/tbb/parallel_for.h>
 #include <oneapi/tbb/blocked_range2d.h>
 
-
 Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
+    camera_movement_speed_m = 7.5f;
+    camera_rotation_speed_m = 7.5f;
 
     camera_m.setPosition(glm::vec3(0.0f, -10.0f, 0.0f));
     camera_m.setDirection(glm::vec3(0.0f, 1.0f, 0.0f));
@@ -51,7 +52,7 @@ Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
 //    }
 }
 
-void Scene::render(Image &output_image) {
+void Scene::render(Image &output_image) const {
     namespace tbb = oneapi::tbb;
     using range_t = tbb::blocked_range2d<int>;
 
@@ -65,10 +66,10 @@ void Scene::render(Image &output_image) {
                                   Ray camera_ray;
                                   glm::vec3 int_point;
                                   glm::vec3 loc_normal;
-                                  double x_factor = 1.0 / (static_cast<double>(width) / 2.0);
-                                  double y_factor = 1.0 / (static_cast<double>(height) / 2.0);
-                                  double norm_x = static_cast<double>(x) * x_factor - 1.0;
-                                  double norm_y = static_cast<double>(y) * y_factor - 1.0;
+                                  float x_factor = 2 / (static_cast<float>(width));
+                                  float y_factor = 2 / (static_cast<float>(height));
+                                  float norm_x = static_cast<float>(x) * x_factor - 1;
+                                  float norm_y = static_cast<float>(y) * y_factor - 1;
                                   camera_m.createRay(norm_x, norm_y, camera_ray);
                                   internalRender(x, y, camera_ray, output_image, int_point, loc_normal);
                               }
@@ -140,38 +141,44 @@ Scene::computeColor(const Ray &camera_ray, const Object* const current_object, c
 void Scene::moveCamera(CameraMovement direction) {
     switch (direction) {
         case CameraMovement::FORWARD:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getDirection() * 0.1f);
+            camera_m.moveForward(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::BACKWARD:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getDirection() * 0.1f);
+            camera_m.moveBackward(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::LEFT:
-            camera_m.setPosition(
-                    camera_m.getPosition() +
-                    glm::normalize(glm::cross(camera_m.getUp(), camera_m.getDirection())) * 0.1f);
+            camera_m.moveLeft(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::RIGHT:
-            camera_m.setPosition(
-                    camera_m.getPosition() +
-                    glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp())) * 0.1f);
+            camera_m.moveRight(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::UP:
-            camera_m.setPosition(camera_m.getPosition() + camera_m.getUp() * 0.1f);
+            camera_m.moveUp(camera_movement_speed_m * update_time_m);
             break;
         case CameraMovement::DOWN:
-            camera_m.setPosition(camera_m.getPosition() - camera_m.getUp() * 0.1f);
+            camera_m.moveDown(camera_movement_speed_m * update_time_m);
             break;
     }
 
     camera_m.updateCameraGeometry();
 }
 
-void Scene::rotateCamera(const glm::vec2 &rotation) {
-    glm::vec3 x_axis = glm::normalize(glm::cross(camera_m.getDirection(), camera_m.getUp()));
-    camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.x, camera_m.getUp()));
+void Scene::rotateCamera(CameraRotation direction) {
+    switch (direction) {
+        case CameraRotation::LEFT:
+            camera_m.rotateLeft(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+        case CameraRotation::RIGHT:
+            camera_m.rotateRight(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+        case CameraRotation::UP:
+            camera_m.rotateUp(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+        case CameraRotation::DOWN:
+            camera_m.rotateDown(0.1f * camera_rotation_speed_m * update_time_m);
+            break;
+    }
 
-    camera_m.setDirection(glm::rotate(camera_m.getDirection(), rotation.y, x_axis));
-    camera_m.setUp(glm::rotate(camera_m.getUp(), rotation.y, x_axis));
     camera_m.updateCameraGeometry();
 }
 

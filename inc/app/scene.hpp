@@ -22,6 +22,12 @@ class Scene {
     glm::vec3 background_color_m;
 
 public:
+    Camera camera_m;
+
+    float update_time_m{};
+    float camera_movement_speed_m;
+    float camera_rotation_speed_m;
+
     enum class CameraMovement {
         FORWARD,
         BACKWARD,
@@ -31,9 +37,16 @@ public:
         DOWN
     };
 
+    enum class CameraRotation {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    };
+
     Scene();
 
-    void render(Image &output_image);
+    void render(Image &output_image) const;
 
     void internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
                         glm::vec3 &loc_normal) const;
@@ -44,7 +57,7 @@ public:
 
     void moveCamera(CameraMovement direction);
 
-    void rotateCamera(const glm::vec2 &rotation);
+    void rotateCamera(CameraRotation direction);
 
     ~Scene();
 };

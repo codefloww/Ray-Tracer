@@ -23,9 +23,7 @@ public:
 
     bool onInit();
 
-    void onEvent(const SDL_Event *event);
-
-    void onLoop() const;
+    void onEvent();
 
     void onRender();
 
