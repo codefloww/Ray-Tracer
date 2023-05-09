@@ -11,11 +11,8 @@
 #include "objects/object.hpp"
 
 class Sphere : public Object {
-private:
-    glm::vec3 center_m {0.0f, 0.0f, 0.0f};
-    float radius_m = 1.0f;
 public:
-    explicit Sphere(glm::vec3 center, float radius);
+    explicit Sphere();
 
     bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const override;
 };

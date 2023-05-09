@@ -4,7 +4,6 @@
 
 #include "app/image.hpp"
 #include <algorithm>
-#include <iostream>
 
 constexpr float STANDARD_MAX_COLOR = 0.05;
 constexpr float GAMMA = 2.2;

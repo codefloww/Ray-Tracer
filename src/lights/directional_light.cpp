@@ -1,4 +1,3 @@
-#include <iostream>
 #include "lights/directional_light.hpp"
 
 DirectionalLight::DirectionalLight(glm::vec3 direction) : LightSource() {

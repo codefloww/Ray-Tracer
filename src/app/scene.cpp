@@ -22,14 +22,21 @@ Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
 
     light_list_m.emplace_back(new PointLight(glm::vec3(-25.0f, -10.0f, 25.0f)));
     light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-//    light_list_m.emplace_back(new PointLight(glm::vec3(25.0f, -10.0f, 25.0f)));
-//    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
-//
-//    object_list_m.emplace_back(new TriangleMesh("../models/suzanne.obj"));
-//
+    light_list_m.emplace_back(new PointLight(glm::vec3(25.0f, -10.0f, 25.0f)));
+    light_list_m.back()->setColor(glm::vec3(1.0f, 1.0f, 0.8f));
+
+    object_list_m.emplace_back(new TriangleMesh("../models/suzanne.obj"));
+
+    Transformation suzanneTransform;
+    suzanneTransform.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
+                                 glm::vec3(1.0f, 1.0f, 1.0f));
+    object_list_m.back()->setTransformation(suzanneTransform);
+
+//    object_list_m.emplace_back(new Sphere());
 //    Transformation transformation1;
 //    transformation1.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
+//                                 glm::vec3(0.0f, 0.0f, 0.0f),
 //                                 glm::vec3(1.0f, 1.0f, 1.0f));
 //
 //    object_list_m.back()->setTransformation(transformation1);
@@ -38,9 +45,6 @@ Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
                            glm::vec3(1.0f, 1.0f, 0.0f),
                            glm::vec3(1.0f, 1.0f, 0.0f),
                            256.0f);
-//    object_list_m.back()->setMaterial(material);
-
-    object_list_m.emplace_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1));
     object_list_m.back()->setMaterial(material);
 
 //    for (int i = 0; i < 100; i++){

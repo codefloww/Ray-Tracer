@@ -5,7 +5,7 @@
 #include "objects/sphere.hpp"
 #include <cmath>
 
-Sphere::Sphere(glm::vec3 center, float radius): center_m(center), radius_m(radius){};
+Sphere::Sphere() = default;
 
 bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const {
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
@@ -40,6 +40,7 @@ bool Sphere::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::v
     int_point = transformation_m.applyTransform(loc_int_point, Direction::FORWARD);
     return true;
 }
+
 
 
 

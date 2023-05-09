@@ -2,7 +2,6 @@
 // Created by paul on 3/18/23.
 //
 
-#include <iostream>
 #include "lights/point_light.hpp"
 
 

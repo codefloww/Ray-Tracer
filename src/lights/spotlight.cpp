@@ -1,4 +1,3 @@
-#include <iostream>
 #include "lights/spotlight.hpp"
 
 
