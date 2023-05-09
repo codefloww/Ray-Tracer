@@ -29,6 +29,8 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
 
     pitch_m = width_m * static_cast<int>(sizeof(Uint32));
 
+    max_color_m = STANDARD_MAX_COLOR;
+
     initTexture();
 }
 
@@ -88,10 +90,6 @@ int Image::getWidth() const {
 
 int Image::getHeight() const {
     return height_m;
-}
-
-void Image::resetColor(){
-    max_color_m = STANDARD_MAX_COLOR;
 }
 
 Uint32 Image::postProcess(glm::vec4 rgba) {

@@ -7,9 +7,7 @@
 #include "objects/trianglemesh.hpp"
 #include <oneapi/tbb/parallel_for.h>
 #include <oneapi/tbb/blocked_range2d.h>
-#include <oneapi/tbb/enumerable_thread_specific.h>
 
-tbb::enumerable_thread_specific<float> local_max_color;
 
 Scene::Scene(): background_color_m{0.01, 0.01, 0.01} {
 
@@ -77,13 +75,6 @@ void Scene::render(Image &output_image) {
                           }
                       }
     );
-    output_image.resetColor();
-    auto max_color = static_cast<float>(output_image.max_color_m);
-    for (auto &local_color: local_max_color){
-        max_color = std::max({local_color, max_color});
-        local_color = 0.0f;
-    }
-    output_image.max_color_m = max_color;
 }
 
 void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
@@ -143,7 +134,6 @@ Scene::computeColor(const Ray &camera_ray, const Object* const current_object, c
                    diffuse_color * current_object->getMaterial().getDiffuse() +
                    specular_color * current_object->getMaterial().getSpecular();
 
-    local_max_color.local() = std::max({local_max_color.local(), output_color.r, output_color.g, output_color.b});
     return output_color;
 }
 
