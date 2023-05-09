@@ -2,10 +2,6 @@
 
 DirectionalLight::DirectionalLight(glm::vec3 direction) : LightSource() {
     direction_m = normalize(direction);
-    color_m = glm::vec3(1.0f, 1.0f, 1.0f);
-    intensity_m = 1.0f;
-    spec_intensity_m = 0.2f;
-    ambient_intensity_m = 0.005f;
 }
 
 void DirectionalLight::computeIllumination(const glm::vec3 &int_point,

@@ -11,6 +11,10 @@ private:
 
     glm::vec3 direction_m {1.0f, 1.0f, 1.0f};
     float m_distance = 1000.0f;
+    glm::vec3 color_m = glm::vec3(1.0f, 1.0f, 1.0f);
+    float intensity_m = 1.0f;
+    float spec_intensity_m = 0.2f;
+    float ambient_intensity_m = 0.005f;
 
     [[nodiscard]] static bool testIlluminationPresence(const std::vector<Object *> &object_list,
                                                               const Object * current_object,

@@ -15,6 +15,10 @@ private:
     static constexpr float kAttenQuad = 0.032f;
 
     glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 color_m = glm::vec3(1.0f, 1.0f, 1.0f);
+    float intensity_m = 1.0f;
+    float spec_intensity_m = 0.5f;
+    float ambient_intensity_m = 0.005f;
 
     [[nodiscard]] static bool testIlluminationPresence(const glm::vec3 &int_point,
                                                               const glm::vec3 &to_light_unnormalized,
