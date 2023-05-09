@@ -5,12 +5,7 @@
 #include "lights/point_light.hpp"
 
 
-PointLight::PointLight(glm::vec3 position) : LightSource(), position_m(position) {
-    color_m = glm::vec3(1.0f, 1.0f, 1.0f);
-    intensity_m = 1.0f;
-    spec_intensity_m = 0.5f;
-    ambient_intensity_m = 0.005f;
-}
+PointLight::PointLight(glm::vec3 position) : LightSource(), position_m(position) {}
 
 void PointLight::computeIllumination(const glm::vec3 &int_point,
                                      const glm::vec3 &loc_normal,
