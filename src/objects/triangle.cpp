@@ -1,6 +1,3 @@
-//
-// Created by andrew on 28/04/23.
-//
 #include "objects/triangle.hpp"
 
 Triangle::Triangle(const Vertex &v1, const Vertex &v2, const Vertex &v3) {
@@ -14,7 +11,7 @@ Triangle::Triangle(const Vertex &v1, const Vertex &v2, const Vertex &v3) {
 }
 
 bool Triangle::testIntersections(const Ray &cast_ray, glm::vec3 &loc_normal, float &distance) const {
-    constexpr float kEpsilon = 0.0001;
+    constexpr float kEpsilon = 0.0001f;
 
     glm::vec3 p_vec = glm::cross(cast_ray.getDirection(), e2_m);
     float determinant = glm::dot(e1_m, p_vec);
@@ -41,14 +38,14 @@ bool Triangle::testIntersections(const Ray &cast_ray, glm::vec3 &loc_normal, flo
 
     distance = glm::dot(e2_m, q_vec) * invDeterminant;
 
-    if (distance < 0.0f){
+    if (distance < 0.0f) {
         return false;
     }
 
-    if (glm::dot(normal_m, cast_ray.getDirection()) >= 0.0f){ // TODO: probably there is a more optimized way to find appropriate direction
+    if (glm::dot(normal_m, cast_ray.getDirection()) >= 0.0f) {
+        // TODO: probably there is a more optimized way to find appropriate direction
         loc_normal = -normal_m;
-    }
-    else{
+    } else {
         loc_normal = normal_m;
     }
     return true;

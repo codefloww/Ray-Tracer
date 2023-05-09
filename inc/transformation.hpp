@@ -1,12 +1,7 @@
-//
-// Created by paul on 3/31/23.
-//
-
 #ifndef RAY_TRACER_TRANSFORMATION_HPP
 #define RAY_TRACER_TRANSFORMATION_HPP
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "ray.hpp"
 
 enum class Direction {

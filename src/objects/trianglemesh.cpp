@@ -1,8 +1,5 @@
-//
-// Created by andrew on 29/04/23.
-//
-
 #include "objects/trianglemesh.hpp"
+#include <iostream>
 
 TriangleMesh::TriangleMesh(const std::string &file_path) {
     std::string mtl_base = file_path.substr(0, file_path.find_last_of('/') + 1);
@@ -50,8 +47,8 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
 
                 // emplace_back causes a compilation error with clang
                 vertices.push_back({glm::vec3{vx, vy, vz},
-                                      glm::vec3{nx, ny, nz},
-                                      glm::vec2{tx, ty}}
+                                    glm::vec3{nx, ny, nz},
+                                    glm::vec2{tx, ty}}
                 );
             }
             offset += vertex;
@@ -67,7 +64,7 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
 // override setMaterial to set the material of all the triangles
 void TriangleMesh::setMaterial(const Material &material) {
     material_m = material;
-    for(auto &part_material:materials){
+    for (auto &part_material: materials) {
         part_material.ambient[0] = material_m.getAmbient()[0];
         part_material.ambient[1] = material_m.getAmbient()[1];
         part_material.ambient[2] = material_m.getAmbient()[2];
@@ -88,7 +85,6 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
     bool hit = false;
     float closest_hit = std::numeric_limits<float>::max();
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
-    glm::vec3 tri_int_point;
     glm::vec3 tri_loc_normal;
     float distance;
 
@@ -102,7 +98,7 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
             }
         }
     }
-    if (hit){
+    if (hit) {
         loc_normal = glm::normalize(transformation_m.applyLinearTransform(loc_normal, Direction::FORWARD));
         int_point = transformation_m.applyTransform(int_point, Direction::FORWARD);
     }

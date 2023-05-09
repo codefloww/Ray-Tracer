@@ -1,7 +1,3 @@
-//
-// Created by paul on 3/11/23.
-//
-
 #ifndef RAY_TRACER_SCENE_HPP
 #define RAY_TRACER_SCENE_HPP
 
@@ -11,8 +7,6 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
-#include <glm/gtx/rotate_vector.hpp>
-#include <memory>
 
 
 class Scene {
@@ -22,8 +16,6 @@ class Scene {
     glm::vec3 background_color_m;
 
 public:
-    Camera camera_m;
-
     float update_time_m{};
     float camera_movement_speed_m;
     float camera_rotation_speed_m;
@@ -52,7 +44,7 @@ public:
                         glm::vec3 &loc_normal) const;
 
     [[nodiscard]] glm::vec3
-    computeColor(const Ray &camera_ray, const Object* current_object, const glm::vec3 &int_point,
+    computeColor(const Ray &camera_ray, const Object *current_object, const glm::vec3 &int_point,
                  const glm::vec3 &loc_normal) const;
 
     void moveCamera(CameraMovement direction);

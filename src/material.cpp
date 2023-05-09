@@ -1,7 +1,3 @@
-//
-// Created by paul on 5/3/23.
-//
-
 #include "material.hpp"
 
 glm::vec3 Material::getAmbient() const {

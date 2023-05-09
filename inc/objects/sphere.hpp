@@ -7,7 +7,6 @@
 
 #include <glm/glm.hpp>
 #include "ray.hpp"
-#include "transformation.hpp"
 #include "objects/object.hpp"
 
 class Sphere : public Object {

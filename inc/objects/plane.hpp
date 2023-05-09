@@ -6,7 +6,7 @@
 #define RAY_TRACER_PLANE_HPP
 
 #include <glm/glm.hpp>
-#include "transformation.hpp"
+#include "ray.hpp"
 #include "objects/object.hpp"
 
 class Plane : public Object {

@@ -1,7 +1,3 @@
-//
-// Created by paul on 3/8/23.
-//
-
 #ifndef RAY_TRACER_APP_HPP
 #define RAY_TRACER_APP_HPP
 

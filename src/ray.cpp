@@ -1,7 +1,3 @@
-//
-// Created by paul on 3/11/23.
-//
-
 #include "ray.hpp"
 
 Ray::Ray() : origin_m(glm::vec3(0.0f, 0.0f, 0.0f)),
@@ -19,7 +15,7 @@ glm::vec3 Ray::getDirection() const {
 }
 
 glm::vec3 Ray::getPoint(float t) const {
-    return origin_m + direction_m * static_cast<float>(t);
+    return origin_m + direction_m * t;
 }
 
 Ray Ray::getRayFromPoints(const glm::vec3 &origin, const glm::vec3 &destination) {

@@ -4,8 +4,9 @@
 
 #include "app/image.hpp"
 #include <algorithm>
+#include <iostream>
 
-constexpr float STANDARD_MAX_COLOR = 0.05;
+constexpr float STANDARD_MAX_COLOR = 0.05f;
 //constexpr float GAMMA = 2.2;
 
 Image::~Image() {
@@ -21,7 +22,6 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     height_m = height;
 
     pixels_m = new Uint32[width_m * height_m];
-    memset(pixels_m, 0, width_m * height_m * sizeof(Uint32));
 
     renderer_m = renderer;
     max_color_m = STANDARD_MAX_COLOR;
@@ -40,7 +40,6 @@ Uint32 Image::getPixel(int x, int y) const {
 void Image::display() {
     auto uint32_size = static_cast<int>(sizeof(Uint32));
     SDL_UpdateTexture(texture_m, nullptr, pixels_m, width_m * uint32_size);
-
     SDL_RenderCopy(renderer_m, texture_m, nullptr, nullptr);
 }
 
@@ -69,8 +68,23 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-glm::vec4 Image::convertColor(const glm::vec4 &color) const {
-    return {(color.r / max_color_m), (color.g / max_color_m), (color.b / max_color_m), color.a};
+glm::vec3 Image::convertColor(glm::vec3& color) const {
+
+    color.r = color.r / max_color_m;
+    color.g = color.g / max_color_m;
+    color.b = color.b / max_color_m;
+
+    // Still there is god know why a possibility that the color is greater than 1.0f
+    if (color.r > 1.0f) {
+        color.r = 1.0f;
+    }
+    if (color.g > 1.0f) {
+        color.g = 1.0f;
+    }
+    if (color.b > 1.0f) {
+        color.b = 1.0f;
+    }
+    return {color.r, color.g, color.b};
 }
 
 int Image::getWidth() const {
@@ -81,17 +95,15 @@ int Image::getHeight() const {
     return height_m;
 }
 
-Uint32 Image::postProcess(glm::vec4 rgba) {
-    auto corrected_rgba = rgba; //TODO: optimize and turn it on: glm::pow(rgba, glm::vec4{1.0f/GAMMA, 1.0f/GAMMA, 1.0f/GAMMA, 1.0f}); // rgba is in [0, 1]
-    Uint8 red = corrected_rgba.r * 255; // so corrected_rgba as well
-    Uint8 green = corrected_rgba.g * 255;
-    Uint8 blue = corrected_rgba.b * 255;
-    Uint8 alpha = corrected_rgba.a * 255;
+Uint32 Image::postProcess(glm::vec4&& rgba) {
+    Uint8 red = rgba.r * 255;
+    Uint8 green = rgba.g * 255;
+    Uint8 blue = rgba.b * 255;
+    Uint8 alpha = rgba.a * 255;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    alpha = 0x000000FF;
     return red << 24 | (green << 16) | (blue << 8) | alpha;
 #else
-    return alpha | (blue << 16) | (green << 8) | red;
+    return (alpha << 24) | (blue << 16) | (green << 8) | red;
 #endif
 }

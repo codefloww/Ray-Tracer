@@ -7,7 +7,6 @@
 
 #include "triangle.hpp"
 #include "obj_loader/tiny_obj_loader.h"
-#include <iostream>
 #include <vector>
 #include <memory>
 

@@ -28,9 +28,6 @@ bool Application::onInit() {
         return false;
     }
     image_m.initialize(kWidth, kHeight, renderer_m);
-    SDL_SetRenderDrawColor(renderer_m, 100.0, 100.0, 100.0, 255.0);
-    SDL_RenderClear(renderer_m);
-
     return true;
 }
 

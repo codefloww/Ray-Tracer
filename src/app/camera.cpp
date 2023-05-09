@@ -119,14 +119,14 @@ glm::vec3 Camera::getXAxis() const {
 void Camera::updateCameraGeometry() {
     screen_u_m = glm::cross(direction_m, screen_up_m);
     screen_v_m = glm::cross(direction_m, screen_u_m);
-    screen_center_m = position_m + direction_m * static_cast<float>(lens_distance_m);
-    screen_u_m *= static_cast<float>(width_m);
-    screen_v_m *= static_cast<float>(width_m / aspect_ratio_m);
+    screen_center_m = position_m + direction_m * lens_distance_m;
+    screen_u_m *= width_m;
+    screen_v_m *= width_m / aspect_ratio_m;
 }
 
 bool Camera::createRay(float x, float y, Ray &camera_ray) const {
     glm::vec3 point_on_screen =
-            screen_center_m + screen_u_m * static_cast<float>(x) + screen_v_m * static_cast<float>(y);
+            screen_center_m + screen_u_m * x + screen_v_m * y;
     camera_ray = Ray::getRayFromPoints(position_m, point_on_screen);
     return true;
 }

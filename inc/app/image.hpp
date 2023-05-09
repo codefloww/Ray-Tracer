@@ -1,17 +1,11 @@
-//
-// Created by paul on 3/8/23.
-//
-
 #ifndef RAY_TRACER_IMAGE_HPP
 #define RAY_TRACER_IMAGE_HPP
 
-#include <string>
-#include <vector>
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
 class Image {
-    Uint32 *pixels_m = nullptr;
+    Uint32 *pixels_m;
     int width_m = 0;
     int height_m = 0;
 
@@ -35,11 +29,11 @@ public:
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] glm::vec4 convertColor(const glm::vec4 &color) const;
+    [[nodiscard]] glm::vec3 convertColor(glm::vec3& color) const;
 
     void initTexture();
 
-    static Uint32 postProcess(glm::vec4 rgba);
+    static Uint32 postProcess(glm::vec4&& rgba); // because we pass rvalue (constructed glm::vec4 in internalRender)
 };
 
 #endif //RAY_TRACER_IMAGE_HPP

@@ -9,16 +9,12 @@ private:
     static constexpr float kAttenLin = 0.0f;
     static constexpr float kAttenQuad = 0.0f;
 
-    glm::vec3 direction_m {1.0f, 1.0f, 1.0f};
+    glm::vec3 direction_m{1.0f, 1.0f, 1.0f};
     float m_distance = 1000.0f;
-    glm::vec3 color_m = glm::vec3(1.0f, 1.0f, 1.0f);
-    float intensity_m = 1.0f;
-    float spec_intensity_m = 0.2f;
-    float ambient_intensity_m = 0.005f;
 
     [[nodiscard]] static bool testIlluminationPresence(const std::vector<Object *> &object_list,
-                                                              const Object * current_object,
-                                                              const Ray &light_ray) ;
+                                                       const Object *current_object,
+                                                       const Ray &light_ray);
 
     [[nodiscard]] glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
                                                        const glm::vec3 &loc_normal,
@@ -29,19 +25,31 @@ private:
                                                   const glm::vec3 &view_dir) const override;
 
     [[nodiscard]] float getAttenuation(const glm::vec3 &int_point) const override;
+
 public:
-    explicit DirectionalLight(glm::vec3 direction);
+    DirectionalLight() {
+        color_m = glm::vec3(1.0f, 1.0f, 1.0f);
+        intensity_m = 1.0f;
+        spec_intensity_m = 0.5f;
+        ambient_intensity_m = 0.01f;
+    }
+
+    explicit DirectionalLight(const glm::vec3 &direction) : LightSource() {
+        direction_m = normalize(direction);
+        color_m = glm::vec3(1.0f, 1.0f, 1.0f);
+        intensity_m = 1.0f;
+        spec_intensity_m = 0.5f;
+        ambient_intensity_m = 0.01f;
+    }
 
     void computeIllumination(const glm::vec3 &int_point,
                              const glm::vec3 &loc_normal,
                              const std::vector<Object *> &object_list,
-                             const Object * current_object,
+                             const Object *current_object,
                              const glm::vec3 &view_dir,
                              glm::vec3 &diffuse_component,
                              glm::vec3 &specular_component,
                              glm::vec3 &ambient_component) const override;
-
-    ~DirectionalLight() override = default;
 };
 
 
