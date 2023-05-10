@@ -4,7 +4,6 @@
 #include "light_source.hpp"
 
 class DirectionalLight : public LightSource {
-private:
     static constexpr float kAttenConst = 1.0f;
     static constexpr float kAttenLin = 0.0f;
     static constexpr float kAttenQuad = 0.0f;
@@ -31,7 +30,7 @@ public:
         color_m = glm::vec3(1.0f, 1.0f, 1.0f);
         intensity_m = 1.0f;
         spec_intensity_m = 0.5f;
-        ambient_intensity_m = 0.01f;
+        ambient_intensity_m = 0.1f;
     }
 
     explicit DirectionalLight(const glm::vec3 &direction) : LightSource() {
@@ -39,7 +38,7 @@ public:
         color_m = glm::vec3(1.0f, 1.0f, 1.0f);
         intensity_m = 1.0f;
         spec_intensity_m = 0.5f;
-        ambient_intensity_m = 0.01f;
+        ambient_intensity_m = 0.1f;
     }
 
     void computeIllumination(const glm::vec3 &int_point,

@@ -9,7 +9,7 @@
 #include <algorithm>
 
 class LightSource {
-private:
+
     [[nodiscard]] virtual glm::vec3 computeDiffuseIllumination(const glm::vec3 &int_point,
                                                                const glm::vec3 &loc_normal,
                                                                const Ray &light_ray) const = 0;
@@ -21,10 +21,6 @@ private:
     [[nodiscard]] virtual float getAttenuation(const glm::vec3 &int_point) const = 0;
 
 protected:
-    static constexpr float kAttenConst = 1.0f;
-    static constexpr float kAttenLin = 0.0f;
-    static constexpr float kAttenQuad = 0.0f;
-
     glm::vec3 color_m;
     float intensity_m;
     float spec_intensity_m;

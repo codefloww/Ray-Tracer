@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 class Image {
-    Uint32 *pixels_m;
+    Uint32 *pixels_m = nullptr;
     int width_m = 0;
     int height_m = 0;
 
@@ -13,27 +13,31 @@ class Image {
     SDL_Texture *texture_m = nullptr;
 
 public:
-    float max_color_m = 0.0;
+    Image() = default;
+
+    Image(const Image&) = delete;
+
+    Image& operator=(const Image&) = delete;
 
     ~Image();
 
     void initialize(int width, int height, SDL_Renderer *renderer);
 
+    void initTexture();
+
     void setPixel(int x, int y, Uint32 color);
-
-    [[nodiscard]] Uint32 getPixel(int x, int y) const;
-
-    void display();
 
     [[nodiscard]] int getWidth() const;
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] glm::vec3 convertColor(glm::vec3& color) const;
+    [[nodiscard]] Uint32 getPixel(int x, int y) const;
 
-    void initTexture();
+    void display();
 
-    static Uint32 postProcess(glm::vec4&& rgba); // because we pass rvalue (constructed glm::vec4 in internalRender)
+    [[nodiscard]] static glm::vec3 convertColor(glm::vec3& color);
+
+    [[nodiscard]] static Uint32 postProcess(glm::vec3 rgba);
 };
 
 #endif //RAY_TRACER_IMAGE_HPP

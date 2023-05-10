@@ -5,10 +5,9 @@
 
 
 class PointLight : public LightSource {
-private:
     static constexpr float kAttenConst = 1.0f;
-    static constexpr float kAttenLin = 0.09f;
-    static constexpr float kAttenQuad = 0.032f;
+    static constexpr float kAttenLin = 0.0001f;
+    static constexpr float kAttenQuad = 0.0f;  // for now let's test out linear attenuation only
 
     glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -34,7 +33,7 @@ public:
         color_m = glm::vec3(1.0f, 1.0f, 1.0f);
         intensity_m = 1.0f;
         spec_intensity_m = 0.5f;
-        ambient_intensity_m = 0.01f;
+        ambient_intensity_m = 0.1f;
     }
 
     explicit PointLight(const glm::vec3 &position) : LightSource() {
@@ -42,7 +41,7 @@ public:
         color_m = glm::vec3(1.0f, 1.0f, 1.0f);
         intensity_m = 1.0f;
         spec_intensity_m = 0.5f;
-        ambient_intensity_m = 0.01f;
+        ambient_intensity_m = 0.1f;
     }
 
     void computeIllumination(const glm::vec3 &int_point,

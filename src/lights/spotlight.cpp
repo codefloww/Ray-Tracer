@@ -8,7 +8,7 @@ Spotlight::Spotlight(const glm::vec3 &position, const glm::vec3 &direction, floa
     color_m = glm::vec3(1.0f, 1.0f, 1.0f);
     intensity_m = 1.0f;
     spec_intensity_m = 0.5f;
-    ambient_intensity_m = 0.005f;
+    ambient_intensity_m = 0.1f;
 
     inner_cone_cos_m = std::cos(glm::radians(inner_cone_angle_m));
     outer_cone_cos_m = std::cos(glm::radians(outer_cone_angle_m));

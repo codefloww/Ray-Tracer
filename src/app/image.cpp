@@ -1,12 +1,6 @@
-//
-// Created by paul on 3/8/23.
-//
-
 #include "app/image.hpp"
 #include <algorithm>
-#include <iostream>
 
-constexpr float STANDARD_MAX_COLOR = 0.05f;
 //constexpr float GAMMA = 2.2;
 
 Image::~Image() {
@@ -24,23 +18,7 @@ void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     pixels_m = new Uint32[width_m * height_m];
 
     renderer_m = renderer;
-    max_color_m = STANDARD_MAX_COLOR;
-
     initTexture();
-}
-
-void Image::setPixel(int x, int y, Uint32 color) {
-    pixels_m[y * width_m + x] = color;
-}
-
-Uint32 Image::getPixel(int x, int y) const {
-    return pixels_m[y * width_m + x];
-}
-
-void Image::display() {
-    auto uint32_size = static_cast<int>(sizeof(Uint32));
-    SDL_UpdateTexture(texture_m, nullptr, pixels_m, width_m * uint32_size);
-    SDL_RenderCopy(renderer_m, texture_m, nullptr, nullptr);
 }
 
 void Image::initTexture() {
@@ -68,23 +46,12 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-glm::vec3 Image::convertColor(glm::vec3& color) const {
+void Image::setPixel(int x, int y, Uint32 color) {
+    pixels_m[y * width_m + x] = color;
+}
 
-    color.r = color.r / max_color_m;
-    color.g = color.g / max_color_m;
-    color.b = color.b / max_color_m;
-
-    // Still there is god know why a possibility that the color is greater than 1.0f
-    if (color.r > 1.0f) {
-        color.r = 1.0f;
-    }
-    if (color.g > 1.0f) {
-        color.g = 1.0f;
-    }
-    if (color.b > 1.0f) {
-        color.b = 1.0f;
-    }
-    return {color.r, color.g, color.b};
+Uint32 Image::getPixel(int x, int y) const {
+    return pixels_m[y * width_m + x];
 }
 
 int Image::getWidth() const {
@@ -95,15 +62,29 @@ int Image::getHeight() const {
     return height_m;
 }
 
-Uint32 Image::postProcess(glm::vec4&& rgba) {
-    Uint8 red = rgba.r * 255;
-    Uint8 green = rgba.g * 255;
-    Uint8 blue = rgba.b * 255;
-    Uint8 alpha = rgba.a * 255;
+void Image::display() {
+    auto uint32_size = static_cast<int>(sizeof(Uint32));
+    SDL_UpdateTexture(texture_m, nullptr, pixels_m, width_m * uint32_size);
+    SDL_RenderCopy(renderer_m, texture_m, nullptr, nullptr);
+}
 
+glm::vec3 Image::convertColor(glm::vec3 &color) {
+    color.r = glm::clamp(color.r, 0.0f, 1.0f);
+    color.g = glm::clamp(color.g, 0.0f, 1.0f);
+    color.b = glm::clamp(color.b, 0.0f, 1.0f);
+
+    return {color.r, color.g, color.b};
+}
+
+Uint32 Image::postProcess(glm::vec3 rgba) {
+    auto red = static_cast<Uint8>(rgba.r * 255);
+    auto green = static_cast<Uint8>(rgba.g * 255);
+    auto blue = static_cast<Uint8>(rgba.b * 255);
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    Uint32 alpha = 0x000000FF;
     return red << 24 | (green << 16) | (blue << 8) | alpha;
 #else
-    return (alpha << 24) | (blue << 16) | (green << 8) | red;
+    Uint32 alpha = 0xFF000000;
+    return alpha | (blue << 16) | (green << 8) | red;
 #endif
 }

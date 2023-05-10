@@ -9,7 +9,7 @@
 #include <oneapi/tbb/parallel_for.h>
 #include <oneapi/tbb/blocked_range2d.h>
 
-Scene::Scene() : background_color_m{0.01, 0.01, 0.01} {
+Scene::Scene() : background_color_m{0.01f, 0.01f, 0.01f} {
     camera_movement_speed_m = 7.5f;
     camera_rotation_speed_m = 7.5f;
 
@@ -33,13 +33,12 @@ Scene::Scene() : background_color_m{0.01, 0.01, 0.01} {
                                   glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f),
                                   glm::vec3(1.0f, 1.0f, 1.0f));
     object_list_m.back()->setTransformation(suzanneTransform);
-
-//    object_list_m.emplace_back(new Sphere());
-//    Transformation sphereTransform;
-//    sphereTransform.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(0.0f, 0.0f, 0.0f),
-//                                 glm::vec3(1.0f, 1.0f, 1.0f));
-//    object_list_m.back()->setTransformation(sphereTransform);
+/*    object_list_m.emplace_back(new Sphere());
+    Transformation sphereTransform;
+    sphereTransform.setTransform(glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(1.0f, 1.0f, 1.0f));
+    object_list_m.back()->setTransformation(sphereTransform);*/
 
     Material material;
     material.setupMaterial(glm::vec3(0.4f, 0.6f, 0.8f),
@@ -71,8 +70,7 @@ void Scene::render(Image &output_image) const {
                                   internalRender(x, y, camera_ray, output_image, int_point, loc_normal);
                               }
                           }
-                      }
-    );
+                      });
 }
 
 void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_image, glm::vec3 &int_point,
@@ -103,7 +101,7 @@ void Scene::internalRender(int x, int y, const Ray &camera_ray, Image &output_im
         output_color = background_color_m;
     }
 
-    output_image.setPixel(x, y, Image::postProcess(glm::vec4{output_image.convertColor(output_color), 1.0f}));
+    output_image.setPixel(x, y, Image::postProcess(Image::convertColor(output_color)));
 }
 
 glm::vec3

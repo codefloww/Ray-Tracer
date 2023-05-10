@@ -5,10 +5,9 @@
 
 
 class Spotlight : public LightSource {
-private:
     static constexpr float kAttenConst = 1.0f;
-    static constexpr float kAttenLin = 0.045f;
-    static constexpr float kAttenQuad = 0.0075f;
+    static constexpr float kAttenLin = 0.0005f;
+    static constexpr float kAttenQuad = 0.0f;
 
     glm::vec3 position_m;
     glm::vec3 spot_direction_m;
