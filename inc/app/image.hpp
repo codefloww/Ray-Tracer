@@ -1,49 +1,43 @@
-//
-// Created by paul on 3/8/23.
-//
-
 #ifndef RAY_TRACER_IMAGE_HPP
 #define RAY_TRACER_IMAGE_HPP
 
-#include <string>
-#include <vector>
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
 class Image {
+    Uint32 *pixels_m = nullptr;
     int width_m = 0;
     int height_m = 0;
 
     SDL_Renderer *renderer_m = nullptr;
     SDL_Texture *texture_m = nullptr;
 
-    Uint32 *pixels_m = nullptr;
-    glm::vec3 bg_color_m{};
-
 public:
-    ~Image();
-
     Image() = default;
 
-    Image(const Image &) = delete;
+    Image(const Image&) = delete;
 
-    Image &operator=(const Image &) = delete;
+    Image& operator=(const Image&) = delete;
+
+    ~Image();
 
     void initialize(int width, int height, SDL_Renderer *renderer);
 
-    void display();
+    void initTexture();
+
+    void setPixel(int x, int y, Uint32 color);
 
     [[nodiscard]] int getWidth() const;
 
     [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] glm::vec3 getBgColor() const;
+    [[nodiscard]] Uint32 getPixel(int x, int y) const;
 
-    void setPixel(int x, int y, glm::vec3 color) const;
+    void display();
 
-    [[nodiscard]] static Uint32 convertColor(float r, float g, float b);
+    [[nodiscard]] static glm::vec3 convertColor(glm::vec3& color);
 
-    void initTexture();
+    [[nodiscard]] static Uint32 postProcess(glm::vec3 rgba);
 };
 
 #endif //RAY_TRACER_IMAGE_HPP

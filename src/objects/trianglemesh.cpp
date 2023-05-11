@@ -1,8 +1,5 @@
-//
-// Created by andrew on 29/04/23.
-//
-
 #include "objects/trianglemesh.hpp"
+#include <iostream>
 
 TriangleMesh::TriangleMesh(const std::string &file_path) {
     std::string mtl_base = file_path.substr(0, file_path.find_last_of('/') + 1);
@@ -50,8 +47,8 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
 
                 // emplace_back causes a compilation error with clang
                 vertices.push_back({glm::vec3{vx, vy, vz},
-                                      glm::vec3{nx, ny, nz},
-                                      glm::vec2{tx, ty}}
+                                    glm::vec3{nx, ny, nz},
+                                    glm::vec2{tx, ty}}
                 );
             }
             offset += vertex;
@@ -59,7 +56,7 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
     }
 
     for (int i = 0; i < vertices.size() / 3; ++i) {
-        triangles.push_back(std::make_shared<Triangle>(
+        triangles.push_back(new Triangle(
                 vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2]));
     }
 }
@@ -67,7 +64,7 @@ TriangleMesh::TriangleMesh(const std::string &file_path) {
 // override setMaterial to set the material of all the triangles
 void TriangleMesh::setMaterial(const Material &material) {
     material_m = material;
-    for(auto &part_material:materials){
+    for (auto &part_material: materials) {
         part_material.ambient[0] = material_m.getAmbient()[0];
         part_material.ambient[1] = material_m.getAmbient()[1];
         part_material.ambient[2] = material_m.getAmbient()[2];
@@ -88,21 +85,22 @@ bool TriangleMesh::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, 
     bool hit = false;
     float closest_hit = std::numeric_limits<float>::max();
     Ray local_ray = transformation_m.applyTransform(cast_ray, Direction::BACKWARD);
-    glm::vec3 tri_int_point;
     glm::vec3 tri_loc_normal;
+    float distance;
 
     for (const auto &tri: triangles) {
-        if (tri->testIntersections(local_ray, tri_int_point, tri_loc_normal)) {
-            tri_int_point = transformation_m.applyTransform(tri_int_point, Direction::FORWARD);
-            float dist = glm::distance(cast_ray.getOrigin(), tri_int_point);
-
-            if (dist < closest_hit) {
-                closest_hit = dist;
-                int_point = tri_int_point;
-                loc_normal = glm::normalize(transformation_m.applyTransform(tri_loc_normal, Direction::FORWARD));
+        if (tri->testIntersections(local_ray, tri_loc_normal, distance)) {
+            if (distance < closest_hit) {
+                closest_hit = distance;
+                int_point = local_ray.getPoint(distance);
+                loc_normal = tri_loc_normal;
                 hit = true;
             }
         }
+    }
+    if (hit) {
+        loc_normal = glm::normalize(transformation_m.applyLinearTransform(loc_normal, Direction::FORWARD));
+        int_point = transformation_m.applyTransform(int_point, Direction::FORWARD);
     }
 
     return hit;

@@ -1,12 +1,7 @@
-//
-// Created by paul on 3/31/23.
-//
-
 #ifndef RAY_TRACER_TRANSFORMATION_HPP
 #define RAY_TRACER_TRANSFORMATION_HPP
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "ray.hpp"
 
 enum class Direction {
@@ -34,6 +29,8 @@ public:
     [[nodiscard]] Ray applyTransform(const Ray &ray, Direction dir) const;
 
     [[nodiscard]] glm::vec3 applyTransform(const glm::vec3 &vec, Direction dir) const;
+
+    [[nodiscard]] glm::vec3 applyLinearTransform(const glm::vec3 &vec, Direction dir) const;
 
     void printTransform(Direction dir) const;
 

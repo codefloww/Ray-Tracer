@@ -1,15 +1,21 @@
-#ifndef RAY_TRACER_POINT_LIGHT_HPP
-#define RAY_TRACER_POINT_LIGHT_HPP
+#ifndef RAY_TRACER_SPOTLIGHT_HPP
+#define RAY_TRACER_SPOTLIGHT_HPP
 
 #include "light_source.hpp"
 
 
-class PointLight : public LightSource {
+class Spotlight : public LightSource {
     static constexpr float kAttenConst = 1.0f;
-    static constexpr float kAttenLin = 0.0001f;
-    static constexpr float kAttenQuad = 0.0f;  // for now let's test out linear attenuation only
+    static constexpr float kAttenLin = 0.0005f;
+    static constexpr float kAttenQuad = 0.0f;
 
-    glm::vec3 position_m = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 position_m;
+    glm::vec3 spot_direction_m;
+    float inner_cone_angle_m;
+    float inner_cone_cos_m;
+    float outer_cone_angle_m;
+    float outer_cone_cos_m;
+    float epsilon_m; // Cos difference between outer and inner cone angles.
 
 
     [[nodiscard]] static bool testIlluminationPresence(const glm::vec3 &int_point,
@@ -28,21 +34,10 @@ class PointLight : public LightSource {
 
     [[nodiscard]] float getAttenuation(const glm::vec3 &int_point) const override;
 
-public:
-    PointLight() {
-        color_m = glm::vec3(1.0f, 1.0f, 1.0f);
-        intensity_m = 1.0f;
-        spec_intensity_m = 0.5f;
-        ambient_intensity_m = 0.1f;
-    }
+    [[nodiscard]] bool testIfInCone(float angle_cos) const;
 
-    explicit PointLight(const glm::vec3 &position) : LightSource() {
-        position_m = position;
-        color_m = glm::vec3(1.0f, 1.0f, 1.0f);
-        intensity_m = 1.0f;
-        spec_intensity_m = 0.5f;
-        ambient_intensity_m = 0.1f;
-    }
+public:
+    Spotlight(const glm::vec3 &position, const glm::vec3 &direction, float inner_angle, float outer_angle);
 
     void computeIllumination(const glm::vec3 &int_point,
                              const glm::vec3 &loc_normal,
@@ -54,4 +49,4 @@ public:
                              glm::vec3 &ambient_component) const override;
 };
 
-#endif //RAY_TRACER_POINT_LIGHT_HPP
+#endif //RAY_TRACER_SPOTLIGHT_HPP

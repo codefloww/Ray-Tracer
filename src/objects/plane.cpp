@@ -1,7 +1,3 @@
-//
-// Created by paul on 3/31/23.
-//
-
 #include "objects/plane.hpp"
 
 constexpr float kEpsilon = 0.0001f;
@@ -16,7 +12,7 @@ Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &l
     }
 
     float t = -local_ray.getOrigin().z / k.z;
-    if (t < 0.0) {
+    if (t < 0.0f) {
         return false;
     }
 
@@ -27,8 +23,11 @@ Plane::testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &l
     }
 
     int_point = transformation_m.applyTransform(local_int_point, Direction::FORWARD);
-    glm::vec3 plane_origin = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 0.0f), Direction::FORWARD);
-    loc_normal = transformation_m.applyTransform(glm::vec3(0.0f, 0.0f, 1.0f), Direction::FORWARD) - plane_origin;
+    loc_normal = transformation_m.applyLinearTransform(glm::vec3(0.0f, 0.0f, 1.0f), Direction::FORWARD);
     loc_normal = glm::normalize(loc_normal);
+    if (glm::dot(loc_normal, cast_ray.getDirection()) >= 0.0f) {
+        // TODO: probably there is a more optimized way to find appropriate direction
+        loc_normal *= -1;
+    }
     return true;
 }

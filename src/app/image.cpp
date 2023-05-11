@@ -1,9 +1,7 @@
-//
-// Created by paul on 3/8/23.
-//
-
 #include "app/image.hpp"
 #include <algorithm>
+
+//constexpr float GAMMA = 2.2;
 
 Image::~Image() {
     if (texture_m != nullptr) {
@@ -16,20 +14,11 @@ Image::~Image() {
 void Image::initialize(int width, int height, SDL_Renderer *renderer) {
     width_m = width;
     height_m = height;
-    renderer_m = renderer;
-
-    bg_color_m = glm::vec3(0.0, 0.0, 0.0);
 
     pixels_m = new Uint32[width_m * height_m];
 
+    renderer_m = renderer;
     initTexture();
-}
-
-void Image::display() {
-    auto uint32_size = static_cast<int>(sizeof(Uint32));
-    SDL_UpdateTexture(texture_m, nullptr, pixels_m, width_m * uint32_size);
-
-    SDL_RenderCopy(renderer_m, texture_m, nullptr, nullptr);
 }
 
 void Image::initTexture() {
@@ -57,27 +46,12 @@ void Image::initTexture() {
     SDL_FreeSurface(temp_surface);
 }
 
-void Image::setPixel(int x, int y, glm::vec3 color) const {
-    auto index = y * width_m + x;
-    pixels_m[index] = convertColor(color.r, color.g, color.b);
+void Image::setPixel(int x, int y, Uint32 color) {
+    pixels_m[y * width_m + x] = color;
 }
 
-Uint32 Image::convertColor(float r, float g, float b) {
-    if (r > 1.0) r = 1.0;
-    if (g > 1.0) g = 1.0;
-    if (b > 1.0) b = 1.0;
-
-    auto red = static_cast<Uint8>(255 * r);
-    auto blue = static_cast<Uint8>(255 * b);
-    auto green = static_cast<Uint8>(255 * g);
-    auto alpha = 0xFF000000;
-
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    alpha = 0x000000FF;
-    return red << 24 | (green << 16) | (blue << 8) | alpha;
-#else
-    return alpha | (blue << 16) | (green << 8) | red;
-#endif
+Uint32 Image::getPixel(int x, int y) const {
+    return pixels_m[y * width_m + x];
 }
 
 int Image::getWidth() const {
@@ -88,6 +62,29 @@ int Image::getHeight() const {
     return height_m;
 }
 
-glm::vec3 Image::getBgColor() const {
-    return bg_color_m;
+void Image::display() {
+    auto uint32_size = static_cast<int>(sizeof(Uint32));
+    SDL_UpdateTexture(texture_m, nullptr, pixels_m, width_m * uint32_size);
+    SDL_RenderCopy(renderer_m, texture_m, nullptr, nullptr);
+}
+
+glm::vec3 Image::convertColor(glm::vec3 &color) {
+    color.r = glm::clamp(color.r, 0.0f, 1.0f);
+    color.g = glm::clamp(color.g, 0.0f, 1.0f);
+    color.b = glm::clamp(color.b, 0.0f, 1.0f);
+
+    return {color.r, color.g, color.b};
+}
+
+Uint32 Image::postProcess(glm::vec3 rgba) {
+    auto red = static_cast<Uint8>(rgba.r * 255);
+    auto green = static_cast<Uint8>(rgba.g * 255);
+    auto blue = static_cast<Uint8>(rgba.b * 255);
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    Uint32 alpha = 0x000000FF;
+    return red << 24 | (green << 16) | (blue << 8) | alpha;
+#else
+    Uint32 alpha = 0xFF000000;
+    return alpha | (blue << 16) | (green << 8) | red;
+#endif
 }

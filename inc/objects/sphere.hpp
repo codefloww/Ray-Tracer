@@ -7,11 +7,12 @@
 
 #include <glm/glm.hpp>
 #include "ray.hpp"
-#include "transformation.hpp"
 #include "objects/object.hpp"
 
 class Sphere : public Object {
 public:
+    explicit Sphere();
+
     bool testIntersections(const Ray &cast_ray, glm::vec3 &int_point, glm::vec3 &loc_normal) const override;
 };
 

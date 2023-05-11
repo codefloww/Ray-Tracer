@@ -1,8 +1,5 @@
-//
-// Created by paul on 3/31/23.
-//
-
 #include <iostream>
+#include <glm/gtx/transform.hpp>
 #include "transformation.hpp"
 
 Transformation::Transformation(const glm::mat4 &forw_transform, const glm::mat4 &back_transform) {
@@ -48,6 +45,17 @@ glm::vec3 Transformation::applyTransform(const glm::vec3 &vec, Direction dir) co
         new_vec = back_transform_m * new_vec;
     }
     return glm::vec3{new_vec};
+}
+
+glm::vec3 Transformation::applyLinearTransform(const glm::vec3 &vec,
+                                               Direction dir) const { // Apply transformation without its "affine part". Usable for directions - normals, for instance.
+    auto new_vec = glm::vec4(vec, 0.0f);
+    if (dir == Direction::FORWARD) {
+        new_vec = forw_transform_m * new_vec;
+    } else {
+        new_vec = back_transform_m * new_vec;
+    }
+    return new_vec;
 }
 
 void Transformation::printTransform(Direction dir) const {
