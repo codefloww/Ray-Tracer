@@ -10,7 +10,9 @@ To reproduce the properties of the camera, such as field of view and perspective
 
 ## Prerequisites
 
-Cmake, C++ std lib, SDL2, TBB, GLM
+You need to have C++ std lib installed. You will also need `gcc` or `clang` compiler, `cmake` and `make` installed to build the project.
+
+Additionally, SDL2, TBB, and glm libraries are required.
 
 We use SDL2 library as an API for computer multimedia hardware.
 Intel Threading Building Blocks is used to utilize the parallelization.
@@ -18,14 +20,45 @@ OpenGL Mathematics (GLM) provides a mathematical backbone for our application.
 
 ## Compilation
 
-Just through CMake.
+Our project uses CMake as a build system. To compile the project, run the following commands:
 
-### Usage
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
 
-To start the program type, for example:
+### Installation
 
+To install the project, run the following commands:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --target install
+```
+
+
+## Usage
+
+To start the program just run the executable file:
+```bash
     cd ./cmake-build-release
-    ./Ray_Tracer.exe
+    ./Ray_Tracer
+```
+
+### Controls
+
+There are controls for the camera:
+
+* `W` - move forward
+* `S` - move backward
+* `A` - move left
+* `D` - move right
+* `Q` - move up
+* `E` - move down
+* `UP` - rotate up
+* `DOWN` - rotate down
+* `LEFT` - rotate left
+* `RIGHT` - rotate right
 
 ### Gallery
 
